@@ -27,20 +27,14 @@
 =============================================================================
 */
 
-#ifdef DEBUGWALLS
-unsigned screenloc[3]= {0,0,0};
-#else
-unsigned screenloc[3]= {PAGE1START,PAGE2START,PAGE3START};
-#endif
-unsigned freelatch = FREESTART;
-
 static byte *vbuf = NULL;
+unsigned vbufPitch = 0;
 
 long    lasttimecount;
 long    frameon;
 boolean fpscounter;
 
-int         fps_frames=0, fps_time=0, fps=0;
+int fps_frames=0, fps_time=0, fps=0;
 
 int wallheight[MAXVIEWWIDTH];
 
@@ -56,7 +50,7 @@ fixed *costable = sintable+(ANGLES/4);
 // refresh variables
 //
 fixed   viewx,viewy;                    // the focal point
-short viewangle;
+short   viewangle;
 fixed   viewsin,viewcos;
 
 void    TransformActor (objtype *ob);
@@ -81,20 +75,20 @@ int     lasttexture;
 //
 // ray tracing variables
 //
-short focaltx,focalty,viewtx,viewty;
+short    focaltx,focalty,viewtx,viewty;
 longword xpartialup,xpartialdown,ypartialup,ypartialdown;
 
-short midangle,angle;
+short   midangle,angle;
 
-word tilehit;
-int pixx;
+word    tilehit;
+int     pixx;
 
-short xtile,ytile;
-short xtilestep,ytilestep;
-long xintercept,yintercept;
-word xstep,ystep; // long
-word xspot,yspot;
-int texdelta;
+short   xtile,ytile;
+short   xtilestep,ytilestep;
+long    xintercept,yintercept;
+word    xstep,ystep;
+word    xspot,yspot;
+int     texdelta;
 
 word horizwall[MAXWALLTILES],vertwall[MAXWALLTILES];
 
@@ -132,48 +126,48 @@ word horizwall[MAXWALLTILES],vertwall[MAXWALLTILES];
 //
 void TransformActor (objtype *ob)
 {
-        fixed gx,gy,gxt,gyt,nx,ny;
+    fixed gx,gy,gxt,gyt,nx,ny;
 
 //
 // translate point to view centered coordinates
 //
-        gx = ob->x-viewx;
-        gy = ob->y-viewy;
+    gx = ob->x-viewx;
+    gy = ob->y-viewy;
 
 //
 // calculate newx
 //
-        gxt = FixedMul(gx,viewcos);
-        gyt = FixedMul(gy,viewsin);
-        nx = gxt-gyt-ACTORSIZE;         // fudge the shape forward a bit, because
-                                                                // the midpoint could put parts of the shape
-                                                                // into an adjacent wall
+    gxt = FixedMul(gx,viewcos);
+    gyt = FixedMul(gy,viewsin);
+    nx = gxt-gyt-ACTORSIZE;         // fudge the shape forward a bit, because
+                                    // the midpoint could put parts of the shape
+                                    // into an adjacent wall
 
 //
 // calculate newy
 //
-        gxt = FixedMul(gx,viewsin);
-        gyt = FixedMul(gy,viewcos);
-        ny = gyt+gxt;
+    gxt = FixedMul(gx,viewsin);
+    gyt = FixedMul(gy,viewcos);
+    ny = gyt+gxt;
 
 //
 // calculate perspective ratio
 //
-        ob->transx = nx;
-        ob->transy = ny;
+    ob->transx = nx;
+    ob->transy = ny;
 
-        if (nx<mindist)                 // too close, don't overflow the divide
-        {
-          ob->viewheight = 0;
-          return;
-        }
+    if (nx<mindist)                 // too close, don't overflow the divide
+    {
+        ob->viewheight = 0;
+        return;
+    }
 
-        ob->viewx = (word)(centerx + ny*scale/nx);      // DEBUG: use assembly divide
+    ob->viewx = (word)(centerx + ny*scale/nx);      // DEBUG: use assembly divide
 
 //
 // calculate height (heightnumerator/(nx>>8))
 //
-        ob->viewheight = (word)(heightnumerator/(nx>>8));
+    ob->viewheight = (word)(heightnumerator/(nx>>8));
 }
 
 //==========================================================================
@@ -201,47 +195,47 @@ void TransformActor (objtype *ob)
 
 boolean TransformTile (int tx, int ty, short *dispx, short *dispheight)
 {
-        fixed gx,gy,gxt,gyt,nx,ny;
+    fixed gx,gy,gxt,gyt,nx,ny;
 
 //
 // translate point to view centered coordinates
 //
-        gx = ((long)tx<<TILESHIFT)+0x8000-viewx;
-        gy = ((long)ty<<TILESHIFT)+0x8000-viewy;
+    gx = ((long)tx<<TILESHIFT)+0x8000-viewx;
+    gy = ((long)ty<<TILESHIFT)+0x8000-viewy;
 
 //
 // calculate newx
 //
-        gxt = FixedMul(gx,viewcos);
-        gyt = FixedMul(gy,viewsin);
-        nx = gxt-gyt-0x2000;            // 0x2000 is size of object
+    gxt = FixedMul(gx,viewcos);
+    gyt = FixedMul(gy,viewsin);
+    nx = gxt-gyt-0x2000;            // 0x2000 is size of object
 
 //
 // calculate newy
 //
-        gxt = FixedMul(gx,viewsin);
-        gyt = FixedMul(gy,viewcos);
-        ny = gyt+gxt;
+    gxt = FixedMul(gx,viewsin);
+    gyt = FixedMul(gy,viewcos);
+    ny = gyt+gxt;
 
 
 //
 // calculate height / perspective ratio
 //
-        if (nx<mindist)                 // too close, don't overflow the divide
-                *dispheight = 0;
-        else
-        {
-                *dispx = (short)(centerx + ny*scale/nx);        // DEBUG: use assembly divide
-                *dispheight = (short)(heightnumerator/(nx>>8));
-        }
+    if (nx<mindist)                 // too close, don't overflow the divide
+        *dispheight = 0;
+    else
+    {
+        *dispx = (short)(centerx + ny*scale/nx);        // DEBUG: use assembly divide
+        *dispheight = (short)(heightnumerator/(nx>>8));
+    }
 
 //
 // see if it should be grabbed
 //
-        if (nx<TILEGLOBAL && ny>-TILEGLOBAL/2 && ny<TILEGLOBAL/2)
-                return true;
-        else
-                return false;
+    if (nx<TILEGLOBAL && ny>-TILEGLOBAL/2 && ny<TILEGLOBAL/2)
+        return true;
+    else
+        return false;
 }
 
 //==========================================================================
@@ -258,9 +252,10 @@ boolean TransformTile (int tx, int ty, short *dispx, short *dispheight)
 
 int CalcHeight()
 {
-    fixed z = FixedMul(xintercept-viewx, viewcos)-FixedMul(yintercept-viewy, viewsin);
-    if(z<MINDIST) z=MINDIST;        // NOTYET  1024?
-    return (heightnumerator/(z>>8));
+    fixed z = FixedMul(xintercept - viewx, viewcos)
+        - FixedMul(yintercept - viewy, viewsin);
+    if(z < mindist) z = mindist;
+    return (heightnumerator / (z >> 8));
 }
 
 #if 0
@@ -288,6 +283,7 @@ int CalcHeight();
         value [eax] \
         modify exact [eax edx edi]
 #endif
+
 //==========================================================================
 
 /*
@@ -302,106 +298,59 @@ byte *postsource;
 int postx;
 int postwidth;
 
-// usage: masks[width-1][xpos&3]
-/*byte masks[4][4]={{1,2,4,8},{3,6,12,0},{7,14,0,0},{15,0,0,0}};
-
 void ScalePost()
 {
-   int ywcount,yoffs,yw,yd,yendoffs;
+   int ywcount, yoffs, yw, yd, yendoffs;
    byte col;
 
-   VGAMAPMASK(masks[postwidth-1][postx&3]);
-   ywcount=yd=wallheight[postx]>>3;
+   ywcount = yd = wallheight[postx] >> 3;
+   if(yd <= 0) yd = 100;
 
-   if(yd<=0) yd=100;
-   yoffs=(viewheight/2-ywcount)*80;
-   if(yoffs<0) yoffs=0;
-   yoffs+=postx>>2;
-   yendoffs=viewheight/2+ywcount-1;
+   yoffs = (viewheight / 2 - ywcount) * vbufPitch;
+   if(yoffs < 0) yoffs = 0;
+   yoffs += postx;
+
+   yendoffs = viewheight / 2 + ywcount - 1;
    yw=63;
-   while(yendoffs>=viewheight)
+
+   while(yendoffs >= viewheight)
    {
-      ywcount-=32;
-      while(ywcount<=0)
+      ywcount -= 32;
+      while(ywcount <= 0)
       {
-         ywcount+=yd;
+         ywcount += yd;
          yw--;
       }
       yendoffs--;
    }
-   if(yw<0) return;
-   col=((byte *)postsource)[yw];
-   yendoffs=yendoffs*80+(postx>>2);
-   while(yoffs<=yendoffs)
+   if(yw < 0) return;
+   col = ((byte *) postsource)[yw];
+   yendoffs = yendoffs * vbufPitch + postx;
+   while(yoffs <= yendoffs)
    {
-      vbuf[yendoffs]=col;
-      ywcount-=32;
-      if(ywcount<=0)
+      vbuf[yendoffs]=  col;
+      ywcount -= 32;
+      if(ywcount <= 0)
       {
          do
          {
-            ywcount+=yd;
+            ywcount += yd;
             yw--;
          }
-         while(ywcount<=0);
-         if(yw<0) break;
-         col=postsource[yw];
+         while(ywcount <= 0);
+         if(yw < 0) break;
+         col = postsource[yw];
       }
-      yendoffs-=80;
-   }
-}*/
-
-static void ScalePost()
-{
-   int ywcount,yoffs,yw,yd,yendoffs;
-   byte col;
-
-   ywcount=yd=wallheight[postx]>>3;
-
-   if(yd<=0) yd=100;
-   yoffs=(viewheight/2-ywcount)*screenpitch;
-   if(yoffs<0) yoffs=0;
-   yoffs+=postx;
-   yendoffs=viewheight/2+ywcount-1;
-   yw=63;
-   while(yendoffs>=viewheight)
-   {
-      ywcount-=32;
-      while(ywcount<=0)
-      {
-         ywcount+=yd;
-         yw--;
-      }
-      yendoffs--;
-   }
-   if(yw<0) return;
-   col=((byte *)postsource)[yw];
-   yendoffs=yendoffs*screenpitch+postx;
-   while(yoffs<=yendoffs)
-   {
-      vbuf[yendoffs]=col;
-      ywcount-=32;
-      if(ywcount<=0)
-      {
-         do
-         {
-            ywcount+=yd;
-            yw--;
-         }
-         while(ywcount<=0);
-         if(yw<0) break;
-         col=postsource[yw];
-      }
-      yendoffs-=screenpitch;
+      yendoffs -= vbufPitch;
    }
 }
 
-void GlobalScalePost(byte *vidbuf)
+void GlobalScalePost(byte *vidbuf, unsigned pitch)
 {
     vbuf = vidbuf;
+    vbufPitch = pitch;
     ScalePost();
 }
-
 
 /*
 ====================
@@ -419,8 +368,6 @@ void HitVertWall (void)
     int wallpic;
     int texture;
 
-//    VL_Plot((xintercept&0x1fffff)*100/0x200000, (yintercept&0x1fffff)*100/0x200000, 14);
-
     texture = ((yintercept+texdelta)>>4)&0xfc0;
     if (xtilestep == -1)
     {
@@ -433,10 +380,7 @@ void HitVertWall (void)
         if((pixx&3) && texture == lasttexture)
         {
             ScalePost();
-            postx++;
-#ifdef NOTYET
-            //postwidth++;
-#endif
+            postx = pixx;
             wallheight[pixx] = wallheight[pixx-1];
             return;
         }
@@ -490,21 +434,18 @@ void HitHorizWall (void)
     int wallpic;
     int texture;
 
-//    VL_Plot((xintercept&0x1fffff)*100/0x200000, (yintercept&0x1fffff)*100/0x200000, 13);
-
     texture = ((xintercept+texdelta)>>4)&0xfc0;
     if (ytilestep == -1)
-        yintercept += TILEGLOBAL;
+            yintercept += TILEGLOBAL;
     else
-        texture = 0xfc0-texture;
+            texture = 0xfc0-texture;
 
     if(lastside==0 && lastintercept==ytile && lasttilehit==tilehit && !(lasttilehit & 0x40))
     {
         if((pixx&3) && texture == lasttexture)
         {
             ScalePost();
-            postx++;
-//            postwidth++;
+            postx=pixx;
             wallheight[pixx] = wallheight[pixx-1];
             return;
         }
@@ -565,8 +506,7 @@ void HitHorizDoor (void)
         if((pixx&3) && texture == lasttexture)
         {
             ScalePost();
-            postx++;
-//            postwidth++;
+            postx=pixx;
             wallheight[pixx] = wallheight[pixx-1];
             return;
         }
@@ -631,8 +571,7 @@ void HitVertDoor (void)
         if((pixx&3) && texture == lasttexture)
         {
             ScalePost();
-            postx++;
-//            postwidth++;
+            postx=pixx;
             wallheight[pixx] = wallheight[pixx-1];
             return;
         }
@@ -706,8 +645,7 @@ void HitHorizPWall (void)
         if((pixx&3) && texture == lasttexture)
         {
             ScalePost();
-            postx++;
-//            postwidth++;
+            postx=pixx;
             wallheight[pixx] = wallheight[pixx-1];
             return;
         }
@@ -764,8 +702,7 @@ void HitVertPWall (void)
         if((pixx&3) && texture == lasttexture)
         {
             ScalePost();
-            postx++;
-//            postwidth++;
+            postx=pixx;
             wallheight[pixx] = wallheight[pixx-1];
             return;
         }
@@ -826,63 +763,12 @@ void VGAClearScreen (void)
     unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
     ceiling|=ceiling<<16;
 
-    for(int y=0; y<viewheight/2; y++)
-        memset(vbuf+y*screenpitch, ceiling, viewwidth);
-    for(int y=viewheight/2; y<viewheight; y++)
-        memset(vbuf+y*screenpitch, 0x19, viewwidth);
-
-#ifdef NOTYET
-        unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
-        ceiling|=ceiling<<16;
-
-        _asm {
-                cli
-                mov     edx,SC_INDEX
-                mov     eax,SC_MAPMASK+15*256
-                out     dx,ax
-                sti
-                mov     edx,80
-                mov     ebx,[viewwidth]
-                shr     ebx,2
-                sub     edx,ebx
-
-                shr     ebx,2
-                mov     bh,byte ptr [viewheight]
-                shr     bh,1
-
-                mov     edi,[vbuf]
-                mov     eax,[ceiling]
-                xor     ecx,ecx
-
-toploop:
-                mov     cl,bl
-                rep     stosd
-                add     edi,edx
-                dec     bh
-                jnz     toploop
-
-                mov     bh,byte ptr [viewheight]
-                shr     bh,1
-                mov     eax,0x19191919
-
-bottomloop:
-                mov     cl,bl
-                rep     stosd
-                add     edi,edx
-                dec     bh
-                jnz     bottomloop
-        }
-#endif
-}
-
-void GlobalVGAClearScreen()
-{
-    vbuf = VL_LockSurface(backgroundSurface) + viewscreeny * backgroundPitch + viewscreenx;
-    int tmp = screenpitch;
-    screenpitch = backgroundPitch;
-    VGAClearScreen();
-    screenpitch = tmp;
-    VL_UnlockSurface(backgroundSurface);
+    int y;
+    byte *ptr = vbuf;
+    for(y = 0; y < viewheight / 2; y++, ptr += vbufPitch)
+        memset(ptr, ceiling, viewwidth);
+    for(; y < viewheight; y++, ptr += vbufPitch)
+        memset(ptr, 0x19, viewwidth);
 }
 
 //==========================================================================
@@ -897,7 +783,7 @@ void GlobalVGAClearScreen()
 
 int     CalcRotate (objtype *ob)
 {
-    int     angle,viewangle;
+    int angle,viewangle;
 
     // this isn't exactly correct, as it should vary by a trig value,
     // but it is close enough with only eight rotations
@@ -905,9 +791,9 @@ int     CalcRotate (objtype *ob)
     viewangle = player->angle + (centerx - ob->viewx)/8;
 
     if (ob->obclass == rocketobj || ob->obclass == hrocketobj)
-        angle =  (viewangle-180)- ob->angle;
+        angle = (viewangle-180) - ob->angle;
     else
-        angle =  (viewangle-180)- dirangle[ob->dir];
+        angle = (viewangle-180) - dirangle[ob->dir];
 
     angle+=ANGLES/16;
     while (angle>=ANGLES)
@@ -922,7 +808,7 @@ int     CalcRotate (objtype *ob)
 }
 
 
-static void ScaleShape (int xcenter, int shapenum, unsigned height)
+void ScaleShape (int xcenter, int shapenum, unsigned height)
 {
     t_compshape   *shape;
     unsigned scale,pixheight;
@@ -943,7 +829,7 @@ static void ScaleShape (int xcenter, int shapenum, unsigned height)
     shape=(t_compshape *)(Pages+((PMSpriteStart+shapenum)<<12));
 
     scale=height>>3;                 // low three bits are fractional
-    if(!scale/* || scale>maxscale*/) return;   // too close or far away
+    if(!scale) return;   // too close or far away
 
 #ifdef SHADE_COUNT
     switch(shapenum)
@@ -995,7 +881,7 @@ static void ScaleShape (int xcenter, int shapenum, unsigned height)
                         ycnt=j*pixheight;
                         screndy=(ycnt>>6)+upperedge;
                         if(screndy<0) vmem=vbuf+lpix;
-                        else vmem=vbuf+screndy*screenpitch+lpix;
+                        else vmem=vbuf+screndy*vbufPitch+lpix;
                         for(;j<endy;j++)
                         {
                             scrstarty=screndy;
@@ -1004,7 +890,7 @@ static void ScaleShape (int xcenter, int shapenum, unsigned height)
                             if(scrstarty!=screndy && screndy>0)
                             {
 #ifdef SHADE_COUNT
-                                col=curshades[((byte _seg *)shape)[newstart+j]];
+                                col=curshades[((byte *)shape)[newstart+j]];
 #else
                                 col=((byte *)shape)[newstart+j];
 #endif
@@ -1014,7 +900,7 @@ static void ScaleShape (int xcenter, int shapenum, unsigned height)
                                 while(scrstarty<screndy)
                                 {
                                     *vmem=col;
-                                    vmem+=screenpitch;
+                                    vmem+=vbufPitch;
                                     scrstarty++;
                                 }
                             }
@@ -1028,7 +914,7 @@ static void ScaleShape (int xcenter, int shapenum, unsigned height)
     }
 }
 
-static void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
+void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 {
     t_compshape   *shape;
     unsigned scale,pixheight;
@@ -1076,7 +962,7 @@ static void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
                     ycnt=j*pixheight;
                     screndy=(ycnt>>6)+upperedge;
                     if(screndy<0) vmem=vbuf+lpix;
-                    else vmem=vbuf+screndy*screenpitch+lpix;
+                    else vmem=vbuf+screndy*vbufPitch+lpix;
                     for(;j<endy;j++)
                     {
                         scrstarty=screndy;
@@ -1091,7 +977,7 @@ static void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
                             while(scrstarty<screndy)
                             {
                                 *vmem=col;
-                                vmem+=screenpitch;
+                                vmem+=vbufPitch;
                                 scrstarty++;
                             }
                         }
@@ -1104,12 +990,6 @@ static void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
     }
 }
 
-void GlobalSimpleScaleShape(byte *vidbuf, int xcenter, int shapenum, unsigned height)
-{
-    vbuf = vidbuf;
-    SimpleScaleShape(xcenter, shapenum, height);
-}
-
 /*
 =====================
 =
@@ -1120,7 +1000,7 @@ void GlobalSimpleScaleShape(byte *vidbuf, int xcenter, int shapenum, unsigned he
 =====================
 */
 
-#define MAXVISABLE      50
+#define MAXVISABLE 50
 
 typedef struct
 {
@@ -1134,12 +1014,12 @@ visobj_t *visptr,*visstep,*farthest;
 
 void DrawScaleds (void)
 {
-    int             i,least,numvisable,height;
-    byte            *tilespot,*visspot;
+    int      i,least,numvisable,height;
+    byte     *tilespot,*visspot;
     unsigned spotloc;
 
-    statobj_t       *statptr;
-    objtype         *obj;
+    statobj_t *statptr;
+    objtype   *obj;
 
     visptr = &vislist[0];
 
@@ -1154,8 +1034,8 @@ void DrawScaleds (void)
         if (!*statptr->visspot)
             continue;                                               // not visable
 
-        if (TransformTile (statptr->tilex, statptr->tiley, &visptr->viewx,
-            &visptr->viewheight) && statptr->flags & FL_BONUS)
+        if (TransformTile (statptr->tilex,statptr->tiley,
+            &visptr->viewx,&visptr->viewheight) && statptr->flags & FL_BONUS)
         {
             GetBonus (statptr);
             continue;
@@ -1176,7 +1056,7 @@ void DrawScaleds (void)
         if ((visptr->shapenum = obj->state->shapenum)==0)
             continue;                                               // no shape
 
-        spotloc = (obj->tilex<<mapshift)+obj->tiley;// optimize: keep in struct?
+        spotloc = (obj->tilex<<mapshift)+obj->tiley;   // optimize: keep in struct?
         visspot = &spotvis[0][0]+spotloc;
         tilespot = &tilemap[0][0]+spotloc;
 
@@ -1196,7 +1076,7 @@ void DrawScaleds (void)
             obj->active = ac_yes;
             TransformActor (obj);
             if (!obj->viewheight)
-                continue;                              // too close or far away
+                continue;                                               // too close or far away
 
             visptr->viewx = obj->viewx;
             visptr->viewheight = obj->viewheight;
@@ -1220,7 +1100,7 @@ void DrawScaleds (void)
     numvisable = visptr-&vislist[0];
 
     if (!numvisable)
-        return;                                           // no visable objects
+        return;                                                                 // no visable objects
 
     for (i = 0; i<numvisable; i++)
     {
@@ -1255,17 +1135,17 @@ void DrawScaleds (void)
 ==============
 */
 
-int weaponscale[NUMWEAPONS] = { SPR_KNIFEREADY, SPR_PISTOLREADY,
-        SPR_MACHINEGUNREADY, SPR_CHAINREADY};
+int weaponscale[NUMWEAPONS] = {SPR_KNIFEREADY, SPR_PISTOLREADY,
+    SPR_MACHINEGUNREADY, SPR_CHAINREADY};
 
 void DrawPlayerWeapon (void)
 {
-    int     shapenum;
+    int shapenum;
 
 #ifndef SPEAR
     if (gamestate.victoryflag)
     {
-        if (player->state == &s_deathcam && (GetTicks()&32) )
+        if (player->state == &s_deathcam && (GetTimeCount()&32) )
             SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
         return;
     }
@@ -1273,7 +1153,7 @@ void DrawPlayerWeapon (void)
 
     if (gamestate.weapon != -1)
     {
-        shapenum = weaponscale[gamestate.weapon] + gamestate.weaponframe;
+        shapenum = weaponscale[gamestate.weapon]+gamestate.weaponframe;
         SimpleScaleShape(viewwidth/2,shapenum,viewheight+1);
     }
 
@@ -1300,13 +1180,12 @@ void CalcTics (void)
 //
 // calculate tics since last refresh for adaptive timing
 //
-    if (lasttimecount > GetTicks())
-        lasttimecount = GetTicks();        // if the game was paused a LONG time
+    if (lasttimecount > GetTimeCount())
+        lasttimecount = GetTimeCount();    // if the game was paused a LONG time
 
-//    SDL_Delay(143);
     do
     {
-        newtime = GetTicks();
+        newtime = GetTimeCount();
         tics = newtime-lasttimecount;
     } while (!tics);                        // make sure at least one tic passes
 
@@ -1331,12 +1210,13 @@ void CalcTics (void)
 ========================
 */
 
-#ifdef NOTYET
 void    FixOfs (void)
 {
+#ifdef NOTYET
     VW_ScreenToScreen (vdisp,vbuf,viewwidth/8,viewheight);
-}
 #endif
+}
+
 
 //==========================================================================
 
@@ -1344,9 +1224,11 @@ void    FixOfs (void)
 
 #ifdef DEBUGRAYTRACER
 #define LOGF if(dolog) fprintf
-#define MARKPIX(y,col) vbuf[pixx+(y)*screenpitch]=(col);
+#define MARKPIX(y,col) VGAMAPMASK(1<<(pixx&3)); \
+	vbuf[(pixx>>2)+(y)*80]=(col);
 #else
-#define LOGF 0 &&
+//#define LOGF 0 &&
+#define LOGF(...)
 #define MARKPIX(y,col)
 #endif
 
@@ -1403,21 +1285,12 @@ void AsmRefresh()
             ypartial=ypartialup;
         }
         yintercept=FixedMul(ystep,xpartial)+viewy;
-/*        printf("ystep = %f xpartial = %f viewy = %f ystep*xpartial+viewy = %f calced = %f\n",
-            (float)ystep/(float)GLOBAL1, (float)xpartial/(float)GLOBAL1, (float)viewy/(float)GLOBAL1,
-            ((float)ystep/(float)GLOBAL1)*((float)xpartial/(float)GLOBAL1)+((float)viewy/(float)GLOBAL1),
-            (float)yintercept/(float)GLOBAL1);*/
         xtile=focaltx+xtilestep;
         xspot=(xtile<<mapshift)+*((word *)&yintercept+1);
         xintercept=FixedMul(xstep,ypartial)+viewx;
         ytile=focalty+ytilestep;
         yspot=(*((word *)&xintercept+1)<<mapshift)+ytile;
-        texdelta=0;
-
-/*        printf("pixx = %i xintercept = %f yintercept = %f\n", pixx,
-            ((float)xintercept)/(float)GLOBAL1, ((float)yintercept)/(float)GLOBAL1);
-
-        VL_Plot((xintercept&0x1f0000)*160/0x200000+160, (yintercept&0x1f0000)*100/0x200000, 15);*/
+		  texdelta=0;
 
         if(xintercept<0) xintercept=0;
         if(xintercept>mapwidth*65536-1) xintercept=mapwidth*65536-1;
@@ -1425,25 +1298,26 @@ void AsmRefresh()
         if(yintercept>mapheight*65536-1) yintercept=mapheight*65536-1;
 
 #ifdef DEBUGRAYTRACER
-		if(pixx==93)
-		{
-			vbuf[pixx+screenpitch]=14;
-			if(logpressed)
-			{
-                if(!Keyboard[sc_L]) logpressed=0;
-            }
-			else
-			{
-                if(Keyboard[sc_L])
-				{
-                    logpressed=1;
-					dolog=1;
-					log=fopen("draw93.txt","wt");
-					if(!log) return;
-					fprintf(log,"player->x=%.8X  player->y=%.8X  player->angle=%i  pixx=%i\nxintercept=%.8X  xtile=%.4X  xtilestep=%i  xstep=%.8X\nyintercept=%.8X  ytile=%.4X  ytilestep=%i  ystep=%.8X\n",player->x,player->y,player->angle,pixx,xintercept,xtile,xtilestep,xstep,yintercept,ytile,ytilestep,ystep);
-				}
-            }
-        }
+		  if(pixx==93)
+		  {
+			  VGAMAPMASK(1<<(pixx&3));
+			  vbuf[(pixx>>2)+80]=14;
+			  if(logpressed)
+			  {
+				  if(!Keyboard[sc_L]) logpressed=0;
+			  }
+			  else
+			  {
+				  if(Keyboard[sc_L])
+				  {
+					  logpressed=1;
+					  dolog=1;
+					  log=fopen("draw93.txt","wt");
+					  if(!log) return;
+					  fprintf(log,"player->x=%.8X  player->y=%.8X  player->angle=%i  pixx=%i\nxintercept=%.8X  xtile=%.4X  xtilestep=%i  xstep=%.8X\nyintercept=%.8X  ytile=%.4X  ytilestep=%i  ystep=%.8X\n",player->x,player->y,player->angle,pixx,xintercept,xtile,xtilestep,xstep,yintercept,ytile,ytilestep,ystep);
+				  }
+			  }
+		  }
 #endif
 
         do
@@ -1502,26 +1376,26 @@ vertentry:
                                 if(*((word *)&yintbuf+1)!=*((word *)&yintercept+1))
                                     goto passvert;
 
-								MARKPIX(4,2);
+                                MARKPIX(4,2);
 
-         		                xintercept=(xtile<<TILESHIFT)+TILEGLOBAL-(pwallposinv<<10);
+                                xintercept=(xtile<<TILESHIFT)+TILEGLOBAL-(pwallposinv<<10);
                                 yintercept=yintbuf;
-								tilehit=pwalltile;
-								LOGF(log,"Pushwall hit 1: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
+                                tilehit=pwalltile;
+                                LOGF(log,"Pushwall hit 1: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                 HitVertWall();
                             }
-							else
-							{
+                            else
+                            {
                                 yintbuf=yintercept+((ystep*pwallposinv)>>6);
                                 if(*((word *)&yintbuf+1)!=*((word *)&yintercept+1))
                                     goto passvert;
 
                                 MARKPIX(4,1);
 
-         		                xintercept=(xtile<<TILESHIFT)-(pwallposinv<<10);
+                                xintercept=(xtile<<TILESHIFT)-(pwallposinv<<10);
                                 yintercept=yintbuf;
-								tilehit=pwalltile;
-								LOGF(log,"Pushwall hit 2: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
+                                tilehit=pwalltile;
+                                LOGF(log,"Pushwall hit 2: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                 HitVertWall();
                             }
                         }
@@ -1542,9 +1416,9 @@ vertentry:
 
                                     LOGF(log,"Pushwall hit 3: HitHorizWall old values:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X",xintercept,xtile,yintercept,ytile,pwallpos);
                                     if(pwalldir==di_south)
-                                        yintercept=(yintercept&0xffff0000)+(pwallposi<<10);
+                                       yintercept=(yintercept&0xffff0000)+(pwallposi<<10);
                                     else
-                                        yintercept=(yintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
+                                       yintercept=(yintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
                                     xintercept=xintercept-((xstep*(63-pwallpos))>>6);
                                     tilehit=pwalltile;
                                     LOGF(log,"Pushwall hit 3: HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
@@ -1577,7 +1451,7 @@ vertentry:
                                 {
                                     if(pwalldir==di_south && (long)((word)yintercept)+ystep>(pwallposi<<10)
                                             || pwalldir==di_north && (long)((word)yintercept)+ystep<(pwallposi<<10))
-                                       goto passvert;
+                                        goto passvert;
 
                                     MARKPIX(3,3);
 
@@ -1596,7 +1470,7 @@ vertentry:
                     else
                     {
                         xintercept=xtile<<TILESHIFT;
-                        LOGF(log,"HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
+							   LOGF(log,"HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
                         HitVertWall();
                     }
                 }
@@ -1607,16 +1481,16 @@ passvert:
             xtile+=xtilestep;
             yintercept+=ystep;
             xspot=(xtile<<mapshift)+*((word *)&yintercept+1);
-           LOGF(log,"passvert:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
+            LOGF(log,"passvert:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
         }
         while(1);
 #ifdef DEBUGRAYTRACER
-        if(dolog)
-		{
-            fclose(log);
-			dolog=0;
-			log=NULL;
-        }
+		  if(dolog)
+		  {
+			  fclose(log);
+			  dolog=0;
+			  log=NULL;
+		  }
 #endif
         continue;
         do
@@ -1653,7 +1527,7 @@ horizentry:
                 {
                     if(tilehit==64)
                     {
-                        if(pwalldir==di_north || pwalldir==di_south)
+                       if(pwalldir==di_north || pwalldir==di_south)
                         {
                             long xintbuf;
                             int pwallposnorm;
@@ -1703,13 +1577,13 @@ horizentry:
                             int pwallposi = pwallpos;
                             if(pwalldir==di_west) pwallposi = 63-pwallpos;
                             if(pwalldir==di_east && (word)xintercept<(pwallposi<<10)
-                                || pwalldir==di_west && (word)xintercept>(pwallposi<<10))
+                                    || pwalldir==di_west && (word)xintercept>(pwallposi<<10))
                             {
                                 if(*((word *)&xintercept+1)==pwallx && ytile==pwally)
                                 {
                                     if(pwalldir==di_east && (long)((word)xintercept)+xstep<(pwallposi<<10)
                                             || pwalldir==di_west && (long)((word)xintercept)+xstep>(pwallposi<<10))
-                                    goto passhoriz;
+                                        goto passhoriz;
 
                                     MARKPIX(3,15);
 
@@ -1726,7 +1600,7 @@ horizentry:
                                 }
                                 else
                                 {
-                                    MARKPIX(3,11);
+                                   MARKPIX(3,11);
 
                                     texdelta = -(pwallposi<<10);
                                     yintercept=ytile<<TILESHIFT;
@@ -1739,7 +1613,7 @@ horizentry:
                             {
                                 if(*((word *)&xintercept+1)==pwallx && ytile==pwally)
                                 {
-                                    MARKPIX(3,12);
+                                   MARKPIX(3,12);
 
                                     texdelta = -(pwallposi<<10);
                                     yintercept=ytile<<TILESHIFT;
@@ -1770,7 +1644,7 @@ horizentry:
                     else
                     {
                         yintercept=ytile<<TILESHIFT;
-                        LOGF(log,"HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
+							   LOGF(log,"HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
                         HitHorizWall();
                     }
                 }
@@ -1785,12 +1659,12 @@ passhoriz:
         }
         while(1);
 #ifdef DEBUGRAYTRACER
-        if(dolog)
-        {
-            fclose(log);
-            dolog=0;
-            log=NULL;
-        }
+		  if(dolog)
+		  {
+			  fclose(log);
+			  dolog=0;
+			  log=NULL;
+		  }
 #endif
     }
 }
@@ -1805,9 +1679,9 @@ passhoriz:
 
 void WallRefresh (void)
 {
-    //
-    // set up variables for this view
-    //
+//
+// set up variables for this view
+//
     viewangle = player->angle;
     midangle = viewangle*(FINEANGLES/ANGLES);
     viewsin = sintable[viewangle];
@@ -1841,21 +1715,17 @@ void WallRefresh (void)
 ========================
 */
 
-void ThreeDRefresh (void)
+void    ThreeDRefresh (void)
 {
-    DrawFace ();
-
-    // draw status bar, background and borders
-    SDL_BlitSurface(backgroundSurface, NULL, screen, NULL);
-
-    vbuf = VL_LockSurface(screen);
 //
 // clear out the traced array
 //
     memset(spotvis,0,maparea);
     spotvis[player->tilex][player->tiley] = 1;       // Detect all sprites over player fix
 
+    vbuf = VL_LockSurface(screenBuffer);
     vbuf+=screenofs;
+    vbufPitch = bufferPitch;
 
 //
 // follow the walls from there to the right, drawwing as we go
@@ -1864,25 +1734,36 @@ void ThreeDRefresh (void)
 
     WallRefresh ();
 
-/*    for(int i=0; i<16; i++)
-        for(int j=0; j<16; j++)
-            for(int k=0; k<20; k++)
-                for(int m=0; m<20; m++)
-                    vbuf[(i*20+k)*screenpitch+(j*20+m)] = i*16+j;*/
-
 //
 // draw all the scaled images
 //
     DrawScaleds();                  // draw scaled stuff
     DrawPlayerWeapon ();    // draw player's hands
 
+    VL_UnlockSurface(screenBuffer);
+    vbuf = NULL;
+
 //
 // show screen and time last cycle
 //
+
+    if (fizzlein)
+    {
+        FizzleFade(screenBuffer, screen, 0, 0,
+            screenWidth, screenHeight, 20, false);
+        fizzlein = false;
+
+        lasttimecount = GetTimeCount();          // don't make a big tic count
+    }
+    else
+    {
+        SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
+        SDL_UpdateRect(screen, 0, 0, 0, 0);
+    }
+
 #ifndef REMDEBUG
     if (fpscounter)
     {
-        vbuf -= screenofs;
         fps_frames++;
         fps_time+=tics;
 
@@ -1893,24 +1774,13 @@ void ThreeDRefresh (void)
             fps_frames=0;
         }
         fontnumber = 0;
-        SETFONTCOLOR(7, 127);
+        SETFONTCOLOR(7,127);
         PrintX=8; PrintY=190;
-        VWB_Bar(vbuf, screenpitch, 2, 189, 50, 10, bordercol);
+        VWB_Bar(2,189,50,10,bordercol);
         US_PrintSigned(fps);
         US_Print(" fps");
     }
 #endif
-
-    VL_UnlockSurface(screen);
-    vbuf = NULL;
-    if (fizzlein)
-    {
-        FizzleFade(viewscreenx, viewscreeny, viewwidth, viewheight, 20, false);
-
-        lasttimecount = GetTicks();          // don't make a big tic count
-    }
-
-    SDL_Flip(screen);
 }
 
 

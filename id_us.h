@@ -8,8 +8,6 @@
 #ifndef	__ID_US__
 #define	__ID_US__
 
-#pragma pack(1)
-
 #ifdef	__DEBUG__
 #define	__DEBUG_UserMgr__
 #endif
@@ -24,38 +22,38 @@
 #define	MaxHighName	57
 #define	MaxScores	7
 typedef	struct
-		{
-			char	name[MaxHighName + 1];
-			long	score;
-			word	completed,episode;
-		} HighScore;
+{
+    char	name[MaxHighName + 1];
+    long	score;
+    word	completed,episode;
+} HighScore;
 
 #define	MaxGameName		32
 #define	MaxSaveGames	6
 typedef	struct
-		{
-			char	signature[4];
-			word	*oldtest;
-			boolean	present;
-			char	name[MaxGameName + 1];
-		} SaveGame;
+{
+    char	signature[4];
+    word	*oldtest;
+    boolean	present;
+    char	name[MaxGameName + 1];
+} SaveGame;
 
 #define	MaxString	128	// Maximum input string size
 
 typedef	struct
-		{
-			int	x,y,
-				w,h,
-				px,py;
-		} WindowRec;	// Record used to save & restore screen windows
+{
+    int	x,y,
+        w,h,
+        px,py;
+} WindowRec;	// Record used to save & restore screen windows
 
 typedef	enum
-		{
-			gd_Continue,
-			gd_Easy,
-			gd_Normal,
-			gd_Hard
-		} GameDiff;
+{
+    gd_Continue,
+    gd_Easy,
+    gd_Normal,
+    gd_Hard
+} GameDiff;
 
 //	Hack import for TED launch support
 extern	boolean		tedlevel;
@@ -77,8 +75,8 @@ extern	boolean		Button0,Button1,
 					CursorBad;
 extern	int			CursorX,CursorY;
 
-extern	void		(*USL_MeasureString)(char *,word *,word *);
-extern void				(*USL_DrawString)(char *);
+extern	void		(*USL_MeasureString)(const char *,word *,word *);
+extern void			(*USL_DrawString)(const char *);
 
 extern	boolean		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
 extern	void		(*USL_ResetGame)(void);
@@ -90,35 +88,39 @@ extern	HighScore	Scores[];
 extern	void	US_Startup(void),
 				US_Setup(void),
 				US_Shutdown(void);
-void				US_InitRndT(boolean randomize);
-void				US_SetLoadSaveHooks(boolean (*load)(int),
+void			US_InitRndT(boolean randomize);
+void			US_SetLoadSaveHooks(boolean (*load)(int),
 									boolean (*save)(int),
 									void (*reset)(void));
-void				US_TextScreen(void),
+void			US_TextScreen(void),
 				US_UpdateTextScreen(void),
 				US_FinishTextScreen(void);
-void				US_DrawWindow(word x,word y,word w,word h);
-void				US_CenterWindow(word,word);
-void				US_SaveWindow(WindowRec *win),
+void			US_DrawWindow(word x,word y,word w,word h);
+void			US_CenterWindow(word,word);
+void			US_SaveWindow(WindowRec *win),
 				US_RestoreWindow(WindowRec *win);
-void 				US_ClearWindow(void);
-void				US_SetPrintRoutines(void (*measure)(char *,word *,word *),
-									void (*print)(char *));
-void				US_PrintCentered(char *s),
-				US_CPrint(char *s),
-				US_CPrintLine(char *s),
-				US_Print(char *s);
-void				US_PrintUnsigned(longword n);
-void				US_PrintSigned(long n);
-void				US_StartCursor(void),
+void 			US_ClearWindow(void);
+void			US_SetPrintRoutines(void (*measure)(const char *,word *,word *),
+									void (*print)(const char *));
+void			US_PrintCentered(const char *s),
+				US_CPrint(const char *s),
+				US_CPrintLine(const char *s),
+				US_Print(const char *s);
+void			US_PrintUnsigned(longword n);
+void			US_PrintSigned(long n);
+void			US_StartCursor(void),
 				US_ShutCursor(void);
-void				US_CheckHighScore(long score,word other);
-void				US_DisplayHighScores(int which);
+void			US_CheckHighScore(long score,word other);
+void			US_DisplayHighScores(int which);
 extern	boolean	US_UpdateCursor(void);
-boolean US_LineInput(int x,int y,char *buf,char *def,boolean escok,
-								int maxchars,int maxwidth);
-extern	int		US_CheckParm(char *parm,char **strings);
+boolean         US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
+                             int maxchars,int maxwidth);
+extern	int		US_CheckParm(const char *parm,const char **strings);
 
-		void	USL_PrintInCenter(char *s,Rect r);
-		char 	*USL_GiveSaveName(word game);
+void	        USL_PrintInCenter(const char *s,Rect r);
+char 	        *USL_GiveSaveName(word game);
+
+void            US_InitRndT(int randomize);
+int             US_RndT();
+
 #endif

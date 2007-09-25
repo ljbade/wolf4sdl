@@ -17,11 +17,7 @@
 //	DEBUG - there are more globals
 //
 
-//#include <dos.h>
-//#include <i86.h>
 #include "wl_def.h"
-
-#define	KeyInt		9	// The keyboard ISR number
 
 //
 // joystick constants
@@ -38,35 +34,45 @@
 =============================================================================
 */
 
+SDL_Thread *eventThread = NULL;
+
 //
 // configuration variables
 //
-boolean			MousePresent;
-boolean			JoysPresent[MaxJoys];
-boolean			JoyPadPresent;
-
-//union REGS regs;
+boolean		MousePresent;
+boolean		JoysPresent[MaxJoys];
+boolean		JoyPadPresent;
 
 
 // 	Global variables
-//		Uint8		Keyboard[NumCodes];
-        Uint8       Keyboard[SDLK_LAST];
-		boolean		Paused;
-		char		LastASCII;
-		ScanCode	LastScan;
+//boolean		Keyboard[NumCodes];
+volatile boolean    Keyboard[SDLK_LAST];
+volatile boolean	Paused;
+volatile char		LastASCII;
+volatile ScanCode	LastScan;
 
-//		KeyboardDef	KbdDefs = {0x1d,0x38,0x47,0x48,0x49,0x4b,0x4d,0x4f,0x50,0x51};
-		KeyboardDef	KbdDefs = { sc_Control, sc_Alt, sc_Home, sc_UpArrow,
-            sc_PgUp, sc_LeftArrow, sc_RightArrow, sc_End, sc_DownArrow,
-            sc_PgDn };
-		JoystickDef	JoyDefs[MaxJoys];
-		ControlType	Controls[MaxPlayers];
+//KeyboardDef	KbdDefs = {0x1d,0x38,0x47,0x48,0x49,0x4b,0x4d,0x4f,0x50,0x51};
+KeyboardDef KbdDefs = {
+    sc_Control,             // button0
+    sc_Alt,                 // button1
+    sc_Home,                // upleft
+    sc_UpArrow,             // up
+    sc_PgUp,                // upright
+    sc_LeftArrow,           // left
+    sc_RightArrow,          // right
+    sc_End,                 // downleft
+    sc_DownArrow,           // down
+    sc_PgDn                 // downright
+};
 
-		longword	MouseDownCount;
+JoystickDef	JoyDefs[MaxJoys];
+ControlType	Controls[MaxPlayers];
 
-		Demo		DemoMode = demo_Off;
-		byte 		*DemoBuffer;	// _seg
-		word		DemoOffset,DemoSize;
+longword	MouseDownCount;
+
+Demo		DemoMode = demo_Off;
+byte 		*DemoBuffer;
+word		DemoOffset,DemoSize;
 
 /*
 =============================================================================
@@ -76,7 +82,7 @@ boolean			JoyPadPresent;
 =============================================================================
 */
 byte        ASCIINames[] =		// Unshifted ASCII for scan codes       // TODO: keypad
-					{
+{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,8  ,9  ,0  ,0  ,0  ,13 ,0  ,0  ,	// 0
     0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,27 ,0  ,0  ,0  ,	// 1
@@ -86,9 +92,9 @@ byte        ASCIINames[] =		// Unshifted ASCII for scan codes       // TODO: key
 	'p','q','r','s','t','u','v','w','x','y','z','[',92 ,']',0  ,0  ,	// 5
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 6
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0		// 7
-					};
+};
 byte ShiftNames[] =		// Shifted ASCII for scan codes
-					{
+{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,8  ,9  ,0  ,0  ,0  ,13 ,0  ,0  ,	// 0
     0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,27 ,0  ,0  ,0  ,	// 1
@@ -98,9 +104,9 @@ byte ShiftNames[] =		// Shifted ASCII for scan codes
 	'P','Q','R','S','T','U','V','W','X','Y','Z','{','|','}',0  ,0  ,	// 5
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 6
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0		// 7
-					};
+};
 byte SpecialNames[] =	// ASCII for 0xe0 prefixed codes
-					{
+{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 0
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,13 ,0  ,0  ,0  ,	// 1
@@ -110,7 +116,7 @@ byte SpecialNames[] =	// ASCII for 0xe0 prefixed codes
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 5
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 6
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0   	// 7
-					};
+};
 
 
 static	boolean		IN_Started;
@@ -118,15 +124,13 @@ static	boolean		CapsLock;
 static	ScanCode	CurCode,LastCode;
 
 static	Direction	DirTable[] =		// Quick lookup for total direction
-					{
-						dir_NorthWest,	dir_North,	dir_NorthEast,
-						dir_West,		dir_None,	dir_East,
-						dir_SouthWest,	dir_South,	dir_SouthEast
-					};
+{
+    dir_NorthWest,	dir_North,	dir_NorthEast,
+    dir_West,		dir_None,	dir_East,
+    dir_SouthWest,	dir_South,	dir_SouthEast
+};
 
-//static	void (__interrupt *OldKeyVect)(void);
-
-static	char			*ParmStrings[] = {"nojoys","nomouse",0};
+static	char *ParmStrings[] = {"nojoys","nomouse",0};
 
 boolean NumLockPanic=false;
 
@@ -589,6 +593,156 @@ INL_ShutJoy(word joy)
 
 #endif
 
+static void processEvent(SDL_Event *event)
+{
+    SDLMod mod;
+
+    switch (event->type)
+    {
+        // exit if the window is closed
+        case SDL_QUIT:
+            Quit(NULL);
+
+        // check for keypresses
+        case SDL_KEYDOWN:
+		{
+            LastScan = event->key.keysym.sym;
+            mod = SDL_GetModState();
+//                if((mod & KMOD_ALT))
+            if(Keyboard[sc_Alt])
+            {
+                if(event->key.keysym.sym==SDLK_F4)
+                    Quit(NULL);
+/*                    if(event.key.keysym.sym==SDLK_RETURN)
+                {
+                    ToggleFullscreen(0);
+                    return;
+                }*/
+            }
+            int sym = event->key.keysym.sym;
+            if(sym >= 'a' && sym <= 'z')
+                sym -= 32;  // convert to uppercase
+
+            if(mod & (KMOD_SHIFT | KMOD_CAPS))
+            {
+                if(ShiftNames[sym])
+                    LastASCII = ShiftNames[sym];
+            }
+            else
+            {
+                if(ASCIINames[sym])
+                    LastASCII = ASCIINames[sym];
+            }
+            if(LastScan<SDLK_LAST)
+                Keyboard[LastScan] = 1;
+            if(LastScan == SDLK_PAUSE)
+                Paused = true;
+            fprintf(stderr, "SDL_KEYDOWN: %i\n", sym);
+
+            break;
+		}
+
+        case SDL_KEYUP:
+            if(event->key.keysym.sym<SDLK_LAST)
+                Keyboard[event->key.keysym.sym] = 0;
+            fprintf(stderr, "SDL_KEYUP: %i\n", event->key.keysym.sym);
+            if(event->key.keysym.sym == 273)
+                fprintf(stderr, "BREAKPOINT!");
+            break;
+    }
+}
+
+void IN_WaitAndProcessEvents()
+{
+    SDL_Event event;
+    if(!SDL_WaitEvent(&event)) return;
+    do
+    {
+        processEvent(&event);
+    }
+    while(SDL_PollEvent(&event));
+}
+
+void IN_ProcessEvents()
+{
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event))
+    {
+        processEvent(&event);
+    }
+}
+
+#if 0
+boolean inEventLoop = false;
+
+int eventThreadFunc(void *arg)
+{
+    SDL_Event event;
+    SDLMod mod;
+
+    inEventLoop = true;
+
+    while (true)
+    {
+        SDL_WaitEvent(&event);
+
+        switch (event.type)
+        {
+            // exit if the window is closed
+            case SDL_QUIT:
+                Quit(NULL);
+
+            // check for keypresses
+            case SDL_KEYDOWN:
+                LastScan = event.key.keysym.sym;
+                mod = SDL_GetModState();
+//                if((mod & KMOD_ALT))
+                if(Keyboard[sc_Alt])
+                {
+                    if(event.key.keysym.sym==SDLK_F4)
+                        Quit(NULL);
+/*                    if(event.key.keysym.sym==SDLK_RETURN)
+                    {
+                        ToggleFullscreen(0);
+                        return;
+                    }*/
+                }
+                int sym = event.key.keysym.sym;
+                if(sym >= 'a' && sym <= 'z')
+                    sym -= 32;  // convert to uppercase
+
+                if(mod & (KMOD_SHIFT | KMOD_CAPS))
+                {
+                    if(ShiftNames[sym])
+                        LastASCII = ShiftNames[sym];
+                }
+                else
+                {
+                    if(ASCIINames[sym])
+                        LastASCII = ASCIINames[sym];
+                }
+                if(LastScan<SDLK_LAST)
+                    Keyboard[LastScan] = 1;
+                if(LastScan == SDLK_PAUSE)
+                    Paused = true;
+                fprintf(stderr, "SDL_KEYDOWN: %i\n", sym);
+
+                break;
+
+            case SDL_KEYUP:
+                if(event.key.keysym.sym<SDLK_LAST)
+                    Keyboard[event.key.keysym.sym] = 0;
+                fprintf(stderr, "SDL_KEYUP: %i\n", event.key.keysym.sym);
+                if(event.key.keysym.sym == 273)
+                    fprintf(stderr, "BREAKPOINT!");
+                break;
+        }
+    }
+    return 0;
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	IN_Startup() - Starts up the Input Mgr
@@ -603,8 +757,11 @@ IN_Startup(void)
 	if (IN_Started)
 		return;
 
-	IN_ClearKeysDown();
-//    Keyboard = SDL_GetKeyState(NULL);
+    IN_ClearKeysDown();
+
+/*    eventThread = SDL_CreateThread(eventThreadFunc, NULL);
+    if(eventThread == NULL)
+        Quit("Unable to create event thread: %s\n", SDL_GetError());*/
 
 #ifdef NOTYET
 	checkjoys = true;
@@ -684,7 +841,7 @@ IN_ClearKeysDown(void)
 {
 	LastScan = sc_None;
 	LastASCII = key_None;
-	memset (Keyboard,0,sizeof(Keyboard));
+	memset ((void *) Keyboard,0,sizeof(Keyboard));
 }
 
 
@@ -708,6 +865,8 @@ IN_ReadControl(int player,ControlInfo *info)
 	dx = dy = 0;
 	mx = my = motion_None;
 	buttons = 0;
+
+	IN_ProcessEvents();
 
 	if (DemoMode == demo_Playback)
 	{
@@ -839,13 +998,12 @@ IN_SetControlType(int player,ControlType type)
 ScanCode
 IN_WaitForKey(void)
 {
-    ScanCode result;
-    while((result = LastScan) == 0)
-    {
-        ProcessEvents();
-    }
-    LastScan = 0;
-    return result;
+	ScanCode	result;
+
+	while ((result = LastScan)==0)
+		IN_WaitAndProcessEvents();
+	LastScan = 0;
+	return(result);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -857,13 +1015,12 @@ IN_WaitForKey(void)
 char
 IN_WaitForASCII(void)
 {
-    char result;
-    while((result = LastASCII) == 0)
-    {
-        ProcessEvents();
-    }
-    LastASCII = 0;
-    return result;
+	char		result;
+
+	while ((result = LastASCII)==0)
+		IN_WaitAndProcessEvents();
+	LastASCII = '\0';
+	return(result);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -873,19 +1030,20 @@ IN_WaitForASCII(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 
-#if NOTYET
 boolean	btnstate[8];
 
 void IN_StartAck(void)
 {
 	unsigned i,buttons;
 
+    IN_ProcessEvents();
 //
 // get initial state of everything
 //
 	IN_ClearKeysDown();
 	memset (btnstate,0,sizeof(btnstate));
 
+#ifdef NOTYET
 	buttons = IN_JoyButtons () << 4;
 	if (MousePresent)
 		buttons |= IN_MouseButtons ();
@@ -893,18 +1051,22 @@ void IN_StartAck(void)
 	for (i=0;i<8;i++,buttons>>=1)
 		if (buttons&1)
 			btnstate[i] = true;
+#endif
 }
+
 
 boolean IN_CheckAck (void)
 {
 	unsigned i,buttons;
 
+    IN_ProcessEvents();
 //
 // see if something has been pressed
 //
 	if (LastScan)
 		return true;
 
+#ifdef NOTYET
 	buttons = IN_JoyButtons () << 4;
 	if (MousePresent)
 		buttons |= IN_MouseButtons ();
@@ -917,6 +1079,7 @@ boolean IN_CheckAck (void)
 		}
 		else
 			btnstate[i]=false;
+#endif
 
 	return false;
 }
@@ -928,31 +1091,13 @@ void IN_Ack (void)
 
 	IN_StartAck ();
 
-	while (!IN_CheckAck ());
-}
-#else
-
-void IN_StartAck()
-{
-    ProcessEvents();
-    IN_ClearKeysDown();
-}
-
-boolean IN_CheckAck()
-{
-    return LastScan!=0;
-}
-
-void IN_Ack()
-{
-    IN_StartAck();
     do
     {
-        ProcessEvents();
+        IN_WaitAndProcessEvents();
     }
-    while(!IN_CheckAck());
+	while(!IN_CheckAck ());
 }
-#endif
+
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -966,14 +1111,15 @@ boolean IN_UserInput(longword delay)
 {
 	longword	lasttime;
 
-	lasttime = GetTicks();
+	lasttime = GetTimeCount();
 	IN_StartAck ();
 	do
 	{
-	    ProcessEvents();
+        IN_ProcessEvents();
 		if (IN_CheckAck())
 			return true;
-	} while (GetTicks() - lasttime < delay);
+        SDL_Delay(5);
+	} while (GetTimeCount() - lasttime < delay);
 	return(false);
 }
 
@@ -986,7 +1132,6 @@ boolean IN_UserInput(longword delay)
 =
 ===================
 */
-
 #ifdef NOTYET
 byte	IN_MouseButtons (void)
 {

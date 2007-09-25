@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include "WL_DEF.H"
-#include <SDL/SDL_mixer.h>
+#include <SDL_mixer.h>
 #pragma hdrstop
 
 #ifdef MYPROFILE
@@ -13,7 +13,7 @@
 /*
 =============================================================================
 
-                                                 LOCAL CONSTANTS
+                             LOCAL CONSTANTS
 
 =============================================================================
 */
@@ -22,25 +22,25 @@
 /*
 =============================================================================
 
-                                                 GLOBAL VARIABLES
+                             GLOBAL VARIABLES
 
 =============================================================================
 */
 
-boolean ingame, fizzlein;
-gametype gamestate;
-byte bordercol = VIEWCOLOR;        // color of the Change View/Ingame border
+boolean         ingame,fizzlein;
+gametype        gamestate;
+byte            bordercol=VIEWCOLOR;        // color of the Change View/Ingame border
 
 #ifdef SPEAR
-long spearx, speary;
-unsigned spearangle;
-boolean spearflag;
+long            spearx,speary;
+unsigned        spearangle;
+boolean         spearflag;
 #endif
 
 //
 // ELEVATOR BACK MAPS - REMEMBER (-1)!!
 //
-int ElevatorBackTo[] = { 1, 1, 7, 3, 5, 3 };
+int ElevatorBackTo[]={1,1,7,3,5,3};
 
 void ScanInfoPlane (void);
 void SetupGameLevel (void);
@@ -51,7 +51,7 @@ void GameLoop (void);
 /*
 =============================================================================
 
-                                                 LOCAL VARIABLES
+                             LOCAL VARIABLES
 
 =============================================================================
 */
@@ -113,29 +113,29 @@ byte lefttable[ATABLEMAX][ATABLEMAX * 2] = {
 };
 
 void
-SetSoundLoc(fixed gx, fixed gy)
+SetSoundLoc(fixed gx,fixed gy)
 {
-    fixed xt, yt;
-    int x, y;
+    fixed   xt,yt;
+    int     x,y;
 
-    //
-    // translate point to view centered coordinates
-    //
+//
+// translate point to view centered coordinates
+//
     gx -= viewx;
     gy -= viewy;
 
-    //
-    // calculate newx
-    //
-    xt = FixedMul(gx, viewcos);
-    yt = FixedMul(gy, viewsin);
+//
+// calculate newx
+//
+    xt = FixedMul(gx,viewcos);
+    yt = FixedMul(gy,viewsin);
     x = (xt - yt) >> TILESHIFT;
 
-    //
-    // calculate newy
-    //
-    xt = FixedMul(gx, viewsin);
-    yt = FixedMul(gy, viewcos);
+//
+// calculate newy
+//
+    xt = FixedMul(gx,viewsin);
+    yt = FixedMul(gy,viewcos);
     y = (yt + xt) >> TILESHIFT;
 
     if (y >= ATABLEMAX)
@@ -146,11 +146,11 @@ SetSoundLoc(fixed gx, fixed gy)
         x = -x;
     if (x >= ATABLEMAX)
         x = ATABLEMAX - 1;
-    leftchannel = lefttable[x][y + ATABLEMAX];
+    leftchannel  =  lefttable[x][y + ATABLEMAX];
     rightchannel = righttable[x][y + ATABLEMAX];
 
 #if 0
-    CenterWindow(8, 1);
+    CenterWindow(8,1);
     US_PrintSigned(leftchannel);
     US_Print(",");
     US_PrintSigned(rightchannel);
@@ -170,17 +170,17 @@ SetSoundLoc(fixed gx, fixed gy)
 =
 ==========================
 */
-void PlaySoundLocGlobal(word s, fixed gx, fixed gy)
+void PlaySoundLocGlobal(word s,fixed gx,fixed gy)
 {
     SetSoundLoc(gx, gy);
-
     SD_PositionSound(leftchannel, rightchannel);
+
     int channel = SD_PlaySound((soundnames) s);
     if(channel)
     {
-        channelSoundPos[channel-1].globalsoundx = gx;
-        channelSoundPos[channel-1].globalsoundy = gy;
-        channelSoundPos[channel-1].valid = 1;
+        channelSoundPos[channel - 1].globalsoundx = gx;
+        channelSoundPos[channel - 1].globalsoundy = gy;
+        channelSoundPos[channel - 1].valid = 1;
     }
 }
 
@@ -188,10 +188,11 @@ void UpdateSoundLoc(void)
 {
 /*    if (SoundPositioned)
     {
-        SetSoundLoc(globalsoundx, globalsoundy);
-        SD_SetPosition(leftchannel, rightchannel);
+        SetSoundLoc(globalsoundx,globalsoundy);
+        SD_SetPosition(leftchannel,rightchannel);
     }*/
-    for(int i=0; i<MIX_CHANNELS; i++)
+
+    for(int i = 0; i < MIX_CHANNELS; i++)
     {
         if(channelSoundPos[i].valid)
         {
@@ -218,13 +219,13 @@ void UpdateSoundLoc(void)
 
 void ScanInfoPlane (void)
 {
-    unsigned x, y;
-    int tile;
-    word *start;
+    unsigned x,y;
+    int      tile;
+    word     *start;
 
     start = mapsegs[1];
-    for (y = 0;y < mapheight;y++)
-        for (x = 0;x < mapwidth;x++)
+    for (y=0;y<mapheight;y++)
+        for (x=0;x<mapwidth;x++)
         {
             tile = *start++;
             if (!tile)
@@ -236,7 +237,7 @@ void ScanInfoPlane (void)
                 case 20:
                 case 21:
                 case 22:
-                    SpawnPlayer(x, y, NORTH + tile - 19);
+                    SpawnPlayer(x,y,NORTH+tile-19);
                     break;
 
                 case 23:
@@ -295,42 +296,42 @@ void ScanInfoPlane (void)
                 case 71:
                 case 72:
 #ifdef SPEAR
-                case 73:                                                 // TRUCK AND SPEAR!
+                case 73:                                                // TRUCK AND SPEAR!
                 case 74:
 #endif
-                    SpawnStatic(x, y, tile - 23);
+                    SpawnStatic(x,y,tile-23);
                     break;
 
-                //
-                // P wall
-                //
+//
+// P wall
+//
                 case 98:
                     if (!loadedgame)
                         gamestate.secrettotal++;
                     break;
 
-                //
-                // guard
-                //
+//
+// guard
+//
                 case 180:
                 case 181:
                 case 182:
                 case 183:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 144:
                 case 145:
                 case 146:
                 case 147:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 108:
                 case 109:
                 case 110:
                 case 111:
-                    SpawnStand(en_guard, x, y, tile - 108);
+                    SpawnStand(en_guard,x,y,tile-108);
                     break;
 
 
@@ -338,95 +339,95 @@ void ScanInfoPlane (void)
                 case 185:
                 case 186:
                 case 187:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 148:
                 case 149:
                 case 150:
                 case 151:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 112:
                 case 113:
                 case 114:
                 case 115:
-                    SpawnPatrol(en_guard, x, y, tile - 112);
+                    SpawnPatrol(en_guard,x,y,tile-112);
                     break;
 
                 case 124:
-                    SpawnDeadGuard (x, y);
+                    SpawnDeadGuard (x,y);
                     break;
-
-                //
-                // officer
-                //
+//
+// officer
+//
                 case 188:
                 case 189:
                 case 190:
                 case 191:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 152:
                 case 153:
                 case 154:
                 case 155:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 116:
                 case 117:
                 case 118:
                 case 119:
-                    SpawnStand(en_officer, x, y, tile - 116);
+                    SpawnStand(en_officer,x,y,tile-116);
                     break;
+
 
                 case 192:
                 case 193:
                 case 194:
                 case 195:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 156:
                 case 157:
                 case 158:
                 case 159:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 120:
                 case 121:
                 case 122:
                 case 123:
-                    SpawnPatrol(en_officer, x, y, tile - 120);
+                    SpawnPatrol(en_officer,x,y,tile-120);
                     break;
 
 
-                //
-                // ss
-                //
+//
+// ss
+//
                 case 198:
                 case 199:
                 case 200:
                 case 201:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 162:
                 case 163:
                 case 164:
                 case 165:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 126:
                 case 127:
                 case 128:
                 case 129:
-                    SpawnStand(en_ss, x, y, tile - 126);
+                    SpawnStand(en_ss,x,y,tile-126);
                     break;
 
 
@@ -434,45 +435,45 @@ void ScanInfoPlane (void)
                 case 203:
                 case 204:
                 case 205:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 166:
                 case 167:
                 case 168:
                 case 169:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 130:
                 case 131:
                 case 132:
                 case 133:
-                    SpawnPatrol(en_ss, x, y, tile - 130);
+                    SpawnPatrol(en_ss,x,y,tile-130);
                     break;
 
-                //
-                // dogs
-                //
+//
+// dogs
+//
                 case 206:
                 case 207:
                 case 208:
                 case 209:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 170:
                 case 171:
                 case 172:
                 case 173:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 134:
                 case 135:
                 case 136:
                 case 137:
-                    SpawnStand(en_dog, x, y, tile - 134);
+                    SpawnStand(en_dog,x,y,tile-134);
                     break;
 
 
@@ -480,130 +481,130 @@ void ScanInfoPlane (void)
                 case 211:
                 case 212:
                 case 213:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
                 case 174:
                 case 175:
                 case 176:
                 case 177:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
                 case 138:
                 case 139:
                 case 140:
                 case 141:
-                    SpawnPatrol(en_dog, x, y, tile - 138);
+                    SpawnPatrol(en_dog,x,y,tile-138);
                     break;
 
-                //
-                // boss
-                //
+//
+// boss
+//
 #ifndef SPEAR
                 case 214:
-                    SpawnBoss (x, y);
+                    SpawnBoss (x,y);
                     break;
                 case 197:
-                    SpawnGretel (x, y);
+                    SpawnGretel (x,y);
                     break;
                 case 215:
-                    SpawnGift (x, y);
+                    SpawnGift (x,y);
                     break;
                 case 179:
-                    SpawnFat (x, y);
+                    SpawnFat (x,y);
                     break;
                 case 196:
-                    SpawnSchabbs (x, y);
+                    SpawnSchabbs (x,y);
                     break;
                 case 160:
-                    SpawnFakeHitler (x, y);
+                    SpawnFakeHitler (x,y);
                     break;
                 case 178:
-                    SpawnHitler (x, y);
+                    SpawnHitler (x,y);
                     break;
 #else
                 case 106:
-                    SpawnSpectre (x, y);
+                    SpawnSpectre (x,y);
                     break;
                 case 107:
-                    SpawnAngel (x, y);
+                    SpawnAngel (x,y);
                     break;
                 case 125:
-                    SpawnTrans (x, y);
+                    SpawnTrans (x,y);
                     break;
                 case 142:
-                    SpawnUber (x, y);
+                    SpawnUber (x,y);
                     break;
                 case 143:
-                    SpawnWill (x, y);
+                    SpawnWill (x,y);
                     break;
                 case 161:
-                    SpawnDeath (x, y);
+                    SpawnDeath (x,y);
                     break;
 
 #endif
 
-                //
-                // mutants
-                //
+//
+// mutants
+//
                 case 252:
                 case 253:
                 case 254:
                 case 255:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 18;
                 case 234:
                 case 235:
                 case 236:
                 case 237:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 18;
                 case 216:
                 case 217:
                 case 218:
                 case 219:
-                    SpawnStand(en_mutant, x, y, tile - 216);
+                    SpawnStand(en_mutant,x,y,tile-216);
                     break;
 
                 case 256:
                 case 257:
                 case 258:
                 case 259:
-                    if (gamestate.difficulty < gd_hard)
+                    if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 18;
                 case 238:
                 case 239:
                 case 240:
                 case 241:
-                    if (gamestate.difficulty < gd_medium)
+                    if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 18;
                 case 220:
                 case 221:
                 case 222:
                 case 223:
-                    SpawnPatrol(en_mutant, x, y, tile - 220);
+                    SpawnPatrol(en_mutant,x,y,tile-220);
                     break;
 
-                //
-                // ghosts
-                //
+//
+// ghosts
+//
 #ifndef SPEAR
                 case 224:
-                    SpawnGhosts (en_blinky, x, y);
+                    SpawnGhosts (en_blinky,x,y);
                     break;
                 case 225:
-                    SpawnGhosts (en_clyde, x, y);
+                    SpawnGhosts (en_clyde,x,y);
                     break;
                 case 226:
-                    SpawnGhosts (en_pinky, x, y);
+                    SpawnGhosts (en_pinky,x,y);
                     break;
                 case 227:
-                    SpawnGhosts (en_inky, x, y);
+                    SpawnGhosts (en_inky,x,y);
                     break;
 #endif
             }
@@ -623,21 +624,21 @@ void ScanInfoPlane (void)
 
 void SetupGameLevel (void)
 {
-    int x, y;
+    int  x,y;
     word *map;
     word tile;
 
 
     if (!loadedgame)
     {
-        gamestate.TimeCount =
-            gamestate.secrettotal =
-            gamestate.killtotal =
-            gamestate.treasuretotal =
-            gamestate.secretcount =
-            gamestate.killcount =
-            gamestate.treasurecount =
-            pwallstate = pwallpos = 0;
+        gamestate.TimeCount
+            = gamestate.secrettotal
+            = gamestate.killtotal
+            = gamestate.treasuretotal
+            = gamestate.secretcount
+            = gamestate.killcount
+            = gamestate.treasurecount
+            = pwallstate = pwallpos = 0;
     }
 
     if (demoplayback || demorecord)
@@ -645,33 +646,33 @@ void SetupGameLevel (void)
     else
         US_InitRndT (true);
 
-    //
-    // load the level
-    //
-    CA_CacheMap (gamestate.mapon + 10*gamestate.episode);
-    mapon -= gamestate.episode * 10;
+//
+// load the level
+//
+    CA_CacheMap (gamestate.mapon+10*gamestate.episode);
+    mapon-=gamestate.episode*10;
 
-    /*      mapwidth = mapheaderseg[mapon]->width;
-            mapheight = mapheaderseg[mapon]->height;
+/*      mapwidth = mapheaderseg[mapon]->width;
+    mapheight = mapheaderseg[mapon]->height;
 
-            if (mapwidth != 64 || mapheight != 64)
-                    Quit ("Map not 64*64!");*/
+    if (mapwidth != 64 || mapheight != 64)
+            Quit ("Map not 64*64!");*/
 
-    //
-    // copy the wall data to a data segment array
-    //
-    memset (tilemap, 0, sizeof(tilemap));
-    memset (actorat, 0, sizeof(actorat));
+//
+// copy the wall data to a data segment array
+//
+    memset (tilemap,0,sizeof(tilemap));
+    memset (actorat,0,sizeof(actorat));
     map = mapsegs[0];
-    for (y = 0;y < mapheight;y++)
-        for (x = 0;x < mapwidth;x++)
+    for (y=0;y<mapheight;y++)
+        for (x=0;x<mapwidth;x++)
         {
             tile = *map++;
-            if (tile < AREATILE)
+            if (tile<AREATILE)
             {
                 // solid wall
                 tilemap[x][y] = (byte) tile;
-                actorat[x][y] = (objtype *) (unsigned int) tile;
+                actorat[x][y] = (objtype *) tile;
             }
             else
             {
@@ -681,16 +682,16 @@ void SetupGameLevel (void)
             }
         }
 
-    //
-    // spawn doors
-    //
+//
+// spawn doors
+//
     InitActorList ();                       // start spawning things with a clean slate
     InitDoorList ();
     InitStaticList ();
 
     map = mapsegs[0];
-    for (y = 0;y < mapheight;y++)
-        for (x = 0;x < mapwidth;x++)
+    for (y=0;y<mapheight;y++)
+        for (x=0;x<mapwidth;x++)
         {
             tile = *map++;
             if (tile >= 90 && tile <= 101)
@@ -704,7 +705,7 @@ void SetupGameLevel (void)
                     case 96:
                     case 98:
                     case 100:
-                        SpawnDoor (x, y, 1, (tile - 90) / 2);
+                        SpawnDoor (x,y,1,(tile-90)/2);
                         break;
                     case 91:
                     case 93:
@@ -712,24 +713,24 @@ void SetupGameLevel (void)
                     case 97:
                     case 99:
                     case 101:
-                        SpawnDoor (x, y, 0, (tile - 91) / 2);
+                        SpawnDoor (x,y,0,(tile-91)/2);
                         break;
                 }
             }
         }
 
-    //
-    // spawn actors
-    //
+//
+// spawn actors
+//
     ScanInfoPlane ();
 
 
-    //
-    // take out the ambush markers
-    //
+//
+// take out the ambush markers
+//
     map = mapsegs[0];
-    for (y = 0;y < mapheight;y++)
-        for (x = 0;x < mapwidth;x++)
+    for (y=0;y<mapheight;y++)
+        for (x=0;x<mapwidth;x++)
         {
             tile = *map++;
             if (tile == AMBUSHTILE)
@@ -740,22 +741,22 @@ void SetupGameLevel (void)
 
                 if (*map >= AREATILE)
                     tile = *map;
-                if (*(map - 1 - mapwidth) >= AREATILE)
-                    tile = *(map - 1 - mapwidth);
-                if (*(map - 1 + mapwidth) >= AREATILE)
-                    tile = *(map - 1 + mapwidth);
-                if ( *(map - 2) >= AREATILE)
-                    tile = *(map - 2);
+                if (*(map-1-mapwidth) >= AREATILE)
+                    tile = *(map-1-mapwidth);
+                if (*(map-1+mapwidth) >= AREATILE)
+                    tile = *(map-1+mapwidth);
+                if ( *(map-2) >= AREATILE)
+                    tile = *(map-2);
 
-                *(map - 1) = tile;
+                *(map-1) = tile;
             }
         }
 
 
-    //
-    // have the caching manager load and purge stuff to make sure all marks
-    // are in memory
-    //
+//
+// have the caching manager load and purge stuff to make sure all marks
+// are in memory
+//
     CA_LoadAllSounds ();
 }
 
@@ -775,26 +776,23 @@ void SetupGameLevel (void)
 
 void DrawPlayBorderSides (void)
 {
-    int xl, yl;
-    byte *vidbuf = VL_LockSurface(backgroundSurface);
+    int     xl,yl;
 
-    xl = screenwidth/2 - viewwidth / 2;
-    yl = (screenheight - STATUSLINES - viewheight) / 2;
+    xl = 160-viewwidth/2;
+    yl = (200-STATUSLINES-viewheight)/2;
 
-    VWB_Bar (vidbuf, backgroundPitch, 0, 0, xl - 1, screenheight - STATUSLINES, bordercol);
-    VWB_Bar (vidbuf, backgroundPitch, xl + viewwidth + 1, 0, xl - 2, screenheight - STATUSLINES, bordercol);
+    VWB_Bar (0,0,xl-1,200-STATUSLINES,bordercol);
+    VWB_Bar (xl+viewwidth+1,0,xl-2,200-STATUSLINES,bordercol);
 
-    VWB_Bar (vidbuf, backgroundPitch, 0, 0, screenwidth, yl - 1, bordercol);
-    VWB_Bar (vidbuf, backgroundPitch, 0, yl + viewheight + 1, screenwidth, yl - 1, bordercol);
+    VWB_Bar (0,0,320,yl-1,bordercol);
+    VWB_Bar (0,yl+viewheight+1,320,yl-1,bordercol);
 
-    VWB_Vlin (vidbuf, backgroundPitch, yl - 1, yl + viewheight, xl - 1, 0);
-    VWB_Vlin (vidbuf, backgroundPitch, yl - 1, yl + viewheight, xl + viewwidth, bordercol - 2);
+    VWB_Vlin (yl-1,yl+viewheight,xl-1,0);
+    VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,bordercol-2);
 
-    VWB_Hlin (vidbuf, backgroundPitch, xl - 1, xl + viewwidth, yl - 1, 0);
-    VWB_Hlin (vidbuf, backgroundPitch, xl - 1, xl + viewwidth, yl + viewheight, bordercol - 2);
-    VWB_Plot (vidbuf, backgroundPitch, xl - 1, yl + viewheight, bordercol - 3);
-
-    VL_UnlockSurface(backgroundSurface);
+    VWB_Hlin (xl-1,xl+viewwidth,yl-1,0);
+    VWB_Hlin (xl-1,xl+viewwidth,yl+viewheight,bordercol-2);
+    VWB_Plot (xl-1,yl+viewheight,bordercol-3);
 }
 
 
@@ -813,14 +811,12 @@ void DrawAllPlayBorderSides (void)
     byte *temp;
 
     temp = vbuf;
-    for (i = 0;i < 3;i++)
+    for (i=0;i<3;i++)
     {
-        vbuf = (byte *)(0xa0000 + screenloc[i]);
+        vbuf = (byte *)(0xa0000+screenloc[i]);
         DrawPlayBorderSides ();
     }
     vbuf = temp;
-#else
-    DrawPlayBorderSides ();
 #endif
 }
 
@@ -835,20 +831,16 @@ void DrawAllPlayBorderSides (void)
 
 void DrawStatusBorder (byte color)
 {
-    byte *vidbuf = VL_LockSurface(backgroundSurface);
+    VWB_Bar (0,0,320,163,color);
+    VWB_Bar (0,163,8,36,color);
+    VWB_Bar (0,198,320,2,color);
+    VWB_Bar (312,163,8,36,color);
 
-    VWB_Bar (vidbuf, backgroundPitch, 0, 0, screenwidth, screenheight-37, color);
-    VWB_Bar (vidbuf, backgroundPitch, 0, screenheight-37, 8, 36, color);
-    VWB_Bar (vidbuf, backgroundPitch, 0, screenheight-2, screenwidth, 2, color);
-    VWB_Bar (vidbuf, backgroundPitch, screenwidth-8, screenheight-37, 8, 36, color);
-
-    VWB_Bar (vidbuf, backgroundPitch, 9, screenheight-3, 97, 1, color - 1);
-    VWB_Bar (vidbuf, backgroundPitch, 106, screenheight-3, 161, 1, color - 2);
-    VWB_Bar (vidbuf, backgroundPitch, 267, screenheight-3, 44, 1, color - 3);
-    VWB_Bar (vidbuf, backgroundPitch, screenwidth-9, screenheight-36, 1, 20, color - 2);
-    VWB_Bar (vidbuf, backgroundPitch, screenwidth-9, screenheight-16, 1, 14, color - 3);
-
-    VL_UnlockSurface(backgroundSurface);
+    VWB_Bar (9,197,97,1,color-1);
+    VWB_Bar (106,197,161,1,color-2);
+    VWB_Bar (267,197,44,1,color-3);
+    VWB_Bar (311,164,1,20,color-2);
+    VWB_Bar (311,184,1,14,color-3);
 }
 
 
@@ -862,18 +854,16 @@ void DrawStatusBorder (byte color)
 void DrawAllStatusBorder (byte color)
 {
 #ifdef NOTYET
-    int i;
-    byte *temp;
+        int i;
+        byte *temp;
 
-    temp = vbuf;
-    for (i = 0;i < 3;i++)
-    {
-        vbuf = (byte *)(0xa0000 + screenloc[i]);
-        DrawStatusBorder (color);
-    }
-    vbuf = temp;
-#else
-    DrawStatusBorder (color);
+        temp = vbuf;
+        for (i=0;i<3;i++)
+        {
+                vbuf = (byte *)(0xa0000+screenloc[i]);
+                DrawStatusBorder (color);
+        }
+        vbuf = temp;
 #endif
 }
 
@@ -888,33 +878,23 @@ void DrawAllStatusBorder (byte color)
 
 void DrawPlayBorder (void)
 {
-    int xl, yl;
+        int     xl,yl;
 
-    byte *vidbuf = VL_LockSurface(backgroundSurface);
-    if (bordercol != VIEWCOLOR)
-        DrawStatusBorder(bordercol);
+        if (bordercol != VIEWCOLOR)
+                DrawStatusBorder(bordercol);
 
-    VWB_Bar (vidbuf, backgroundPitch, 0, 0, screenwidth, screenheight - STATUSLINES, bordercol);
+        VWB_Bar (0,0,320,200-STATUSLINES,bordercol);
 
-    xl = screenwidth / 2 - viewwidth / 2;
-    yl = (screenheight - STATUSLINES - viewheight) / 2;
-    VWB_Bar (vidbuf, backgroundPitch, xl, yl, viewwidth, viewheight, 0);
+        xl = 160-viewwidth/2;
+        yl = (200-STATUSLINES-viewheight)/2;
+        VWB_Bar (xl,yl,viewwidth,viewheight,0);
 
-    VWB_Hlin (vidbuf, backgroundPitch, xl - 1, xl + viewwidth, yl - 1, 0);
-    VWB_Hlin (vidbuf, backgroundPitch, xl - 1, xl + viewwidth, yl + viewheight, bordercol - 2);
-    VWB_Vlin (vidbuf, backgroundPitch, yl - 1, yl + viewheight, xl - 1, 0);
-    VWB_Vlin (vidbuf, backgroundPitch, yl - 1, yl + viewheight, xl + viewwidth, bordercol - 2);
-    VWB_Plot (vidbuf, backgroundPitch, xl - 1, yl + viewheight, bordercol - 3);
+        VWB_Hlin (xl-1,xl+viewwidth,yl-1,0);
+        VWB_Hlin (xl-1,xl+viewwidth,yl+viewheight,bordercol-2);
+        VWB_Vlin (yl-1,yl+viewheight,xl-1,0);
+        VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,bordercol-2);
+        VWB_Plot (xl-1,yl+viewheight,bordercol-3);
 
-    int xoff = (screenwidth-320)/2;
-    if(xoff)
-    {
-        VWB_Bar (vidbuf, backgroundPitch, 0, screenheight-STATUSLINES, xoff, STATUSLINES, bordercol);
-        VWB_Bar (vidbuf, backgroundPitch, screenwidth-xoff, screenheight-STATUSLINES, xoff, STATUSLINES, bordercol);
-    }
-    VL_UnlockSurface(backgroundSurface);
-
-    VH_UpdateScreen();
 }
 
 /*
@@ -927,18 +907,18 @@ void DrawPlayBorder (void)
 void DrawAllPlayBorder (void)
 {
 #ifdef NOTYET
-    int i;
-    byte *temp;
+        int i;
+        byte *temp;
 
-    temp = vbuf;
-    for (i = 0;i < 3;i++)
-    {
-        vbuf = (byte *)(0xa0000 + screenloc[i]);
-        DrawPlayBorder ();
-    }
-    vbuf = temp;
+        temp = vbuf;
+        for (i=0;i<3;i++)
+        {
+                vbuf = (byte *)(0xa0000+screenloc[i]);
+                DrawPlayBorder ();
+        }
+        vbuf = temp;
 #else
-    DrawPlayBorder ();
+    DrawPlayBorder();
 #endif
 }
 
@@ -953,34 +933,41 @@ void DrawAllPlayBorder (void)
 
 void DrawPlayScreen (void)
 {
-//    int i;
-//    byte *temp;
+#ifdef NOTYET
+        int     i;
+        byte *temp;
 
-//    VW_FadeOut ();
+        VW_FadeOut ();              // ATTENTION: Here is a fade out!!
 
-//    temp = vbuf;
+        temp = vbuf;
 
-    CA_CacheGrChunk (STATUSBARPIC);
+        CA_CacheGrChunk (STATUSBARPIC);
 
-//    for (i = 0;i < 3;i++)
-    {
-//        vbuf = (byte *)(0xa0000 + screenloc[i]);
-        VWBL_DrawPic ((screenwidth-320)/2, screenheight - STATUSLINES, STATUSBARPIC);
+        for (i=0;i<3;i++)
+        {
+                vbuf = (byte *)(0xa0000+screenloc[i]);
+                VWB_DrawPic (0,200-STATUSLINES,STATUSBARPIC);
+                DrawPlayBorder ();
+        }
+
+        vbuf = temp;
+
+        UNCACHEGRCHUNK (STATUSBARPIC);
+#else
+        CA_CacheGrChunk (STATUSBARPIC);
+        VWB_DrawPic (0,200-STATUSLINES,STATUSBARPIC);
         DrawPlayBorder ();
-    }
+        UNCACHEGRCHUNK (STATUSBARPIC);
+#endif
 
-//    vbuf = temp;
-
-    UNCACHEGRCHUNK (STATUSBARPIC);
-
-    DrawFace ();
-    DrawHealth ();
-    DrawLives ();
-    DrawLevel ();
-    DrawAmmo ();
-    DrawKeys ();
-    DrawWeapon ();
-    DrawScore ();
+        DrawFace ();
+        DrawHealth ();
+        DrawLives ();
+        DrawLevel ();
+        DrawAmmo ();
+        DrawKeys ();
+        DrawWeapon ();
+        DrawScore ();
 }
 
 
@@ -995,21 +982,20 @@ void DrawPlayScreen (void)
 ==================
 */
 
-char demoname[13] = "DEMO?.";
-#ifdef NOTYET
+char    demoname[13] = "DEMO?.";
 
 #ifndef REMDEBUG
 #define MAXDEMOSIZE     8192
 
 void StartDemoRecord (int levelnumber)
 {
-    demobuffer = malloc(MAXDEMOSIZE);
-    demoptr = (char *) demobuffer;
-    lastdemoptr = demoptr + MAXDEMOSIZE;
+        demobuffer=malloc(MAXDEMOSIZE);
+        demoptr = (char *) demobuffer;
+        lastdemoptr = demoptr+MAXDEMOSIZE;
 
-    *demoptr = levelnumber;
-    demoptr += 4;                           // leave space for length
-    demorecord = true;
+        *demoptr = levelnumber;
+        demoptr += 4;                           // leave space for length
+        demorecord = true;
 }
 
 
@@ -1023,34 +1009,34 @@ void StartDemoRecord (int levelnumber)
 
 void FinishDemoRecord (void)
 {
-    long length, level;
+        long    length,level;
 
-    demorecord = false;
+        demorecord = false;
 
-    length = demoptr - (char *)demobuffer;
+        length = demoptr - (char *)demobuffer;
 
-    demoptr = ((char *)demobuffer) + 1;
-    *(word *)demoptr = (word) length;
+        demoptr = ((char *)demobuffer)+1;
+        *(word *)demoptr = (word) length;
 
-    VW_FadeIn();
-    CenterWindow(24, 3);
-    PrintY += 6;
-    fontnumber = 0;
-    SETFONTCOLOR(0, 15);
-    US_Print(" Demo number (0-9): ");
-    VW_UpdateScreen();
+        VW_FadeIn();
+        CenterWindow(24,3);
+        PrintY+=6;
+        fontnumber=0;
+        SETFONTCOLOR(0,15);
+        US_Print(" Demo number (0-9): ");
+        VW_UpdateScreen();
 
-    if (US_LineInput (px, py, str, NULL, true, 1, 0))
-    {
-        level = atoi (str);
-        if (level >= 0 && level <= 9)
+        if (US_LineInput (px,py,str,NULL,true,1,0))
         {
-            demoname[4] = (char)('0' + level);
-            CA_WriteFile (demoname, demobuffer, length);
+                level = atoi (str);
+                if (level>=0 && level<=9)
+                {
+                        demoname[4] = (char)('0'+level);
+                        CA_WriteFile (demoname,demobuffer,length);
+                }
         }
-    }
 
-    free(demobuffer);
+        free(demobuffer);
 }
 
 //==========================================================================
@@ -1067,71 +1053,73 @@ void FinishDemoRecord (void)
 
 void RecordDemo (void)
 {
-    int level, esc, maps;
+        int level,esc,maps;
 
-    CenterWindow(26, 3);
-    PrintY += 6;
-    CA_CacheGrChunk(STARTFONT);
-    fontnumber = 0;
-    SETFONTCOLOR(0, 15);
+        CenterWindow(26,3);
+        PrintY+=6;
+        CA_CacheGrChunk(STARTFONT);
+        fontnumber=0;
+        SETFONTCOLOR(0,15);
 #ifndef SPEAR
 #ifdef UPLOAD
-    US_Print("  Demo which level(1-10): "); maps = 10;
+        US_Print("  Demo which level(1-10): "); maps = 10;
 #else
-    US_Print("  Demo which level(1-60): "); maps = 60;
+        US_Print("  Demo which level(1-60): "); maps = 60;
 #endif
 #else
-    US_Print("  Demo which level(1-21): "); maps = 21;
+        US_Print("  Demo which level(1-21): "); maps = 21;
 #endif
-    VW_UpdateScreen();
-    VW_FadeIn ();
-    esc = !US_LineInput (px, py, str, NULL, true, 2, 0);
-    if (esc)
-        return ;
+        VW_UpdateScreen();
+        VW_FadeIn ();
+        esc = !US_LineInput (px,py,str,NULL,true,2,0);
+        if (esc)
+                return;
 
-    level = atoi (str);
-    level--;
+        level = atoi (str);
+        level--;
 
-    if (level >= maps || level < 0)
-        return ;
+        if (level >= maps || level < 0)
+                return;
 
-    VW_FadeOut ();
+        VW_FadeOut ();
 
 #ifndef SPEAR
-    NewGame (gd_hard, level / 10);
-    gamestate.mapon = level % 10;
+        NewGame (gd_hard,level/10);
+        gamestate.mapon = level%10;
 #else
-    NewGame (gd_hard, 0);
-    gamestate.mapon = level;
+        NewGame (gd_hard,0);
+        gamestate.mapon = level;
 #endif
 
-    StartDemoRecord (level);
+        StartDemoRecord (level);
 
-    DrawPlayScreen ();
-    VW_FadeIn ();
+        DrawPlayScreen ();
+        VW_FadeIn ();
 
-    startgame = false;
-    demorecord = true;
+        startgame = false;
+        demorecord = true;
 
-    SetupGameLevel ();
-    StartMusic ();
+        SetupGameLevel ();
+        StartMusic ();
 
-    InitFizzleFade();
+        fizzlein = true;
 
-    PlayLoop ();
+        PlayLoop ();
 
-    demoplayback = false;
+        demoplayback = false;
 
-    StopMusic ();
-    VW_FadeOut ();
-    ClearMemory ();
+        StopMusic ();
+        VW_FadeOut ();
+        ClearMemory ();
 
-    FinishDemoRecord ();
+        FinishDemoRecord ();
 }
 #else
-void FinishDemoRecord (void) { return; }
-void RecordDemo (void) { return; }
+void FinishDemoRecord (void) {return;}
+void RecordDemo (void) {return;}
 #endif
+
+
 
 //==========================================================================
 
@@ -1147,70 +1135,62 @@ void RecordDemo (void) { return; }
 
 void PlayDemo (int demonumber)
 {
-    int length;
+        int length;
 
 #ifdef DEMOSEXTERN
-    // debug: load chunk
+// debug: load chunk
 #ifndef SPEARDEMO
-    int dems[4] = { T_DEMO0, T_DEMO1, T_DEMO2, T_DEMO3 };
+        int dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
 #else
-    int dems[1] = { T_DEMO0 };
+        int dems[1]={T_DEMO0};
 #endif
 
-    CA_CacheGrChunk(dems[demonumber]);
-    demoptr = (char *) grsegs[dems[demonumber]];
+        CA_CacheGrChunk(dems[demonumber]);
+        demoptr = (char *) grsegs[dems[demonumber]];
 #else
-    demoname[4] = '0' + demonumber;
-    CA_LoadFile (demoname, &demobuffer);
-    MM_SetLock (&demobuffer, true);
-    demoptr = (char far *)demobuffer;
+        demoname[4] = '0'+demonumber;
+        CA_LoadFile (demoname,&demobuffer);
+        MM_SetLock (&demobuffer,true);
+        demoptr = (char far *)demobuffer;
 #endif
 
-    NewGame (1, 0);
-    gamestate.mapon = *demoptr++;
-    gamestate.difficulty = gd_hard;
-    length = *((word *)demoptr);
-    demoptr += 2;
-    demoptr++;
-    lastdemoptr = demoptr - 4 + length;
+        NewGame (1,0);
+        gamestate.mapon = *demoptr++;
+        gamestate.difficulty = gd_hard;
+        length = *((word *)demoptr);
+        demoptr+=2;
+        demoptr++;
+        lastdemoptr = demoptr-4+length;
 
-    VW_FadeOut ();
+        VW_FadeOut ();
 
-    SETFONTCOLOR(0, 15);
-    DrawPlayScreen ();
-    VW_FadeIn ();
+        SETFONTCOLOR(0,15);
+        DrawPlayScreen ();
+        VW_FadeIn ();
 
-    startgame = false;
-    demoplayback = true;
+        startgame = false;
+        demoplayback = true;
 
-    SetupGameLevel ();
-    StartMusic ();
+        SetupGameLevel ();
+        StartMusic ();
 
-    InitFizzleFade();
+        fizzlein = true;
 
-    PlayLoop ();
+        PlayLoop ();
 
 #ifdef DEMOSEXTERN
-    UNCACHEGRCHUNK(dems[demonumber]);
+        UNCACHEGRCHUNK(dems[demonumber]);
 #else
-    MM_FreePtr (&demobuffer);
+        MM_FreePtr (&demobuffer);
 #endif
 
-    demoplayback = false;
+        demoplayback = false;
 
-    StopMusic ();
-    VW_FadeOut ();
-    ClearMemory ();
+        StopMusic ();
+        VW_FadeOut ();
+        ClearMemory ();
 }
 
-#else
-void RecordDemo (void)
-{
-}
-void PlayDemo (int demonumber)
-{
-}
-#endif // NOTYET
 //==========================================================================
 
 /*
@@ -1225,131 +1205,123 @@ void PlayDemo (int demonumber)
 
 void Died (void)
 {
-    float fangle;
-    long dx, dy;
-    int iangle, curangle, clockwise, counter, change;
+        float fangle;
+        long    dx,dy;
+        int             iangle,curangle,clockwise,counter,change;
 
-    if (screenfaded)
-        VW_FadeIn ();
+        if (screenfaded)
+                VW_FadeIn ();
 
-    gamestate.weapon = (weapontype) - 1;                     // take away weapon
+        gamestate.weapon = (weapontype) -1;                     // take away weapon
+        SD_PlaySound (PLAYERDEATHSND);
 
-    SD_PlaySound (PLAYERDEATHSND);
+//
+// swing around to face attacker
+//
+        dx = killerobj->x - player->x;
+        dy = player->y - killerobj->y;
 
-    //
-    // swing around to face attacker
-    //
-    dx = killerobj->x - player->x;
-    dy = player->y - killerobj->y;
+        fangle = atan2((float) dy, (float) dx);                  // returns -pi to pi
+        if (fangle<0)
+                fangle = M_PI*2+fangle;
 
-    fangle = atan2(dy, dx);                  // returns -pi to pi
-    if (fangle < 0)
-        fangle = M_PI * 2 + fangle;
+        iangle = fangle/(M_PI*2)*ANGLES;
 
-    iangle = fangle / (M_PI * 2) * ANGLES;
+        if (player->angle > iangle)
+        {
+                counter = player->angle - iangle;
+                clockwise = ANGLES-player->angle + iangle;
+        }
+        else
+        {
+                clockwise = iangle - player->angle;
+                counter = player->angle + ANGLES-iangle;
+        }
 
-    if (player->angle > iangle)
-    {
-        counter = player->angle - iangle;
-        clockwise = ANGLES - player->angle + iangle;
-    }
-    else
-    {
-        clockwise = iangle - player->angle;
-        counter = player->angle + ANGLES - iangle;
-    }
+        curangle = player->angle;
 
-    curangle = player->angle;
-
-    if (clockwise < counter)
-    {
+        if (clockwise<counter)
+        {
         //
         // rotate clockwise
         //
-        if (curangle > iangle)
-            curangle -= ANGLES;
-        do
-        {
-            change = tics * DEATHROTATE;
-            if (curangle + change > iangle)
-                change = iangle - curangle;
+                if (curangle>iangle)
+                        curangle -= ANGLES;
+                do
+                {
+                        change = tics*DEATHROTATE;
+                        if (curangle + change > iangle)
+                                change = iangle-curangle;
 
-            curangle += change;
-            player->angle += change;
-            if (player->angle >= ANGLES)
-                player->angle -= ANGLES;
+                        curangle += change;
+                        player->angle += change;
+                        if (player->angle >= ANGLES)
+                                player->angle -= ANGLES;
 
-            ThreeDRefresh ();
-            CalcTics ();
+                        ThreeDRefresh ();
+                        CalcTics ();
+                } while (curangle != iangle);
         }
-        while (curangle != iangle);
-    }
-    else
-    {
+        else
+        {
         //
         // rotate counterclockwise
         //
-        if (curangle < iangle)
-            curangle += ANGLES;
-        do
-        {
-            change = -tics * DEATHROTATE;
-            if (curangle + change < iangle)
-                change = iangle - curangle;
+                if (curangle<iangle)
+                        curangle += ANGLES;
+                do
+                {
+                        change = -tics*DEATHROTATE;
+                        if (curangle + change < iangle)
+                                change = iangle-curangle;
 
-            curangle += change;
-            player->angle += change;
-            if (player->angle < 0)
-                player->angle += ANGLES;
+                        curangle += change;
+                        player->angle += change;
+                        if (player->angle < 0)
+                                player->angle += ANGLES;
 
-            ThreeDRefresh ();
-            CalcTics ();
+                        ThreeDRefresh ();
+                        CalcTics ();
+                } while (curangle != iangle);
         }
-        while (curangle != iangle);
-    }
 
-    //
-    // fade to red
-    //
-    FinishPaletteShifts ();
+//
+// fade to red
+//
+        FinishPaletteShifts ();
 
-    InitFizzleFade();
-    VWBL_Bar (viewscreenx, viewscreeny, viewwidth, viewheight, 4);
-    VW_UpdateScreen();
+        VW_Bar (viewscreenx,viewscreeny,viewwidth,viewheight,4);
 
-    IN_ClearKeysDown ();
+        IN_ClearKeysDown ();
 
-    FizzleFade(viewscreenx, viewscreeny, viewwidth, viewheight, 70, false);
+        FizzleFade(screenBuffer,screen,viewscreenx,viewscreeny,viewwidth,viewheight,70,false);
 
-    IN_UserInput(100);
-    SD_WaitSoundDone ();
-    ClearMemory();                  // Tricob's "Out of Memory" fix
+        IN_UserInput(100);
+        SD_WaitSoundDone ();
+        ClearMemory();                  // Tricob's "Out of Memory" fix
 
-    if (tedlevel == false)  // SO'S YA DON'T GET KILLED WHILE LAUNCHING!
-        gamestate.lives--;
+        if (tedlevel == false)  // SO'S YA DON'T GET KILLED WHILE LAUNCHING!
+          gamestate.lives--;
 
-    if (gamestate.lives > -1)
-    {
-        gamestate.health = 100;
-        gamestate.weapon = gamestate.bestweapon =
-            gamestate.chosenweapon = wp_pistol;
-        gamestate.ammo = STARTAMMO;
-        gamestate.keys = 0;
-        pwallstate = pwallpos = 0;
-        gamestate.attackframe = gamestate.attackcount =
-            gamestate.weaponframe = 0;
+        if (gamestate.lives > -1)
+        {
+                gamestate.health = 100;
+                gamestate.weapon = gamestate.bestweapon
+                        = gamestate.chosenweapon = wp_pistol;
+                gamestate.ammo = STARTAMMO;
+                gamestate.keys = 0;
+                pwallstate = pwallpos = 0;
+                gamestate.attackframe = gamestate.attackcount =
+                gamestate.weaponframe = 0;
 
-        DrawKeys ();
-        DrawWeapon ();
-        DrawAmmo ();
-        DrawHealth ();
-        DrawFace ();
-        DrawLives ();
+                DrawKeys ();
+                DrawWeapon ();
+                DrawAmmo ();
+                DrawHealth ();
+                DrawFace ();
+                DrawLives ();
+        }
 
-        VWBL_Bar (viewscreenx, viewscreeny, viewwidth, viewheight, 4);
-        VW_UpdateScreen();
-//        VW_UpdateScreen();
-    }
 }
 
 //==========================================================================
@@ -1364,250 +1336,253 @@ void Died (void)
 
 void GameLoop (void)
 {
-    boolean died;
+        boolean died;
 #ifdef MYPROFILE
-    clock_t start, end;
+        clock_t start,end;
 #endif
 
 restartgame:
-    ClearMemory ();
-    SETFONTCOLOR(0, 15);
-    DrawPlayScreen ();
-    died = false;
-    do
-    {
-        if (!loadedgame)
-            gamestate.score = gamestate.oldscore;
-        DrawScore();
+        ClearMemory ();
+        SETFONTCOLOR(0,15);
+        DrawPlayScreen ();
+        died = false;
+        do
+        {
+                if (!loadedgame)
+                  gamestate.score = gamestate.oldscore;
+                DrawScore();
 
-        startgame = false;
-        if (!loadedgame)
-            SetupGameLevel ();
+                startgame = false;
+                if (!loadedgame)
+                        SetupGameLevel ();
 
 #ifdef SPEAR
-        if (gamestate.mapon == 20)      // give them the key allways
-        {
-            gamestate.keys |= 1;
-            DrawKeys ();
-        }
+                if (gamestate.mapon == 20)      // give them the key allways
+                {
+                        gamestate.keys |= 1;
+                        DrawKeys ();
+                }
 #endif
 
-        ingame = true;
-        if (loadedgame)
-        {
-            ContinueMusic(lastgamemusicoffset);
-            loadedgame = false;
-        }
-        else StartMusic ();
+                ingame = true;
+                if(loadedgame)
+                {
+                        ContinueMusic(lastgamemusicoffset);
+                        loadedgame = false;
+                }
+                else StartMusic ();
 
-        if (!died)
-            PreloadGraphics ();             // TODO: Let this do something useful!
-        else
-            died = false;
+                if (!died)
+                        PreloadGraphics ();             // TODO: Let this do something useful!
+                else
+                        died = false;
 
-        DrawLevel ();
-        VW_UpdateScreen();
-        VW_UpdateScreen();
-//        VW_FadeIn();
+                fizzlein = true;
 
-        InitFizzleFade();
+                DrawLevel ();
+
+                VW_FadeIn();      //
 
 #ifdef SPEAR
 startplayloop:
 #endif
-        PlayLoop ();
+                PlayLoop ();
 
 #ifdef SPEAR
-        if (spearflag)
-        {
-            SD_StopSound();
-            SD_PlaySound(GETSPEARSND);
-            if (DigiMode != sds_Off)
-            {
-                long lasttimecount = TimeCount;
+                if (spearflag)
+                {
+                        SD_StopSound();
+                        SD_PlaySound(GETSPEARSND);
+                        if (DigiMode != sds_Off)
+                        {
+                                long lasttimecount = TimeCount;
 
-                while (TimeCount < lasttimecount + 150)
-                    //while(DigiPlaying!=false)
-                    SD_Poll();
-            }
-            else
-                SD_WaitSoundDone();
+                                while(TimeCount < lasttimecount+150)
+                                //while(DigiPlaying!=false)
+                                        SD_Poll();
+                        }
+                        else
+                                SD_WaitSoundDone();
 
-            ClearMemory ();
-            gamestate.oldscore = gamestate.score;
-            gamestate.mapon = 20;
-            SetupGameLevel ();
-            StartMusic ();
-            //                      PM_CheckMainMem ();
-            player->x = spearx;
-            player->y = speary;
-            player->angle = (short)spearangle;
-            spearflag = false;
-            Thrust (0, 0);
-            goto startplayloop;
-        }
+                        ClearMemory ();
+                        gamestate.oldscore = gamestate.score;
+                        gamestate.mapon = 20;
+                        SetupGameLevel ();
+                        StartMusic ();
+//                      PM_CheckMainMem ();
+                        player->x = spearx;
+                        player->y = speary;
+                        player->angle = (short)spearangle;
+                        spearflag = false;
+                        Thrust (0,0);
+                        goto startplayloop;
+                }
 #endif
 
-        StopMusic ();
-        ingame = false;
+                StopMusic ();
+                ingame = false;
 
-#ifdef NOTYET
-        if (demorecord && playstate != ex_warped)
-            FinishDemoRecord ();
-#endif
+                if (demorecord && playstate != ex_warped)
+                        FinishDemoRecord ();
 
-        if (startgame || loadedgame)
-            goto restartgame;
+                if (startgame || loadedgame)
+                        goto restartgame;
 
-        switch (playstate)
-        {
-            case ex_completed:
-            case ex_secretlevel:
-                gamestate.keys = 0;
-                DrawKeys ();
-                VW_FadeOut ();
+                switch (playstate)
+                {
+                case ex_completed:
+                case ex_secretlevel:
+                        gamestate.keys = 0;
+                        DrawKeys ();
+                        VW_FadeOut ();
 
-                ClearMemory ();
+                        ClearMemory ();
 
-                LevelCompleted ();              // do the intermission
+                        LevelCompleted ();              // do the intermission
 
 #ifdef SPEARDEMO
-                if (gamestate.mapon == 1)
-                {
-                    died = true;                    // don't "get psyched!"
+                        if (gamestate.mapon == 1)
+                        {
+                                died = true;                    // don't "get psyched!"
 
-                    VW_FadeOut ();
+                                VW_FadeOut ();
 
-                    ClearMemory ();
+                                ClearMemory ();
 
-                    CheckHighScore (gamestate.score, gamestate.mapon + 1);
+                                CheckHighScore (gamestate.score,gamestate.mapon+1);
 
-#pragma warn -sus
- #ifndef JAPAN
-                    strcpy(MainMenu[viewscores].string, STR_VS);
-#endif
-                    MainMenu[viewscores].routine = CP_ViewScores;
-#pragma warn +sus
+                                #pragma warn -sus
+                                #ifndef JAPAN
+                                _fstrcpy(MainMenu[viewscores].string,STR_VS);
+                                #endif
+                                MainMenu[viewscores].routine = CP_ViewScores;
+                                #pragma warn +sus
 
-                    return ;
-                }
+                                return;
+                        }
 #endif
 
 #ifdef JAPDEMO
-                if (gamestate.mapon == 3)
-                {
-                    died = true;                    // don't "get psyched!"
-
-                    VW_FadeOut ();
-
-                    ClearMemory ();
-
-                    CheckHighScore (gamestate.score, gamestate.mapon + 1);
-
-#pragma warn -sus
- #ifndef JAPAN
-                    strcpy(MainMenu[viewscores].string, STR_VS);
-#endif
-                    MainMenu[viewscores].routine = CP_ViewScores;
-#pragma warn +sus
-
-                    return ;
-                }
-#endif
-
-                gamestate.oldscore = gamestate.score;
-
-#ifndef SPEAR
-                //
-                // COMING BACK FROM SECRET LEVEL
-                //
-                if (gamestate.mapon == 9)
-                    gamestate.mapon = ElevatorBackTo[gamestate.episode];    // back from secret
-                else
-                    //
-                    // GOING TO SECRET LEVEL
-                    //
-                    if (playstate == ex_secretlevel)
-                        gamestate.mapon = 9;
-#else
-
-#define FROMSECRET1 3
-#define FROMSECRET2 11
-
-                //
-                // GOING TO SECRET LEVEL
-                //
-                if (playstate == ex_secretlevel)
-                    switch (gamestate.mapon)
-                    {
-                        case FROMSECRET1: gamestate.mapon = 18; break;
-                        case FROMSECRET2: gamestate.mapon = 19; break;
-                    }
-                else
-                    //
-                    // COMING BACK FROM SECRET LEVEL
-                    //
-                    if (gamestate.mapon == 18 || gamestate.mapon == 19)
-                        switch (gamestate.mapon)
+                        if (gamestate.mapon == 3)
                         {
-                            case 18: gamestate.mapon = FROMSECRET1 + 1; break;
-                            case 19: gamestate.mapon = FROMSECRET2 + 1; break;
+                                died = true;                    // don't "get psyched!"
+
+                                VW_FadeOut ();
+
+                                ClearMemory ();
+
+                                CheckHighScore (gamestate.score,gamestate.mapon+1);
+
+                                #pragma warn -sus
+                                #ifndef JAPAN
+                                _fstrcpy(MainMenu[viewscores].string,STR_VS);
+                                #endif
+                                MainMenu[viewscores].routine = CP_ViewScores;
+                                #pragma warn +sus
+
+                                return;
                         }
 #endif
-                    else
+
+                        gamestate.oldscore = gamestate.score;
+
+#ifndef SPEAR
+                        //
+                        // COMING BACK FROM SECRET LEVEL
+                        //
+                        if (gamestate.mapon == 9)
+                                gamestate.mapon = ElevatorBackTo[gamestate.episode];    // back from secret
+                        else
+                        //
+                        // GOING TO SECRET LEVEL
+                        //
+                        if (playstate == ex_secretlevel)
+                                gamestate.mapon = 9;
+#else
+
+#define FROMSECRET1             3
+#define FROMSECRET2             11
+
+                        //
+                        // GOING TO SECRET LEVEL
+                        //
+                        if (playstate == ex_secretlevel)
+                                switch(gamestate.mapon)
+                                {
+                                 case FROMSECRET1: gamestate.mapon = 18; break;
+                                 case FROMSECRET2: gamestate.mapon = 19; break;
+                                }
+                        else
+                        //
+                        // COMING BACK FROM SECRET LEVEL
+                        //
+                        if (gamestate.mapon == 18 || gamestate.mapon == 19)
+                                switch(gamestate.mapon)
+                                {
+                                 case 18: gamestate.mapon = FROMSECRET1+1; break;
+                                 case 19: gamestate.mapon = FROMSECRET2+1; break;
+                                }
+#endif
+                        else
                         //
                         // GOING TO NEXT LEVEL
                         //
-                        gamestate.mapon++;
+                                gamestate.mapon++;
 
-                break;
 
-            case ex_died:
-                Died ();
-                died = true;                    // don't "get psyched!"
+                        break;
 
-                if (gamestate.lives > -1)
-                    break;                          // more lives left
+                case ex_died:
+                        Died ();
+                        died = true;                    // don't "get psyched!"
 
-                VW_FadeOut ();
+                        if (gamestate.lives > -1)
+                                break;                          // more lives left
 
-                ClearMemory ();
+                        VW_FadeOut ();
 
-                CheckHighScore (gamestate.score, gamestate.mapon + 1);
+                        ClearMemory ();
 
-#pragma warn -sus
-#ifndef JAPAN
-                strcpy(MainMenu[viewscores].string, STR_VS);
-#endif
-                MainMenu[viewscores].routine = CP_ViewScores;
-#pragma warn +sus
-                return;
+                        CheckHighScore (gamestate.score,gamestate.mapon+1);
 
-            case ex_victorious:
+                        #pragma warn -sus
+                        #ifndef JAPAN
+                        strcpy(MainMenu[viewscores].string,STR_VS);
+                        #endif
+                        MainMenu[viewscores].routine = CP_ViewScores;
+                        #pragma warn +sus
+
+                        return;
+
+                case ex_victorious:
+
 #ifndef SPEAR
-                VW_FadeOut ();
+                        VW_FadeOut ();
 #else
-                VL_FadeOut (0, 255, 0, 17, 17, 300);
+                        VL_FadeOut (0,255,0,17,17,300);
 #endif
-                ClearMemory ();
+                        ClearMemory ();
 
-                Victory ();
+                        Victory ();
 
-                ClearMemory ();
+                        ClearMemory ();
 
-                CheckHighScore (gamestate.score, gamestate.mapon + 1);
-#pragma warn -sus
-#ifndef JAPAN
-                strcpy(MainMenu[viewscores].string, STR_VS);
-#endif
-                MainMenu[viewscores].routine = CP_ViewScores;
-#pragma warn +sus
-                return;
+                        CheckHighScore (gamestate.score,gamestate.mapon+1);
 
-            default:
-                ClearMemory ();
-                break;
-        }
-    }
-    while (1);
+                        #pragma warn -sus
+                        #ifndef JAPAN
+                        strcpy(MainMenu[viewscores].string,STR_VS);
+                        #endif
+                        MainMenu[viewscores].routine = CP_ViewScores;
+                        #pragma warn +sus
+
+                        return;
+
+                default:
+                        ClearMemory ();
+                        break;
+                }
+
+        } while (1);
+
 }

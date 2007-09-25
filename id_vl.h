@@ -1,12 +1,10 @@
 // ID_VL.H
 
-#pragma pack(1)
-
 // wolf compatability
 
 #define MS_Quit	Quit
 
-void Quit (char *error);
+void Quit (const char *error,...);
 
 //===========================================================================
 
@@ -64,7 +62,7 @@ void Quit (char *error);
 #define ATR_PELPAN			19
 #define ATR_COLORSELECT		20
 
-#define	STATUS_REGISTER_1    0x3da
+#define	STATUS_REGISTER_1   0x3da
 
 #define PEL_WRITE_ADR		0x3c8
 #define PEL_READ_ADR		0x3c7
@@ -73,27 +71,22 @@ void Quit (char *error);
 
 //===========================================================================
 
-#define SCREENSEG		0xa000
-
-#define SCREENWIDTH		80			// default screen width in bytes
-#define MAXSCANLINES	200			// size of ylookup table
-
 #define CHARWIDTH		2
 #define TILEWIDTH		4
 
 //===========================================================================
 
+extern SDL_Surface *screen, *screenBuffer, *curSurface;
+
 //extern	unsigned bufferofs;			// all drawing is reletive to this
-extern	unsigned	 isplayofs,pelpan;	// last setscreen coordinates
+extern	unsigned isplayofs,pelpan;	    // last setscreen coordinates
 
 //extern	unsigned screenseg;			// set to 0xa000 for asm convenience
 
-//extern	unsigned linewidth;
-extern int screenwidth, screenheight, screenpitch, backgroundPitch, fizzlePitch;
-extern boolean fullscreen;
+extern	unsigned screenWidth, screenHeight, screenPitch, bufferPitch, curPitch;
 //extern	unsigned ylookup[MAXSCANLINES];
 
-extern	boolean		screenfaded;
+extern	boolean  screenfaded;
 extern	unsigned bordercolor;
 
 //===========================================================================
@@ -102,103 +95,7 @@ extern	unsigned bordercolor;
 // VGA hardware routines
 //
 
-// NOTYET
 #define VL_WaitVBL(a) SDL_Delay((a)*20)
-
-#if 0
-
-/*#define VGAWRITEMODE(x) asm{\
-cli;\
-mov dx,GC_INDEX;\
-mov al,GC_MODE;\
-out dx,al;\
-inc dx;\
-in al,dx;\
-and al,252;\
-or al,x;\
-out dx,al;\
-sti;}*/
-
-void VGAWRITEMODE(byte x);
-#pragma aux VGAWRITEMODE = \
-		"cli" \
-		"mov edx,0x03ce" \
-		"mov al,5" \
-		"out dx,al" \
-		"inc edx" \
-		"in al,dx" \
-		"and al,252" \
-		"or al,ah" \
-		"out dx,al" \
-		"sti" \
-		parm [ah] \
-		modify exact [edx al]
-
-//#define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov al,SC_MAPMASK;mov ah,x;out dx,ax;sti;}
-//#define VGAREADMAP(x) asm{cli;mov dx,GC_INDEX;mov al,GC_READMAP;mov ah,x;out dx,ax;sti;}
-
-void VL_WaitVBL(int num);
-#pragma aux VL_WaitVBL = \
-		"mov	edx,03dah" \
-		"VBLActive:"\
-		"in al,dx"\
-		"test al,8"\
-		"jnz VBLActive"\
-		"noVBL:"\
-		"in al,dx"\
-		"test al,8"\
-		"jz noVBL"\
-		"loop VBLActive"\
-		parm [ecx] \
-		modify exact [edx al ecx]
-
-void VGAREADMAP(byte x);
-#pragma aux VGAREADMAP = \
-		"mov edx,0x3ce"\
-		"mov al,4"\
-		"mov ah,bl"\
-		"out dx,ax"\
-		parm [bl]\
-		modify exact [edx ax]
-
-/*#pragma aux VGAREADMAP = \
-		"cli"\
-		"mov edx,0x3ce"\
-		"mov al,4"\
-		"mov ah,bl"\
-		"out dx,ax"\
-		"sti"\
-		parm [bl]\
-		modify exact [edx ax]*/
-
-void VGAMAPMASK(byte x);
-#pragma aux VGAMAPMASK = \
-		"mov edx,0x3c4"\
-		"mov al,2"\
-		"mov ah,bl"\
-		"out dx,ax"\
-		parm [bl]\
-		modify exact [edx ax]
-
-/*#pragma aux VGAMAPMASK = \
-		"cli"\
-		"mov edx,0x3c4"\
-		"mov al,2"\
-		"mov ah,bl"\
-		"out dx,ax"\
-		"sti"\
-		parm [bl]\
-		modify exact [edx ax]*/
-
-void SetTextCursor(byte x, byte y);
-#pragma aux SetTextCursor = \
-		"xor	bh,bh" \
-		"mov	ah,2" \
-		"int 0x10" \
-		parm [dl] [dh] \
-		modify exact [bh eax]
-
-#endif
 
 /*void VL_Startup (void);
 
@@ -226,23 +123,28 @@ void VL_FadeOut (int start, int end, int red, int green, int blue, int steps);
 void VL_FadeIn (int start, int end, SDL_Color *palette, int steps);
 //void VL_ColorBorder (int color);
 
-byte *VL_LockSurface(SDL_Surface *screen);
-void VL_UnlockSurface(SDL_Surface *screen);
+byte *VL_LockSurface(SDL_Surface *surface);
+void VL_UnlockSurface(SDL_Surface *surface);
 
-void VL_Plot (byte *vbuf, int pitch, int x, int y, int color);
-void VL_Hlin (byte *vbuf, int pitch, unsigned x, unsigned y, unsigned width, int color);
-void VL_Vlin (byte *vbuf, int pitch, int x, int y, int height, int color);
-void VL_Bar (byte *vbuf, int pitch, int x, int y, int width, int height, int color);
+#define LOCK() VL_LockSurface(curSurface)
+#define UNLOCK() VL_UnlockSurface(curSurface)
+
+byte VL_GetPixel (int x, int y);
+void VL_Plot (int x, int y, int color);
+void VL_Hlin (unsigned x, unsigned y, unsigned width, int color);
+void VL_Vlin (int x, int y, int height, int color);
+void VL_Bar (int x, int y, int width, int height, int color);
 
 void VL_MungePic (byte *source, unsigned width, unsigned height);
 void VL_DrawPicBare (int x, int y, byte *pic, int width, int height);
-void VL_MemToLatch (byte *source, int width, int height, unsigned dest);
+void VL_MemToLatch(byte *source, int width, int height,
+    SDL_Surface *destSurface, int x, int y);
 void VL_ScreenToScreen (SDL_Surface *source, SDL_Surface *dest);
-void VL_MemToScreen (byte *vbuf, int pitch, byte *source, int width, int height, int x, int y);
+void VL_MemToScreen (byte *source, int width, int height, int x, int y);
 void VL_MaskedToScreen (byte *source, int width, int height, int x, int y);
-void VL_LatchToScreen (SDL_Surface *source, int x1, int y1,
-    int width, int height, int x2, int y2);
 void VL_LatchToScreen (SDL_Surface *source, int x, int y);
+void VL_LatchToScreen (SDL_Surface *source, int xsrc, int ysrc,
+    int width, int height, int xdest, int ydest);
 
 /*void VL_DrawTile8String (char *str, char *tile8ptr, int printx, int printy);
 void VL_DrawLatch8String (char *str, unsigned tile8ptr, int printx, int printy);
@@ -251,26 +153,3 @@ void VL_DrawPropString (char *str, unsigned tile8ptr, int printx, int printy);
 void VL_SizePropString (char *str, int *width, int *height, char far *font);
 
 void VL_TestPaletteSet (void);*/
-
-#if 0
-void SetScreen (int offset);
-#pragma aux SetScreen = \
-		"cli" \
-		"mov	edx,0x3d4" \
-		"mov	al,0x0c" \
-		"out	dx,al" \
-		"inc	edx" \
-		"mov	al,ah" \
-		"out	dx,al" \
-		"sti" \
-		parm [eax] \
-		modify exact [edx ax]
-
-#define VL_SetScreen(crtc,pan) SetScreen(crtc)
-
-#endif
-
-extern SDL_Surface *fizzleSurface;
-extern SDL_Surface *fizzleSurface2;
-extern SDL_Surface *fizzleTempSurface;
-extern int fizzleTempPitch;

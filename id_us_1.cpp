@@ -42,15 +42,15 @@
 //	Internal variables
 #define	ConfigVersion	1
 
-static	char		*ParmStrings[] = {"TEDLEVEL","NOWAIT",0};
+static	const char	*ParmStrings[] = {"TEDLEVEL","NOWAIT",0};
 static	boolean		US_Started;
 
 		boolean		Button0,Button1,
 					CursorBad;
 		int			CursorX,CursorY;
 
-		void		(*USL_MeasureString)(char *,word *,word *) = VW_MeasurePropString;
-		void		(*USL_DrawString)(char *) = VWB_DrawPropString;
+		void		(*USL_MeasureString)(const char *,word *,word *) = VW_MeasurePropString;
+		void		(*USL_DrawString)(const char *) = VWB_DrawPropString;
 
 		SaveGame	Games[MaxSaveGames];
 		HighScore	Scores[MaxScores] =
@@ -144,20 +144,6 @@ US_Shutdown(void)
 	US_Started = false;
 }
 
-void US_InitRndT(int randomize)
-{
-    if(randomize)
-        rndindex = SDL_GetTicks()&0xff;
-    else
-        rndindex = 0;
-}
-
-int US_RndT()
-{
-    rndindex = (rndindex+1)&0xff;
-    return rndtable[rndindex];
-}
-
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_CheckParm() - checks to see if a string matches one of a set of
@@ -166,10 +152,10 @@ int US_RndT()
 //
 ///////////////////////////////////////////////////////////////////////////
 int
-US_CheckParm(char *parm,char **strings)
+US_CheckParm(const char *parm,const char **strings)
 {
 	char	cp,cs;
-	char *p,*s;
+	const char *p,*s;
 	int		i;
 
 	while (!isalpha(*parm))	// Skip non-alphas
@@ -205,7 +191,8 @@ US_CheckParm(char *parm,char **strings)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetPrintRoutines(void (*measure)(char *,word *,word *),void (*print)(char *))
+US_SetPrintRoutines(void (*measure)(const char *,word *,word *),
+    void (*print)(const char *))
 {
 	USL_MeasureString = measure;
 	USL_DrawString = print;
@@ -218,12 +205,14 @@ US_SetPrintRoutines(void (*measure)(char *,word *,word *),void (*print)(char *))
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(char *str)
+US_Print(const char *sorg)
 {
 	char c;
-	char *s, *sdup, *se;
-	word	w,h;
-	s = sdup = strdup(str);
+	char *sstart = strdup(sorg);
+	char *s = sstart;
+	char *se;
+	word w,h;
+
 	while (*s)
 	{
 		se = s;
@@ -248,7 +237,7 @@ US_Print(char *str)
 		else
 			PrintX += w;
 	}
-	free(sdup);
+	free(sstart);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -284,7 +273,7 @@ US_PrintSigned(long n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-USL_PrintInCenter(char *s,Rect r)
+USL_PrintInCenter(const char *s,Rect r)
 {
 	word	w,h,
 			rw,rh;
@@ -304,7 +293,7 @@ USL_PrintInCenter(char *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(char *s)
+US_PrintCentered(const char *s)
 {
 	Rect	r;
 
@@ -323,7 +312,7 @@ US_PrintCentered(char *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(char *s)
+US_CPrintLine(const char *s)
 {
 	word	w,h;
 
@@ -344,11 +333,12 @@ US_CPrintLine(char *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(char *str)
+US_CPrint(const char *sorg)
 {
 	char	c;
-	char *s, *sdup, *se;
-	s = sdup = strdup(str);
+	char *sstart = strdup(sorg);
+	char *s = sstart;
+	char *se;
 
 	while (*s)
 	{
@@ -366,7 +356,7 @@ US_CPrint(char *str)
 			s++;
 		}
 	}
-	free(sdup);
+	free(sstart);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -378,7 +368,7 @@ US_CPrint(char *str)
 void
 US_ClearWindow(void)
 {
-	VWBL_Bar(WindowX,WindowY,WindowW,WindowH,WHITE);
+	VWB_Bar(WindowX,WindowY,WindowW,WindowH,WHITE);
 	PrintX = WindowX;
 	PrintY = WindowY;
 }
@@ -474,7 +464,7 @@ US_RestoreWindow(WindowRec *win)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_XORICursor(int x,int y,char *s,word cursor)
+USL_XORICursor(int x,int y,const char *s,word cursor)
 {
 	static	boolean	status;		// VGA doesn't XOR...
 	char	buf[MaxString];
@@ -509,7 +499,7 @@ USL_XORICursor(int x,int y,char *s,word cursor)
 //
 ///////////////////////////////////////////////////////////////////////////
 boolean
-US_LineInput(int x,int y,char *buf,char *def,boolean escok,
+US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 				int maxchars,int maxwidth)
 {
 	boolean		redraw,
@@ -518,7 +508,7 @@ US_LineInput(int x,int y,char *buf,char *def,boolean escok,
 	ScanCode	sc;
 	char		c;
 	char		s[MaxString],olds[MaxString];
-	int cursor,len;
+	int         cursor,len;
 	word		i,
 				w,h,
 				temp;
@@ -533,13 +523,14 @@ US_LineInput(int x,int y,char *buf,char *def,boolean escok,
 	cursormoved = redraw = true;
 
 	cursorvis = done = false;
-	lasttime = GetTicks();
+	lasttime = GetTimeCount();
 	LastASCII = key_None;
 	LastScan = sc_None;
 
 	while (!done)
 	{
-	    ProcessEvents();
+	    IN_ProcessEvents();
+
 		if (cursorvis)
 			USL_XORICursor(x,y,s,cursor);
 
@@ -608,7 +599,7 @@ US_LineInput(int x,int y,char *buf,char *def,boolean escok,
                 cursormoved = true;
                 break;
 
-            case SDLK_KP5: //0x4c:	// Keypad 5     // TODO: hmmmmmm...
+            case SDLK_KP5: //0x4c:	// Keypad 5 // TODO: hmmm...
             case sc_UpArrow:
             case sc_DownArrow:
             case sc_PgUp:
@@ -653,16 +644,17 @@ US_LineInput(int x,int y,char *buf,char *def,boolean escok,
 		if (cursormoved)
 		{
 			cursorvis = false;
-			lasttime = GetTicks() - TickBase;
+			lasttime = GetTimeCount() - TickBase;
 
 			cursormoved = false;
 		}
-		if (GetTicks() - lasttime > TickBase / 2)
+		if (GetTimeCount() - lasttime > TickBase / 2)
 		{
-			lasttime = GetTicks();
+			lasttime = GetTimeCount();
 
 			cursorvis ^= true;
 		}
+		else SDL_Delay(5);
 		if (cursorvis)
 			USL_XORICursor(x,y,s,cursor);
 
@@ -681,4 +673,30 @@ US_LineInput(int x,int y,char *buf,char *def,boolean escok,
 
 	IN_ClearKeysDown();
 	return(result);
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+// US_InitRndT - Initializes the pseudo random number generator.
+//      If randomize is true, the seed will be initialized depending on the
+//      current time
+//
+///////////////////////////////////////////////////////////////////////////
+void US_InitRndT(int randomize)
+{
+    if(randomize)
+        rndindex = SDL_GetTicks()&0xff;
+    else
+        rndindex = 0;
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+// US_RndT - Returns the next 8-bit pseudo random number
+//
+///////////////////////////////////////////////////////////////////////////
+int US_RndT()
+{
+    rndindex = (rndindex+1)&0xff;
+    return rndtable[rndindex];
 }

@@ -2,7 +2,7 @@
 
 #include "wl_def.h"
 
-#define	SCREENWIDTH		80
+//#define	SCREENWIDTH		80
 #define CHARWIDTH		2
 #define TILEWIDTH		4
 #define GRPLANES		4
@@ -12,8 +12,9 @@
 #define SCREENXPLUS		(3)
 #define SCREENXDIV		(4)
 
-#define VIEWWIDTH		80
+//#define VIEWWIDTH		80
 
+// TODO: Check this for higher resolutions
 #define PIXTOBLOCK		4		// 16 pixels to an update block
 
 byte	update[UPDATEHIGH][UPDATEWIDE];
@@ -21,30 +22,27 @@ byte	update[UPDATEHIGH][UPDATEWIDE];
 //==========================================================================
 
 pictabletype	*pictable;
-//unsigned latchpics[NUMLATCHPICS];
-SDL_Surface *latchpics[NUMLATCHPICS];
+SDL_Surface     *latchpics[NUMLATCHPICS];
 
-int fizzleA, fizzleC, fizzleM;
-
-int	px,py;
+int	    px,py;
 byte	fontcolor,backcolor;
-int	fontnumber;
-int bufferwidth,bufferheight;
+int	    fontnumber;
+int     bufferwidth,bufferheight;
 
 //==========================================================================
 
-void VW_DrawPropString (char *string)
+void VW_DrawPropString (const char *string)
 {
-	fontstruct *font;
-	int		width,step,height;
-	byte	*source, *dest, *origdest;
-	byte	ch;
+	fontstruct  *font;
+	int		    width, step, height;
+	byte	    *source, *dest, *origdest;
+	byte	    ch, mask;
 
-    byte *vbuf = VL_LockSurface(backgroundSurface);
+    byte *vbuf = LOCK();
 
-	font = (fontstruct *)grsegs[STARTFONT+fontnumber];
+	font = (fontstruct *) grsegs[STARTFONT+fontnumber];
 	height = bufferheight = font->height;
-	dest = origdest = vbuf+py*backgroundPitch+px;
+	dest = origdest = vbuf + py * curPitch + px;
 
 	while ((ch = *string++)!=0)
 	{
@@ -55,7 +53,7 @@ void VW_DrawPropString (char *string)
 			for(int i=0;i<height;i++)
 			{
 				if(source[i*step])
-					dest[i*backgroundPitch]=fontcolor;
+					dest[i*curPitch]=fontcolor;
 			}
 
 			source++;
@@ -66,7 +64,7 @@ void VW_DrawPropString (char *string)
 	bufferheight = height;
 	bufferwidth = ((dest+1)-origdest)*4;
 
-	VL_UnlockSurface(backgroundSurface);
+	UNLOCK();
 }
 
 /*
@@ -79,7 +77,6 @@ void VW_DrawPropString (char *string)
 
 void VL_MungePic (byte *source, unsigned width, unsigned height)
 {
-#ifdef NOTYET
 	unsigned x,y,plane,size,pwidth;
 	byte *temp, *dest, *srcline;
 
@@ -112,17 +109,16 @@ void VL_MungePic (byte *source, unsigned width, unsigned height)
 	}
 
 	free(temp);
-#endif
 }
 
-void VWL_MeasureString (char *string, word *width, word *height, fontstruct *font)
+void VWL_MeasureString (const char *string, word *width, word *height, fontstruct *font)
 {
 	*height = font->height;
 	for (*width = 0;*string;string++)
 		*width += font->width[*((byte *)string)];	// proportional width
 }
 
-void VW_MeasurePropString (char *string, word *width, word *height)
+void VW_MeasurePropString (const char *string, word *width, word *height)
 {
 	VWL_MeasureString(string,width,height,(fontstruct *)grsegs[STARTFONT+fontnumber]);
 }
@@ -160,9 +156,10 @@ void VH_UpdateScreen()
 		}
 	}
 	VGAWRITEMODE(0);
-	#endif
-	SDL_BlitSurface(backgroundSurface, NULL, screen, NULL);
-	SDL_Flip(screen);
+#else
+    SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
+    SDL_UpdateRect(screen, 0, 0, 0, 0);
+#endif
 }
 
 /*
@@ -227,13 +224,13 @@ void VWB_DrawTile8 (int x, int y, int tile)
 		LatchDrawChar(x,y,tile);
 }
 
-void VWB_DrawTile8M (byte *vbuf, int pitch, int x, int y, int tile)
+void VWB_DrawTile8M (int x, int y, int tile)
 {
 //	if (VW_MarkUpdateBlock (x,y,x+7,y+7))
-		VL_MemToScreen (vbuf, pitch, ((byte *)grsegs[STARTTILE8M])+tile*64,8,8,x,y);
+		VL_MemToScreen (((byte *)grsegs[STARTTILE8M])+tile*64,8,8,x,y);
 }
 
-void VWB_DrawPic (byte *vbuf, int pitch, int x, int y, int chunknum)
+void VWB_DrawPic (int x, int y, int chunknum)
 {
 	int	picnum = chunknum - STARTPICS;
 	unsigned width,height;
@@ -244,10 +241,10 @@ void VWB_DrawPic (byte *vbuf, int pitch, int x, int y, int chunknum)
 	height = pictable[picnum].height;
 
 //	if (VW_MarkUpdateBlock (x,y,x+width-1,y+height-1))
-		VL_MemToScreen (vbuf, pitch, grsegs[chunknum],width,height,x,y);
+		VL_MemToScreen (grsegs[chunknum],width,height,x,y);
 }
 
-void VWB_DrawPropString	 (char *string)
+void VWB_DrawPropString	 (const char *string)
 {
 	int x;
 	x=px;
@@ -255,28 +252,28 @@ void VWB_DrawPropString	 (char *string)
 //	VW_MarkUpdateBlock(x,py,px-1,py+bufferheight-1);
 }
 
-void VWB_Bar (byte *vbuf, int pitch, int x, int y, int width, int height, int color)
+void VWB_Bar (int x, int y, int width, int height, int color)
 {
 //	if (VW_MarkUpdateBlock (x,y,x+width,y+height-1) )
-		VW_Bar (vbuf, pitch,x,y,width,height,color);
+		VW_Bar (x,y,width,height,color);
 }
 
-void VWB_Plot (byte *vbuf, int pitch, int x, int y, int color)
+void VWB_Plot (int x, int y, int color)
 {
 //	if (VW_MarkUpdateBlock (x,y,x,y))
-		VW_Plot(vbuf,pitch,x,y,color);
+		VW_Plot(x,y,color);
 }
 
-void VWB_Hlin (byte *vbuf, int pitch, int x1, int x2, int y, int color)
+void VWB_Hlin (int x1, int x2, int y, int color)
 {
 //	if (VW_MarkUpdateBlock (x1,y,x2,y))
-		VW_Hlin(vbuf,pitch,x1,x2,y,color);
+		VW_Hlin(x1,x2,y,color);
 }
 
-void VWB_Vlin (byte *vbuf, int pitch, int y1, int y2, int x, int color)
+void VWB_Vlin (int y1, int y2, int x, int color)
 {
 //	if (VW_MarkUpdateBlock (x,y1,x,y2))
-		VW_Vlin(vbuf,pitch,y1,y2,x,color);
+		VW_Vlin(y1,y2,x,color);
 }
 
 
@@ -298,7 +295,7 @@ void VWB_Vlin (byte *vbuf, int pitch, int y1, int y2, int x, int color)
 
 void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
 {
-    VL_LatchToScreen(latchpics[2+picnum-LATCHPICS_LUMP_START], x*8, y);
+	VL_LatchToScreen (latchpics[2+picnum-LATCHPICS_LUMP_START], x*8, y);
 }
 
 
@@ -315,59 +312,32 @@ void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
 void LoadLatchMem (void)
 {
 	int	i,width,height,start,end;
-	byte	*src;
-	unsigned destoff;
+	byte *src;
+	SDL_Surface *surf;
 
 //
 // tile 8s
 //
-    SDL_Surface *surf = SDL_CreateRGBSurface(SDL_HWSURFACE, 8*8,
-        ((NUMTILE8+7)/8)*8, 8, 0, 0, 0, 0);
+    surf = SDL_CreateRGBSurface(SDL_HWSURFACE, 8*8,
+        ((NUMTILE8 + 7) / 8) * 8, 8, 0, 0, 0, 0);
     if(surf == NULL)
     {
-        Quit("Unable to create surface for picture!");
+        Quit("Unable to create surface for tiles!");
     }
     SDL_SetColors(surf, gamepal, 0, 256);
+
 	latchpics[0] = surf;
 	CA_CacheGrChunk (STARTTILE8);
 	src = grsegs[STARTTILE8];
-	destoff = freelatch;
 
-	byte *surfmem = VL_LockSurface(surf);
+    byte *surfmem = VL_LockSurface(surf);
 
 	for (i=0;i<NUMTILE8;i++)
 	{
-		int offset = (i>>3)*8*64+(i&7)*8;
-		for(int y=0; y<8; y++)
-		{
-            for(int x=0; x<8; x++)
-            {
-                surfmem[y*surf->pitch+x+offset] = src[(y*2+(x>>2))+(x&3)*2*8];
-            }
-		}
+		VL_MemToLatch (src, 8, 8, surf, (i & 7) * 8, (i >> 3) * 8);
 		src += 64;
 	}
-	VL_UnlockSurface(surf);
-
 	UNCACHEGRCHUNK (STARTTILE8);
-
-#if 0	// ran out of latch space!
-//
-// tile 16s
-//
-	src = (byte _seg *)grsegs[STARTTILE16];
-	latchpics[1] = destoff;
-
-	for (i=0;i<NUMTILE16;i++)
-	{
-		CA_CacheGrChunk (STARTTILE16+i);
-		src = (byte _seg *)grsegs[STARTTILE16+i];
-		VL_MemToLatch (src,16,16,destoff);
-		destoff+=64;
-		if (src)
-			UNCACHEGRCHUNK (STARTTILE16+i);
-	}
-#endif
 
 //
 // pics
@@ -379,39 +349,21 @@ void LoadLatchMem (void)
 	{
 		width = pictable[i-STARTPICS].width;
 		height = pictable[i-STARTPICS].height;
-		SDL_Surface *surf = SDL_CreateRGBSurface(SDL_HWSURFACE, width,
-            height, 8, 0, 0, 0, 0);
+		surf = SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 8, 0, 0, 0, 0);
         if(surf == NULL)
         {
             Quit("Unable to create surface for picture!");
         }
         SDL_SetColors(surf, gamepal, 0, 256);
-        latchpics[2+i-start] = surf;
+
+		latchpics[2+i-start] = surf;
 		CA_CacheGrChunk (i);
-		byte *surfmem = VL_LockSurface(surf);
-		for(int y=0; y<height; y++)
-		{
-            for(int x=0; x<width; x++)
-            {
-                surfmem[y*surf->pitch+x] = grsegs[i][(y*(width>>2)+(x>>2))+(x&3)*(width>>2)*height];
-            }
-		}
-		VL_UnlockSurface(surf);
+		VL_MemToLatch (grsegs[i], width, height, surf, 0, 0);
 		UNCACHEGRCHUNK(i);
 	}
 }
 
 //==========================================================================
-
-void InitFizzleFade()
-{
-    fizzleTempSurface = screen;
-    fizzleTempPitch = screenpitch;
-    screen = fizzleSurface;
-    screenpitch = fizzlePitch;
-    screenofs = viewscreeny * fizzlePitch + viewscreenx;
-    fizzlein = true;
-}
 
 /*
 ===================
@@ -432,68 +384,46 @@ const unsigned int yb = 10;
 #endif
 const unsigned int rndmask = 9 << (xb + yb - 4);
 
-boolean FizzleFade (int sx, int sy, unsigned width, unsigned height,
-    unsigned frames, boolean abortable)
+boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
+    unsigned width, unsigned height, unsigned frames, boolean abortable)
 {
-#ifndef NOTYET          // only for 320*200
-	int			pixperframe;
-	unsigned drawofs;
+	int		 pixperframe;
 	unsigned x,y,p,frame;
-	long		rndval;
+	long	 rndval;
 
-    if(!fizzlein)
-    {
-        printf("FizzleFade without InitFizzleIn!!");
-        return false;
-    }
-    screen = fizzleTempSurface;     // restore screen surface and pitch
-    screenpitch = fizzleTempPitch;
-    screenofs = viewscreeny * screenpitch + viewscreenx;
-    fizzlein = false;
-
-//	rndval = 1;
-    rndval = 0;
-//	x = 0;
-//	y = 0;
-	pixperframe = (screenwidth*screenheight)/frames;
+	rndval = 0;
+	pixperframe = width * height / frames; //64000/frames;
 
 	IN_StartAck ();
 
-    SDL_BlitSurface(screen, NULL, fizzleSurface2, NULL);
-    byte *srcptr = VL_LockSurface(fizzleSurface);
-	frame=GetTicks();
+	frame = GetTimeCount();
+	byte *srcptr = VL_LockSurface(source);
 	do
 	{
-		if (abortable && IN_CheckAck())
+		if (abortable && IN_CheckAck ())
 		{
-            VL_UnlockSurface(fizzleSurface);
+		    VL_UnlockSurface(source);
+            SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
+            SDL_UpdateRect(screen, 0, 0, 0, 0);
 			return true;
 		}
 
-        byte *destptr = VL_LockSurface(fizzleSurface2);
+		byte *destptr = VL_LockSurface(dest);
 
-		for (p=0; p<pixperframe; p++)
+		for (p=0;p<pixperframe;p++)
 		{
 			//
 			// seperate random value into x/y pair
 			//
+
 			x = rndval >> yb;
 			y = rndval & ((1 << yb) - 1);
+
+			//
+			// advance to next random element
+			//
+
 			rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
-
-/*			x = (rndval&0xffff00)>>8;
-            y = (rndval&0xff)-1;
-            if (rndval&1)
-                rndval = (rndval>>1) ^ 0x00012000;
-            else
-                rndval >>= 1;*/
-
-/*            x = rndval / screenheight;
-            y = rndval % screenheight;
-
-            // perhaps ((fizzleA * rndval) % fizzleM + fizzleC) % fizzleM
-            // to avoid overflow?
-            rndval = (fizzleA * rndval + fizzleC) % fizzleM;*/
 
 			if (x>width || y>height)
 			{
@@ -505,96 +435,21 @@ boolean FizzleFade (int sx, int sy, unsigned width, unsigned height,
 			// copy one pixel
 			//
 
-			*(byte *)(destptr+(sy+y)*backgroundPitch + sx + x)
-                = *(byte *)(srcptr+(sy+y)*fizzlePitch + sx + x);
+            *(destptr + (y1 + y) * dest->pitch + x1 + x)
+                = *(srcptr + (y1 + y) * source->pitch + x1 + x);
 
-//			if (rndval == 1)		// entire sequence has been completed
-            if (rndval == 0)		// entire sequence has been completed
+			if (rndval == 0)		// entire sequence has been completed
 			{
-                VL_UnlockSurface(fizzleSurface);
-                VL_UnlockSurface(fizzleSurface2);
-                SDL_BlitSurface(fizzleSurface, NULL, screen, NULL);
-                SDL_Flip(screen);
-                SDL_BlitSurface(fizzleSurface, NULL, screen, NULL);
+			    VL_UnlockSurface(source);
+                VL_UnlockSurface(dest);
+                SDL_UpdateRect(dest, 0, 0, 0, 0);
 				return false;
 			}
 		}
-		VL_UnlockSurface(fizzleSurface2);
-		SDL_BlitSurface(fizzleSurface2, NULL, screen, NULL);
-		SDL_Flip(screen);
+        VL_UnlockSurface(dest);
+        SDL_UpdateRect(dest, 0, 0, 0, 0);
 		frame++;
-		while (GetTicks()<frame)		// don't go too fast
-            ;
+		while (GetTimeCount()<frame)		// don't go too fast
+            SDL_Delay(5);
 	} while (1);
-#else
-	int			pixperframe;
-	unsigned drawofs,pagedelta;
-	byte 		mask;
-	unsigned x,y,p,frame;
-	long		rndval;
-
-	pagedelta = dest-source;
-	rndval = 1;
-	x = 0;
-	y = 0;
-	pixperframe = 64000/frames;
-
-	IN_StartAck ();
-
-	TimeCount=frame=0;
-	do
-	{
-		if (abortable && IN_CheckAck () )
-			return true;
-
-		for (p=0;p<pixperframe;p++)
-		{
-			//
-			// seperate random value into x/y pair
-			//
-			_asm {
-					mov	ax,[WORD PTR rndval]
-					mov	dx,[WORD PTR rndval+2]
-					mov	ebx,eax
-					dec	bl
-					mov	[BYTE PTR y],bl			// low 8 bits - 1 = y xoordinate
-					mov	ebx,eax
-					mov	ecx,edx
-					mov	[BYTE PTR x],ah			// next 9 bits = x xoordinate
-					mov	[BYTE PTR x+1],dl
-			//
-			// advance to next random element
-			//
-					shr	dx,1
-					rcr	ax,1
-					jnc	noxor
-					xor	edx,0x0001
-					xor	eax,0x2000
-noxor:
-					mov	[WORD PTR rndval],ax
-					mov	[WORD PTR rndval+2],dx
-			}
-
-			if (x>width || y>height)
-				continue;
-			drawofs = source + y*80 + (x>>2);
-
-			//
-			// copy one pixel
-			//
-			mask = (byte) x&3;
-			VGAREADMAP(mask);
-			VGAMAPMASK(1<<mask);
-
-			*(byte *)(0xa0000+drawofs+pagedelta)=*(byte *)(0xa0000+drawofs);
-
-			if (rndval == 1)		// entire sequence has been completed
-				return false;
-		}
-		frame++;
-		while (TimeCount<frame)		// don't go too fast
-		;
-	} while (1);
-#endif
-    return false;
 }

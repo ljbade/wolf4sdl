@@ -806,13 +806,13 @@ void MovePWalls (void)
 		  {
 			  if(ppressed)
 			  {
-				  if(Keyboard[sc_P] && GetTicks()-ptimecount<10) return;
+				  if(Keyboard[sc_P] && GetTimeCount()-ptimecount<10) return;
 				  ppressed=0;
 				  return;
 			  }
 			  if(!Keyboard[sc_P]) return;
 			  ppressed=1;
-			  ptimecount = GetTicks();
+			  ptimecount = GetTimeCount();
 
 			  pwallstate += 4;
 		  }

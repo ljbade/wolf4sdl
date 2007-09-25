@@ -237,8 +237,8 @@ void ControlMovement (objtype *ob)
 
 void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 {
-#if 0
-        byte *temp;
+/*        byte *temp;       TODO
+
         temp = vbuf;
 
         vbuf = (byte *)(0xa0000 + PAGE1START+(200-STATUSLINES)*SCREENWIDTH);
@@ -248,9 +248,9 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
         vbuf = (byte *)(0xa0000 + PAGE3START+(200-STATUSLINES)*SCREENWIDTH);
         LatchDrawPic (x,y,picnum);
 
-        vbuf = temp;
-#endif
-    LatchDrawPic(x+(screenwidth-320)/16, screenheight-STATUSLINES+y, picnum);
+        vbuf = temp;*/
+
+        LatchDrawPic (x,200-STATUSLINES+y,picnum);
 }
 
 

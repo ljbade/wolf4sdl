@@ -1,8 +1,6 @@
 // ID_CA.H
 //===========================================================================
 
-#pragma pack(1)
-
 #define NUMMAPS         60
 #define MAPPLANES       2
 
@@ -54,9 +52,9 @@ extern long      *audiostarts;  // array of offsets in audio / audiot
 
 //#define CA_FarRead(handle,dest,length) (read(handle,dest,length)==length)
 //#define CA_FarWrite(handle,source,length) (write(handle,source,length)==length)
-boolean CA_ReadFile (char *filename, memptr *ptr);
-boolean CA_LoadFile (char *filename, memptr *ptr);
-boolean CA_WriteFile (char *filename, void *ptr, long length);
+boolean CA_ReadFile (const char *filename, memptr *ptr);
+boolean CA_LoadFile (const char *filename, memptr *ptr);
+boolean CA_WriteFile (const char *filename, void *ptr, long length);
 
 long CA_RLEWCompress (word *source, long length, word *dest, word rlewtag);
 
@@ -73,4 +71,4 @@ void CA_CacheMap (int mapnum);
 
 void CA_CacheScreen (int chunk);
 
-void CA_CannotOpen(char *name);
+void CA_CannotOpen(const char *name);

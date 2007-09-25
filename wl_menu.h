@@ -1,9 +1,6 @@
 //
 // WL_MENU.H
 //
-
-#pragma pack(1)
-
 #ifdef SPEAR
 
 #define BORDCOLOR       0x99
@@ -45,14 +42,14 @@
 #define SENSITIVE       60
 #define CENTER          SENSITIVE*2
 
-#define MENU_X  60      // 76
+#define MENU_X  76
 #define MENU_Y  55
-#define MENU_W  210     // 178
+#define MENU_W  178
 #ifndef SPEAR
 #ifndef GOODTIMES
 #define MENU_H  13*10+6
 #else
-#define MENU_H  13*10+6  // 13*9+6
+#define MENU_H  13*9+6
 #endif
 #else
 #define MENU_H  13*9+6
@@ -118,7 +115,7 @@ extern CP_iteminfo MainItems;
 // FUNCTION PROTOTYPES
 //
 
-void    US_ControlPanel(ScanCode);
+void    US_ControlPanel(byte);
 
 void SetupControlPanel(void);
 void CleanupControlPanel(void);
@@ -136,8 +133,8 @@ void TicDelay(int count);
 void CacheLump(int lumpstart,int lumpend);
 void UnCacheLump(int lumpstart,int lumpend);
 int StartCPMusic(int song);
-int  Confirm(char *string);
-void Message(char *string);
+int  Confirm(const char *string);
+void Message(const char *string);
 void CheckPause(void);
 void ShootSnd(void);
 void CheckSecretMissions(void);
@@ -185,7 +182,6 @@ int CP_Sound(int);
 int  CP_LoadGame(int quick);
 int  CP_SaveGame(int quick);
 int CP_Control(int);
-int ToggleFullscreen(int);
 int CP_ChangeView(int);
 int CP_ExitOptions(int);
 int CP_Quit(int);
@@ -217,7 +213,6 @@ enum menuitems
         loadgame,
         savegame,
         changeview,
-        togglefullscreen,
 
 #ifndef GOODTIMES
 #ifndef SPEAR
@@ -240,6 +235,6 @@ typedef struct {
 
 extern LRstruct LevelRatios[];
 
-void Write (int x,int y,char *string);
+void Write (int x,int y,const char *string);
 void NonShareware(void);
 int GetYorN(int x,int y,int pic);

@@ -25,12 +25,11 @@ loaded into the data segment
 /*
 =============================================================================
 
-                            LOCAL CONSTANTS
+                             LOCAL CONSTANTS
 
 =============================================================================
 */
 
-#pragma pack(1)
 typedef struct
 {
     word bit0,bit1;       // 0-255 is a character, > is a pointer to a node
@@ -48,30 +47,30 @@ typedef struct
 /*
 =============================================================================
 
-                            GLOBAL VARIABLES
+                             GLOBAL VARIABLES
 
 =============================================================================
 */
 
-byte bufferseg[BUFFERSIZE];
+byte    bufferseg[BUFFERSIZE];
 
-int mapon;
+int     mapon;
 
-word *mapsegs[MAPPLANES];
+word    *mapsegs[MAPPLANES];
 maptype *mapheaderseg[NUMMAPS];
-byte *audiosegs[NUMSNDCHUNKS];
-byte *grsegs[NUMCHUNKS];
+byte    *audiosegs[NUMSNDCHUNKS];
+byte    *grsegs[NUMCHUNKS];
 
-byte grneeded[NUMCHUNKS];
+byte    grneeded[NUMCHUNKS];
 
-word RLEWtag;
+word    RLEWtag;
 
-char audioname[13]="AUDIO.";
+char    audioname[13]="AUDIO.";
 
 /*
 =============================================================================
 
-                            LOCAL VARIABLES
+                             LOCAL VARIABLES
 
 =============================================================================
 */
@@ -85,7 +84,7 @@ char extension[5],      // Need a string, not constant to change cache files
      aheadname[10]="AUDIOHED.",
      afilename[10]="AUDIOT.";
 
-void CA_CannotOpen(char *string);
+void CA_CannotOpen(const char *string);
 
 byte grstarts[(NUMCHUNKS+1)*3];
 long *audiostarts;   // array of offsets in audio / audiot
@@ -104,11 +103,11 @@ huffnode        audiohuffman[255];
 #endif
 */
 
-int grhandle;               // handle to EGAGRAPH
-int maphandle;              // handle to MAPTEMP / GAMEMAPS
-int audiohandle;    // handle to AUDIOT / AUDIO
+int    grhandle;               // handle to EGAGRAPH
+int    maphandle;              // handle to MAPTEMP / GAMEMAPS
+int    audiohandle;            // handle to AUDIOT / AUDIO
 
-long chunkcomplen,chunkexplen;
+long   chunkcomplen,chunkexplen;
 
 SDMode oldsoundmode;
 
@@ -140,7 +139,7 @@ long GRFILEPOS(int c)
 /*
 =============================================================================
 
-                                           LOW LEVEL ROUTINES
+                            LOW LEVEL ROUTINES
 
 =============================================================================
 */
@@ -173,22 +172,22 @@ void CAL_GetGrChunkLength (int chunk)
 ==========================
 */
 
-boolean CA_ReadFile (char *filename, memptr *ptr)
+boolean CA_ReadFile (const char *filename, memptr *ptr)
 {
-        int handle;
-        long size;
+    int handle;
+    long size;
 
-        if ((handle = open(filename,O_RDONLY | O_BINARY)) == -1)
-                return false;
+    if ((handle = open(filename,O_RDONLY | O_BINARY)) == -1)
+        return false;
 
-        size = filelength (handle);
-        if (!read (handle,*ptr,size))
-        {
-                close (handle);
-                return false;
-        }
+    size = filelength (handle);
+    if (!read (handle,*ptr,size))
+    {
         close (handle);
-        return true;
+        return false;
+    }
+    close (handle);
+    return true;
 }
 
 
@@ -202,22 +201,22 @@ boolean CA_ReadFile (char *filename, memptr *ptr)
 ==========================
 */
 
-boolean CA_WriteFile (char *filename, void *ptr, long length)
+boolean CA_WriteFile (const char *filename, void *ptr, long length)
 {
-        int handle;
+    int handle;
 
-        handle = open(filename,O_CREAT | O_BINARY | O_WRONLY);
+    handle = open(filename,O_CREAT | O_BINARY | O_WRONLY);
 
-        if (handle == -1)
-                return false;
+    if (handle == -1)
+        return false;
 
-        if (!write (handle,ptr,length))
-        {
-                close (handle);
-                return false;
-        }
+    if (!write (handle,ptr,length))
+    {
         close (handle);
-        return true;
+        return false;
+    }
+    close (handle);
+    return true;
 }
 
 
@@ -232,23 +231,23 @@ boolean CA_WriteFile (char *filename, void *ptr, long length)
 ==========================
 */
 
-boolean CA_LoadFile (char *filename, memptr *ptr)
+boolean CA_LoadFile (const char *filename, memptr *ptr)
 {
-        int handle;
-        long size;
+    int handle;
+    long size;
 
-        if ((handle = open(filename,O_RDONLY | O_BINARY)) == -1)
-                return false;
+    if ((handle = open(filename,O_RDONLY | O_BINARY)) == -1)
+        return false;
 
-        size = filelength (handle);
-        *ptr=malloc(size);
-        if (!read (handle,*ptr,size))
-        {
-                close (handle);
-                return false;
-        }
+    size = filelength (handle);
+    *ptr=malloc(size);
+    if (!read (handle,*ptr,size))
+    {
         close (handle);
-        return true;
+        return false;
+    }
+    close (handle);
+    return true;
 }
 
 /*
@@ -262,63 +261,62 @@ boolean CA_LoadFile (char *filename, memptr *ptr)
 void CAL_HuffExpand(byte *source, byte *dest, long length,
         huffnode *hufftable, boolean screenhack)
 {
-        byte *end;//,*srcend;
-        huffnode *headptr, *huffptr;
-        byte mapmask;
+    byte *end;//,*srcend;
+    huffnode *headptr, *huffptr;
+    byte mapmask;
 
-        if(!length || !dest)
-        {
-            Quit("length or dest is null!");
-            return;
-        }
+    if(!length || !dest)
+    {
+        Quit("length or dest is null!");
+        return;
+    }
 
-        headptr = hufftable+254;        // head node is allways node 254
+    headptr = hufftable+254;        // head node is allways node 254
 
-        int written = 0;
+    int written = 0;
 
 #ifdef NOTYET
-        if(screenhack)
-        {
-            mapmask=1;
-            VGAMAPMASK(1);
-            length>>=2;
-        }
+    if(screenhack)
+    {
+        mapmask=1;
+        VGAMAPMASK(1);
+        length>>=2;
+    }
 #endif
 
-        end=dest+length;
+    end=dest+length;
 
-        byte val = *source++;
-        byte mask = 1;
-        word nodeval;
-        huffptr = headptr;
-        while(1)
+    byte val = *source++;
+    byte mask = 1;
+    word nodeval;
+    huffptr = headptr;
+    while(1)
+    {
+        if(!(val & mask))
+            nodeval = huffptr->bit0;
+        else
+            nodeval = huffptr->bit1;
+        if(mask==0x80)
         {
-            if(!(val & mask))
-                nodeval = huffptr->bit0;
-            else
-                nodeval = huffptr->bit1;
-            if(mask==0x80)
-            {
-                val = *source++;
-                mask = 1;
-            }
-            else mask <<= 1;
-
-            if(nodeval<256)
-            {
-                *dest++ = (byte) nodeval;
-                written++;
-                huffptr = headptr;
-                if(dest>=end) break;
-            }
-            else
-            {
-                huffptr = hufftable + (nodeval - 256);
-            }
+            val = *source++;
+            mask = 1;
         }
+        else mask <<= 1;
+
+        if(nodeval<256)
+        {
+            *dest++ = (byte) nodeval;
+            written++;
+            huffptr = headptr;
+            if(dest>=end) break;
+        }
+        else
+        {
+            huffptr = hufftable + (nodeval - 256);
+        }
+    }
 
 #if 0
-
         //
         // ds:si source
         // es:di dest
@@ -332,12 +330,12 @@ void CAL_HuffExpand(byte *source, byte *dest, long length,
                 mov     esi,dword ptr [source]
                 mov     edi,dword ptr [dest]
                 mov     eax,dword ptr [end]
-                mov     ch,[esi]                        // load first byte
+                mov     ch,[esi]                                // load first byte
                 inc     esi
                 mov     cl,1
 
 expandshort:
-                test    ch,cl                           // bit set?
+                test    ch,cl                   // bit set?
                 jnz     bit1short
 
                 mov     dx,[ebx]                        // take bit0 path from node
@@ -346,12 +344,12 @@ expandshort:
                 jnc     sourceupshort
 
 bit1short:
-                mov     dx,[ebx+2]                      // take bit1 path
+                mov     dx,[ebx+2]              // take bit1 path
                 shl     cl,1                            // advance to next bit position
                 jnc     sourceupshort
 
 newbyteshort:
-                mov     ch,[esi]                        // load next byte
+                mov     ch,[esi]                                // load next byte
                 inc esi
 
                 mov     cl,1                            // back to first bit
@@ -360,26 +358,25 @@ sourceupshort:
                 or      dh,dh                           // if dx<256 its a byte, else move node
                 jz      storebyteshort
 
-                mov     ebx,dword ptr [hufftable]       // next node = hufftable+code-256
+                mov     ebx,dword ptr [hufftable]                       // next node = hufftable+code-256
                 lea     ebx,dword ptr [ebx+edx*4-1024]
                 jmp     expandshort
 
 storebyteshort:
                 mov     [edi],dl
-                inc     edi                             // write a decompressed byte out
+                inc     edi                                     // write a decompressed byte out
                 mov     ebx,dword ptr [headptr]         // back to the head node for next bit
 
                 cmp     edi,eax                         // done?
 
                 jb expandshort
 done:
-#ifdef NOTYET
                 test    [screenhack],1
-                jz      notscreen
+                jz              notscreen
                 shl     [mapmask],1
                 mov     ah,[mapmask]
                 cmp     ah,16
-                je      notscreen
+                je              notscreen
                 mov     dx,SC_INDEX
                 mov     al,SC_MAPMASK
                 out     dx,ax
@@ -388,7 +385,6 @@ done:
                 jmp     expandshort
 
 notscreen:
-#endif
         }
 #endif
 }
@@ -458,9 +454,7 @@ void CAL_CarmackExpand (word *source, word *dest, int length)
                 length -= count;
                 if(length<0) return;
                 while (count--)
-                {
                     *outptr++ = *copyptr++;
-                }
             }
         }
         else
@@ -519,6 +513,7 @@ long CA_RLEWCompress (word *source, long length, word *dest, word rlewtag)
             for (i=1;i<=count;i++)
                 *dest++ = value;
         }
+
     } while (source<end);
 
     complength = 2*(dest-start);
@@ -569,7 +564,7 @@ void CA_RLEWexpand (word *source, word *dest, long length, word rlewtag)
 /*
 =============================================================================
 
-                        CACHE MANAGER ROUTINES
+                                         CACHE MANAGER ROUTINES
 
 =============================================================================
 */
@@ -623,6 +618,7 @@ void CAL_SetupGrFile (void)
     read(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
     close(handle);
+
 
 #endif
 
@@ -705,7 +701,7 @@ void CAL_SetupMapFile (void)
     for (i=0;i<NUMMAPS;i++)
     {
         pos = tinf->headeroffsets[i];
-        if (pos<0)                                              // $FFFFFFFF start is a sparse map
+        if (pos<0)                          // $FFFFFFFF start is a sparse map
             continue;
 
         mapheaderseg[i]=(maptype *) malloc(sizeof(maptype));
@@ -848,7 +844,7 @@ void CA_CacheAudioChunk (int chunk)
     long    pos,compressed;
 
     if (audiosegs[chunk])
-        return;                                           // already in memory
+        return;                             // already in memory
 
 //
 // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
@@ -904,7 +900,7 @@ cachein:
     switch (SoundMode)
     {
         case sdm_Off:
-            start = STARTADLIBSOUNDS;       // needed for priorities.....
+            start = STARTADLIBSOUNDS;   // needed for priorities...
             break;
 //            return;
         case sdm_PC:
@@ -938,14 +934,14 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
 
     if (chunk >= STARTTILE8 && chunk < STARTEXTERNS)
     {
-    //
-    // expanded sizes of tile8/16/32 are implicit
-    //
+        //
+        // expanded sizes of tile8/16/32 are implicit
+        //
 
 #define BLOCK           64
 #define MASKBLOCK       128
 
-        if (chunk<STARTTILE8M)                  // tile 8s are all in one chunk!
+        if (chunk<STARTTILE8M)          // tile 8s are all in one chunk!
             expanded = BLOCK*NUMTILE8;
         else if (chunk<STARTTILE16)
             expanded = MASKBLOCK*NUMTILE8M;
@@ -960,17 +956,17 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
     }
     else
     {
-    //
-    // everything else has an explicit size longword
-    //
+        //
+        // everything else has an explicit size longword
+        //
         expanded = *(long *) source;
         source += 4;                    // skip over length
     }
 
-//
-// allocate final space, decompress it, and free bigbuffer
-// Sprites need to have shifts made and various other junk
-//
+    //
+    // allocate final space, decompress it, and free bigbuffer
+    // Sprites need to have shifts made and various other junk
+    //
     grsegs[chunk]=(byte *) malloc(expanded);
     if (!grsegs[chunk])
         return;
@@ -993,17 +989,17 @@ void CA_CacheGrChunk (int chunk)
     long pos,compressed;
     byte *bigbufferseg;
     byte *source;
-    int next;
+    int  next;
 
     if (grsegs[chunk])
-        return;                                                 // already in memory
+        return;                             // already in memory
 
 //
 // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
 // a larger buffer
 //
     pos = GRFILEPOS(chunk);
-    if (pos<0)                                                      // $FFFFFFFF start is a sparse tile
+    if (pos<0)                              // $FFFFFFFF start is a sparse tile
         return;
 
     next = chunk +1;
@@ -1048,10 +1044,10 @@ void CA_CacheGrChunk (int chunk)
 
 void CA_CacheScreen (int chunk)
 {
-    long pos,compressed,expanded;
-    memptr bigbufferseg;
-    byte *source;
-    int next;
+    long    pos,compressed,expanded;
+    memptr  bigbufferseg;
+    byte    *source;
+    int             next;
 
 //
 // load the chunk into a buffer
@@ -1076,16 +1072,14 @@ void CA_CacheScreen (int chunk)
 // Sprites need to have shifts made and various other junk
 //
     byte *pic = (byte *) malloc(64000);
-    CAL_HuffExpand (source, pic, expanded, grhuffman, false);    // VL_LockSurface(screen),,true
-    byte *vidbuf = VL_LockSurface(screen);
-    for(int y=0; y<200; y++)
-    {
-        for(int x=0; x<320; x++)
-        {
-            vidbuf[y*screenpitch+x] = pic[(y*80+(x>>2))+(x&3)*80*200];
-        }
-    }
-    VL_UnlockSurface(screen);
+    CAL_HuffExpand (source,pic,expanded,grhuffman,true);
+
+    byte *vbuf = LOCK();
+    for(int y = 0; y < 200; y++)
+        for(int x = 0; x < 320; x++)
+            vbuf[y * screenPitch + x] = pic[(y * 80 + (x >> 2)) + (x & 3) * 80 * 200];
+    UNLOCK();
+    free(pic);
     VW_MarkUpdateBlock (0,0,319,199);
     free(bigbufferseg);
 }
@@ -1167,7 +1161,7 @@ void CA_CacheMap (int mapnum)
 
 //===========================================================================
 
-void CA_CannotOpen(char *string)
+void CA_CannotOpen(const char *string)
 {
     char str[30];
 

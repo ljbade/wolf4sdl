@@ -8,8 +8,6 @@
 #ifndef	__ID_IN__
 #define	__ID_IN__
 
-#pragma pack(1)
-
 #ifdef	__DEBUG__
 #define	__DEBUG_InputMgr__
 #endif
@@ -55,6 +53,9 @@ typedef	int		ScanCode;
 #define	sc_F10			SDLK_F10
 #define	sc_F11			SDLK_F11
 #define	sc_F12			SDLK_F12
+
+#define sc_ScrollLock		SDLK_SCROLLLOCK
+#define sc_PrintScreen		SDLK_PRINT
 
 #define	sc_1			SDLK_1
 #define	sc_2			SDLK_2
@@ -111,20 +112,12 @@ typedef	int		ScanCode;
 #define	MouseInt	0x33
 //#define	Mouse(x)	_AX = x,geninterrupt(MouseInt)
 
-#ifdef NOTYET
 #define _AX regs.w.ax
 #define _BX regs.w.bx
 #define _CX regs.w.cx
 #define _DX regs.w.dx
 
 #define Mouse(x) _AX = x, int386(MouseInt,&regs,&regs);
-#else
-#define _AX 0
-#define _BX 0
-#define _CX 0
-#define _DX 0
-#define Mouse(x)
-#endif
 
 typedef	enum		{
 						demo_Off,demo_Record,demo_Playback,demo_PlayDone
@@ -170,12 +163,12 @@ typedef	struct		{
 									joyMultXH,joyMultYH;
 					} JoystickDef;
 // Global variables
-extern	Uint8	    Keyboard[SDLK_LAST];
+extern	volatile boolean		Keyboard[];
 extern  boolean     JoysPresent[];
 extern	boolean		MousePresent;
-extern	boolean		Paused;
-extern	char		LastASCII;
-extern	ScanCode	LastScan;
+extern	volatile boolean	Paused;
+extern	volatile char		LastASCII;
+extern	volatile ScanCode	LastScan;
 extern	KeyboardDef	KbdDefs;
 extern	JoystickDef	JoyDefs[];
 extern	ControlType	Controls[MaxPlayers];
@@ -209,7 +202,10 @@ extern	boolean		IN_UserInput(longword delay);
 extern	char		IN_WaitForASCII(void);
 extern	ScanCode	IN_WaitForKey(void);
 extern	word		IN_GetJoyButtonsDB(word joy);
-extern	char		*IN_GetScanName(ScanCode);
+extern	const char *IN_GetScanName(ScanCode);
+
+void IN_WaitAndProcessEvents();
+void IN_ProcessEvents();
 
 
 byte	IN_MouseButtons (void);

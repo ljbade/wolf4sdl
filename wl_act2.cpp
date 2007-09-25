@@ -2293,7 +2293,7 @@ void T_SchabbThrow (objtype *ob)
 
         deltax = player->x - ob->x;
         deltay = ob->y - player->y;
-        angle = atan2 (deltay,deltax);
+        angle = atan2 ((float) deltay, (float) deltax);
         if (angle<0)
                 angle = M_PI*2+angle;
         iangle = angle/(M_PI*2)*ANGLES;
@@ -2333,7 +2333,7 @@ void T_GiftThrow (objtype *ob)
 
         deltax = player->x - ob->x;
         deltay = ob->y - player->y;
-        angle = atan2 (deltay,deltax);
+        angle = atan2 ((float) deltay, (float) deltax);
         if (angle<0)
                 angle = M_PI*2+angle;
         iangle = angle/(M_PI*2)*ANGLES;
@@ -2935,7 +2935,7 @@ void T_FakeFire (objtype *ob)
 
         deltax = player->x - ob->x;
         deltay = ob->y - player->y;
-        angle = atan2 (deltay,deltax);
+        angle = atan2 ((float) deltay, (float) deltax);
         if (angle<0)
                 angle = M_PI*2+angle;
         iangle = angle/(M_PI*2)*ANGLES;
@@ -3452,78 +3452,79 @@ void T_Path (objtype *ob)
 
 void T_Shoot (objtype *ob)
 {
-    int     dx,dy,dist;
-    int     hitchance,damage;
+        int     dx,dy,dist;
+        int     hitchance,damage;
 
-    hitchance = 128;
+        hitchance = 128;
 
-    if (!areabyplayer[ob->areanumber])
-        return;
+        if (!areabyplayer[ob->areanumber])
+                return;
 
-    if (CheckLine (ob))                    // player is not behind a wall
-    {
+        if (!CheckLine (ob))                    // player is behind a wall
+          return;
+
         dx = abs(ob->tilex - player->tilex);
         dy = abs(ob->tiley - player->tiley);
         dist = dx>dy ? dx:dy;
 
         if (ob->obclass == ssobj || ob->obclass == bossobj)
-            dist = dist*2/3;                                        // ss are better shots
+                dist = dist*2/3;                                        // ss are better shots
 
         if (thrustspeed >= RUNSPEED)
         {
-            if (ob->flags&FL_VISABLE)
-                hitchance = 160-dist*16;                // player can see to dodge
-            else
-                hitchance = 160-dist*8;
+                if (ob->flags&FL_VISABLE)
+                        hitchance = 160-dist*16;                // player can see to dodge
+                else
+                        hitchance = 160-dist*8;
         }
         else
         {
-            if (ob->flags&FL_VISABLE)
-                hitchance = 256-dist*16;                // player can see to dodge
-            else
-                hitchance = 256-dist*8;
+                if (ob->flags&FL_VISABLE)
+                        hitchance = 256-dist*16;                // player can see to dodge
+                else
+                        hitchance = 256-dist*8;
         }
 
-    // see if the shot was a hit
+// see if the shot was a hit
 
         if (US_RndT()<hitchance)
         {
-            if (dist<2)
-                damage = US_RndT()>>2;
-            else if (dist<4)
-                damage = US_RndT()>>3;
-            else
-                damage = US_RndT()>>4;
+                if (dist<2)
+                        damage = US_RndT()>>2;
+                else if (dist<4)
+                        damage = US_RndT()>>3;
+                else
+                        damage = US_RndT()>>4;
 
-            TakeDamage (damage,ob);
+                TakeDamage (damage,ob);
         }
-    }
 
-    switch(ob->obclass)
-    {
-        case ssobj:
-            PlaySoundLocActor(SSFIRESND,ob);
-            break;
+        switch(ob->obclass)
+        {
+         case ssobj:
+           PlaySoundLocActor(SSFIRESND,ob);
+           break;
 #ifndef SPEAR
-        case giftobj:
-        case fatobj:
-            PlaySoundLocActor(MISSILEFIRESND,ob);
-            break;
-        case mechahitlerobj:
-        case realhitlerobj:
-        case bossobj:
-            PlaySoundLocActor(BOSSFIRESND,ob);
-            break;
-        case schabbobj:
-            PlaySoundLocActor(SCHABBSTHROWSND,ob);
-            break;
-        case fakeobj:
-            PlaySoundLocActor(FLAMETHROWERSND,ob);
-            break;
+         case giftobj:
+         case fatobj:
+           PlaySoundLocActor(MISSILEFIRESND,ob);
+           break;
+         case mechahitlerobj:
+         case realhitlerobj:
+         case bossobj:
+           PlaySoundLocActor(BOSSFIRESND,ob);
+           break;
+         case schabbobj:
+           PlaySoundLocActor(SCHABBSTHROWSND,ob);
+           break;
+         case fakeobj:
+           PlaySoundLocActor(FLAMETHROWERSND,ob);
+           break;
 #endif
-        default:
-            PlaySoundLocActor(NAZIFIRESND,ob);
-    }
+         default:
+           PlaySoundLocActor(NAZIFIRESND,ob);
+        }
+
 }
 
 
@@ -3626,12 +3627,12 @@ statetype s_deathcam = {false,0,0,NULL,NULL,NULL};
 
 void SpawnBJVictory (void)
 {
-    SpawnNewObj (player->tilex,player->tiley+1,&s_bjrun1);
-    newobj->x = player->x;
-    newobj->y = player->y;
-    newobj->obclass = bjobj;
-    newobj->dir = north;
-    newobj->temp1 = 6;                      // tiles to run forward
+        SpawnNewObj (player->tilex,player->tiley+1,&s_bjrun1);
+        newobj->x = player->x;
+        newobj->y = player->y;
+        newobj->obclass = bjobj;
+        newobj->dir = north;
+        newobj->temp1 = 6;                      // tiles to run forward
 }
 
 
@@ -3646,30 +3647,31 @@ void SpawnBJVictory (void)
 
 void T_BJRun (objtype *ob)
 {
-    long    move;
+        long    move;
 
-    move = BJRUNSPEED*tics;
+        move = BJRUNSPEED*tics;
 
-    while (move)
-    {
-        if (move < ob->distance)
+        while (move)
         {
-            MoveObj (ob,move);
-            break;
+                if (move < ob->distance)
+                {
+                        MoveObj (ob,move);
+                        break;
+                }
+
+
+                ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+                ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+                move -= ob->distance;
+
+                SelectPathDir (ob);
+
+                if ( !(--ob->temp1) )
+                {
+                        NewState (ob,&s_bjjump1);
+                        return;
+                }
         }
-
-        ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-        ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
-        move -= ob->distance;
-
-        SelectPathDir (ob);
-
-        if ( !(--ob->temp1) )
-        {
-            NewState (ob,&s_bjjump1);
-            return;
-        }
-    }
 }
 
 
@@ -3683,10 +3685,10 @@ void T_BJRun (objtype *ob)
 
 void T_BJJump (objtype *ob)
 {
-    long    move;
+        long    move;
 
-    move = BJJUMPSPEED*tics;
-    MoveObj (ob,move);
+        move = BJJUMPSPEED*tics;
+        MoveObj (ob,move);
 }
 
 
@@ -3700,7 +3702,7 @@ void T_BJJump (objtype *ob)
 
 void T_BJYell (objtype *ob)
 {
-    PlaySoundLocActor(YEAHSND,ob);  // JAB
+        PlaySoundLocActor(YEAHSND,ob);  // JAB
 }
 
 
@@ -3714,7 +3716,7 @@ void T_BJYell (objtype *ob)
 
 void T_BJDone (objtype *)
 {
-    playstate = ex_victorious;                              // exit castle tile
+        playstate = ex_victorious;                              // exit castle tile
 }
 
 
@@ -3732,27 +3734,27 @@ void T_BJDone (objtype *)
 
 boolean CheckPosition (objtype *ob)
 {
-    int     x,y,xl,yl,xh,yh;
-    objtype *check;
+        int     x,y,xl,yl,xh,yh;
+        objtype *check;
 
-    xl = (ob->x-PLAYERSIZE) >>TILESHIFT;
-    yl = (ob->y-PLAYERSIZE) >>TILESHIFT;
+        xl = (ob->x-PLAYERSIZE) >>TILESHIFT;
+        yl = (ob->y-PLAYERSIZE) >>TILESHIFT;
 
-    xh = (ob->x+PLAYERSIZE) >>TILESHIFT;
-    yh = (ob->y+PLAYERSIZE) >>TILESHIFT;
+        xh = (ob->x+PLAYERSIZE) >>TILESHIFT;
+        yh = (ob->y+PLAYERSIZE) >>TILESHIFT;
 
-    //
-    // check for solid walls
-    //
-    for (y=yl;y<=yh;y++)
-        for (x=xl;x<=xh;x++)
-        {
-            check = actorat[x][y];
-            if (check && check<objlist)
-                return false;
-        }
+        //
+        // check for solid walls
+        //
+        for (y=yl;y<=yh;y++)
+                for (x=xl;x<=xh;x++)
+                {
+                        check = actorat[x][y];
+                        if (check && check<objlist)
+                                return false;
+                }
 
-    return true;
+        return true;
 }
 
 
@@ -3764,125 +3766,123 @@ boolean CheckPosition (objtype *ob)
 ===============
 */
 
-void GlobalVGAClearScreen();
-
 void    A_StartDeathCam (objtype *ob)
 {
-    long    dx,dy;
-    float   fangle;
-    long    xmove,ymove;
-    long    dist;
-//    byte *temp;
+        long    dx,dy;
+        float   fangle;
+        long    xmove,ymove;
+        long    dist;
+        byte *temp;
 
-    FinishPaletteShifts ();
+        FinishPaletteShifts ();
 
-    VW_WaitVBL (100);
+        VW_WaitVBL (100);
 
-    if (gamestate.victoryflag)
-    {
-        playstate = ex_victorious;                              // exit castle tile
-        return;
-    }
+        if (gamestate.victoryflag)
+        {
+                playstate = ex_victorious;                              // exit castle tile
+                return;
+        }
 
-    gamestate.victoryflag = true;
-    InitFizzleFade();
-    VWBL_Bar (0,0,screenwidth,screenheight-STATUSLINES,bordercol);
-    VW_UpdateScreen();
+        gamestate.victoryflag = true;
+        VW_Bar (0,0,320,200-STATUSLINES,bordercol);
+        FizzleFade(screenBuffer, screen, 0, 0, 320, 200-STATUSLINES, 70, false);
 
-    FizzleFade(0,0,screenwidth,screenheight-STATUSLINES,70,false);
+        if (bordercol != VIEWCOLOR)
+        {
+                CA_CacheGrChunk (STARTFONT+1);
+                fontnumber = 1;
+                SETFONTCOLOR(15,bordercol);
+                PrintX = 68; PrintY = 45;
+                US_Print (STR_SEEAGAIN);
+                UNCACHEGRCHUNK(STARTFONT+1);
+        }
+        else
+        {
+                CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
+        #ifdef JAPAN
+        #ifndef JAPDEMO
+                CA_CacheScreen(C_LETSSEEPIC);
+        #endif
+        #else
+                Write(0,7,STR_SEEAGAIN);
+        #endif
+        }
 
-    if (bordercol != VIEWCOLOR)
-    {
-        CA_CacheGrChunk (STARTFONT+1);
-        fontnumber = 1;
-        SETFONTCOLOR(15,bordercol);
-        PrintX = (screenwidth-184)/2; PrintY = (screenheight-STATUSLINES-10)/2;
-        US_Print (STR_SEEAGAIN);
-        UNCACHEGRCHUNK(STARTFONT+1);
-    }
-    else
-    {
-        CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
-    #ifdef JAPAN
-    #ifndef JAPDEMO
-        CA_CacheScreen(C_LETSSEEPIC);
-    #endif
-    #else
-        Write((screenwidth-320)/16,(screenheight-STATUSLINES-10)/16,STR_SEEAGAIN);
-    #endif
-    }
+        VW_UpdateScreen ();
 
-    VW_UpdateScreen ();
-
-    IN_UserInput(300);
+        IN_UserInput(300);
 
 //
 // line angle up exactly
 //
-    NewState (player,&s_deathcam);
+        NewState (player,&s_deathcam);
 
-    player->x = gamestate.killx;
-    player->y = gamestate.killy;
+        player->x = gamestate.killx;
+        player->y = gamestate.killy;
 
-    dx = ob->x - player->x;
-    dy = player->y - ob->y;
+        dx = ob->x - player->x;
+        dy = player->y - ob->y;
 
-    fangle = atan2(dy,dx);                  // returns -pi to pi
-    if (fangle<0)
-        fangle = M_PI*2+fangle;
+        fangle = atan2((float) dy, (float) dx);                  // returns -pi to pi
+        if (fangle<0)
+                fangle = M_PI*2+fangle;
 
-    player->angle = fangle/(M_PI*2)*ANGLES;
+        player->angle = fangle/(M_PI*2)*ANGLES;
 
 //
 // try to position as close as possible without being in a wall
 //
-    dist = 0x14000l;
-    do
-    {
-        xmove = FixedMul(dist,costable[player->angle]);
-        ymove = -FixedMul(dist,sintable[player->angle]);
+        dist = 0x14000l;
+        do
+        {
+                xmove = FixedMul(dist,costable[player->angle]);
+                ymove = -FixedMul(dist,sintable[player->angle]);
 
-        player->x = ob->x - xmove;
-        player->y = ob->y - ymove;
-        dist += 0x1000;
-    } while (!CheckPosition (player));
-    plux = (word)(player->x >> UNSIGNEDSHIFT);                      // scale to fit in unsigned
-    pluy = (word)(player->y >> UNSIGNEDSHIFT);
-    player->tilex = (word)(player->x >> TILESHIFT);         // scale to tile values
-    player->tiley = (word)(player->y >> TILESHIFT);
+                player->x = ob->x - xmove;
+                player->y = ob->y - ymove;
+                dist += 0x1000;
+
+        } while (!CheckPosition (player));
+        plux = (word)(player->x >> UNSIGNEDSHIFT);                      // scale to fit in unsigned
+        pluy = (word)(player->y >> UNSIGNEDSHIFT);
+        player->tilex = (word)(player->x >> TILESHIFT);         // scale to tile values
+        player->tiley = (word)(player->y >> TILESHIFT);
 
 //
 // go back to the game
 //
 
-//    temp = vbuf;
-//    for (int i=0;i<3;i++)
-//    {
-//        vbuf = (byte *)(0xa0000+screenloc[i]);
+        /*temp = vbuf;          TODO
+        for (int i=0;i<3;i++)
+        {
+                vbuf = (byte *)(0xa0000+screenloc[i]);
+                DrawPlayBorder ();
+        }
+        vbuf = temp;*/
+
         DrawPlayBorder ();
-//    }
-//    vbuf = temp;
-    GlobalVGAClearScreen();
 
-    InitFizzleFade();
+        fizzlein = true;
 
-    switch (ob->obclass)
-    {
+        switch (ob->obclass)
+        {
 #ifndef SPEAR
         case schabbobj:
-            NewState (ob,&s_schabbdeathcam);
-            break;
+                NewState (ob,&s_schabbdeathcam);
+                break;
         case realhitlerobj:
-            NewState (ob,&s_hitlerdeathcam);
-            break;
+                NewState (ob,&s_hitlerdeathcam);
+                break;
         case giftobj:
-            NewState (ob,&s_giftdeathcam);
-            break;
+                NewState (ob,&s_giftdeathcam);
+                break;
         case fatobj:
-            NewState (ob,&s_fatdeathcam);
-            break;
+                NewState (ob,&s_fatdeathcam);
+                break;
 #endif
-    }
+        }
+
 }
 
 #endif

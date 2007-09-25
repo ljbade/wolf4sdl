@@ -1,4 +1,4 @@
-#include <SDL/SDL.h>
+#include <SDL.h>
 //#define SODPAL
 
 SDL_Color gamepal[256]={
