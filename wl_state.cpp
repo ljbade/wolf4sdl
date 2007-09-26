@@ -151,35 +151,35 @@ void NewState (objtype *ob, statetype *state)
 ==================================
 */
 
-#define CHECKDIAG(x,y)                                                          \
+#define CHECKDIAG(x,y)                              \
 {                                                   \
-        temp=(unsigned)actorat[x][y];                   \
-        if (temp)                                       \
-        {                                               \
-                if (temp<256)                               \
-                        return false;                           \
-                if (((objtype *)temp)->flags&FL_SHOOTABLE)  \
-                        return false;                           \
-        }                                               \
+    temp=(unsigned)(uintptr_t)actorat[x][y];        \
+    if (temp)                                       \
+    {                                               \
+        if (temp<256)                               \
+            return false;                           \
+        if (((objtype *)temp)->flags&FL_SHOOTABLE)  \
+            return false;                           \
+    }                                               \
 }
 
-#define CHECKSIDE(x,y)                                                          \
-{                                                   \
-        temp=(unsigned)actorat[x][y];                   \
-        if (temp)                                       \
+#define CHECKSIDE(x,y)                                  \
+{                                                       \
+    temp=(unsigned)(uintptr_t)actorat[x][y];            \
+    if (temp)                                           \
+    {                                                   \
+        if (temp<128)                                   \
+            return false;                               \
+        if (temp<256)                                   \
         {                                               \
-                if (temp<128)                               \
-                        return false;                           \
-                if (temp<256)                               \
-                {                                       \
-                        doornum = temp&127;              \
-                        OpenDoor (doornum);             \
-                        ob->distance = -doornum-1;      \
-                        return true;                    \
-                }                                       \
-                else if (((objtype *)temp)->flags&FL_SHOOTABLE)\
-                        return false;                           \
+            doornum = temp&127;                         \
+            OpenDoor (doornum);                         \
+            ob->distance = -doornum-1;                  \
+            return true;                                \
         }                                               \
+        else if (((objtype *)temp)->flags&FL_SHOOTABLE) \
+            return false;                               \
+    }                                                   \
 }
 
 

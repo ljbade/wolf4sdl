@@ -372,10 +372,10 @@ boolean SaveTheGame(FILE *file,int x,int y)
         {
             word actnum;
             objtype *objptr=actorat[i][j];
-            if((long)objptr&0xffff0000)
+            if((uintptr_t)objptr&~0xffff)
                 actnum=0x8000 | (word)(objptr-objlist);
             else
-                actnum=(word)objptr;
+                actnum=(word)(uintptr_t)objptr;
             fwrite(&actnum,sizeof(actnum),1,file);
             checksum = DoChecksum((byte *)&actnum,sizeof(actnum),checksum);
         }

@@ -245,7 +245,7 @@ void BasicOverhead (void)
 
                 for(x=0;x<MAPSIZE;x++)
                         for(y=0;y<MAPSIZE;y++)
-                                VWB_Bar(x*z+offx, y*z+offy,z,z,(unsigned)actorat[x][y]);
+                                VWB_Bar(x*z+offx, y*z+offy,z,z,(unsigned)(uintptr_t)actorat[x][y]);
 
                 // left side (filtered)
 
@@ -255,7 +255,7 @@ void BasicOverhead (void)
                 for(x=0;x<MAPSIZE;x++)
                         for(y=0;y<MAPSIZE;y++)
                         {
-                                tile = (unsigned)actorat[x][y];
+                                tile = (unsigned)(uintptr_t)actorat[x][y];
                                 if (tile > 255 && ((objtype *)tile)->flags&FL_SHOOTABLE) color = 72;  // enemy
                                 else if (!tile || tile > 255)
                                 {
@@ -582,11 +582,11 @@ int DebugKeys (void)
                 US_Print (" X:");    US_PrintUnsigned (player->tilex);
                 US_Print (" Y:");    US_PrintUnsigned (player->tiley);
                 US_Print ("\n1:");   US_PrintUnsigned (tilemap[player->tilex][player->tiley]);
-                sprintf(str," 2:%.8X",(unsigned)actorat[player->tilex][player->tiley]); US_Print(str);
+                sprintf(str," 2:%.8X",(unsigned)(uintptr_t)actorat[player->tilex][player->tiley]); US_Print(str);
                 US_Print ("\nf 1:"); US_PrintUnsigned (player->areanumber);
                 US_Print (" 2:");    US_PrintUnsigned (MAPSPOT(player->tilex,player->tiley,1));
                 US_Print (" 3:");
-                if ((unsigned)actorat[player->tilex][player->tiley] < 256)
+                if ((unsigned)(uintptr_t)actorat[player->tilex][player->tiley] < 256)
                         US_PrintUnsigned (spotvis[player->tilex][player->tiley]);
                 else
                         US_PrintUnsigned (actorat[player->tilex][player->tiley]->flags);

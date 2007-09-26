@@ -736,7 +736,7 @@ void SetupGameLevel (void)
             if (tile == AMBUSHTILE)
             {
                 tilemap[x][y] = 0;
-                if ( (unsigned)actorat[x][y] == AMBUSHTILE)
+                if ( (unsigned)(uintptr_t)actorat[x][y] == AMBUSHTILE)
                     actorat[x][y] = NULL;
 
                 if (*map >= AREATILE)

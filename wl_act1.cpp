@@ -631,7 +631,7 @@ void DoorClosing (int door)
         tilex = doorobjlist[door].tilex;
         tiley = doorobjlist[door].tiley;
 
-        if ( ((unsigned)actorat[tilex][tiley] != (door | 0x80))
+        if ( ((unsigned)(uintptr_t)actorat[tilex][tiley] != (door | 0x80))
         || (player->tilex == tilex && player->tiley == tiley) )
         {                       // something got inside the door
                 OpenDoor (door);
