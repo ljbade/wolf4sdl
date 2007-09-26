@@ -85,9 +85,9 @@ extern	HighScore	Scores[];
 
 #define	US_HomeWindow()	{PrintX = WindowX; PrintY = WindowY;}
 
-extern	void	US_Startup(void),
-				US_Setup(void),
-				US_Shutdown(void);
+void US_Startup(int argc, char* argv[]);
+void US_Setup(void);
+void US_Shutdown(void);
 void			US_InitRndT(boolean randomize);
 void			US_SetLoadSaveHooks(boolean (*load)(int),
 									boolean (*save)(int),

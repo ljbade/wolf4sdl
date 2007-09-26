@@ -878,6 +878,9 @@ void FinishSignon (void)
 =================
 */
 
+static int    __argc; // XXX TODO0000
+static char** __argv; // XXX TODO0000
+
 boolean MS_CheckParm (const char *check)
 {
     int             i;
@@ -1198,7 +1201,7 @@ void DoJukebox(void)
 ==========================
 */
 
-void InitGame (void)
+static void InitGame(int argc, char* argv[])
 {
 #ifndef SPEARDEMO
     boolean didjukebox=false;
@@ -1234,7 +1237,7 @@ void InitGame (void)
     PM_Startup ();
     SD_Startup ();
     CA_Startup ();
-    US_Startup ();
+    US_Startup(argc, argv);
 
     // TODO: Will any memory checking be needed someday??
 #ifdef NOTYET
@@ -1466,7 +1469,7 @@ void Quit (const char *errorStr, ...)
 
 static  const char *ParmStrings[] = {"baby","easy","normal","hard",""};
 
-void DemoLoop ()
+static void DemoLoop(int argc, char* argv[])
 {
     static int LastDemo;
     int i,level;
@@ -1479,9 +1482,10 @@ void DemoLoop ()
         NoWait = true;
         NewGame(1,0);
 
-        for (i = 1;i < __argc;i++)
+        for (i = 1; i < argc; i++)
         {
-            if ( (level = US_CheckParm(__argv[i],ParmStrings)) != -1)
+            level = US_CheckParm(argv[i], ParmStrings);
+            if (level != -1)
             {
                 gamestate.difficulty=level;
                 break;
@@ -1641,6 +1645,9 @@ extern SDL_Thread *eventThread;*/
 
 int main (int argc, char *argv[])
 {
+    __argc = argc; // XXX TODO0000
+    __argv = argv; // XXX TODO0000
+
 #if defined _WIN32
     _fmode=O_BINARY;                // DON'T create save games in text mode!!
 #endif
@@ -1659,9 +1666,9 @@ int main (int argc, char *argv[])
 
     CheckForEpisodes();
 
-    InitGame ();
+    InitGame(argc, argv);
 
-    DemoLoop();
+    DemoLoop(argc, argv);
 
 /*    eventThread = SDL_CreateThread(DemoLoop, NULL);
     if(eventThread == NULL)

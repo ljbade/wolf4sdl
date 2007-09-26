@@ -96,8 +96,7 @@ static byte rndtable[] = {
 //	US_Startup() - Starts the User Mgr
 //
 ///////////////////////////////////////////////////////////////////////////
-void
-US_Startup(void)
+void US_Startup(int argc, char* argv[])
 {
 	int	i,n;
 
@@ -107,14 +106,14 @@ US_Startup(void)
 	US_InitRndT(true);		// Initialize the random number generator
 
 	// Check for TED launching here
-	for (i = 1;i < __argc;i++)
+	for (i = 1; i < argc; i++)
 	{
-		n = US_CheckParm(__argv[i],ParmStrings);
+		n = US_CheckParm(argv[i], ParmStrings);
 		switch(n)
 		{
 #ifdef DEBUGKEYS
 		 case 0:
-		   tedlevelnum = atoi(__argv[i+1]);
+		   tedlevelnum = atoi(argv[i + 1]);
 		   if (tedlevelnum >= 0)
 		     tedlevel = true;
 		   break;
