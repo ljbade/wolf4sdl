@@ -631,7 +631,7 @@ void CenterWindow (word w, word h)
 
 void CheckKeys (void)
 {
-    byte scan;
+    ScanCode scan;
 
 
     if (screenfaded || demoplayback)    // don't do anything with a faded screen
