@@ -92,13 +92,12 @@ char    configname[13]="CONFIG.";
 
 void ReadConfig(void)
 {
-    int             file;
     SDMode  sd;
     SMMode  sm;
     SDSMode sds;
 
-
-    if ( (file = open(configname,O_BINARY | O_RDONLY)) != -1)
+    const int file = open(configname, O_RDONLY);
+    if (file != -1)
     {
         //
         // valid config file
@@ -217,10 +216,7 @@ noconfig:
 
 void WriteConfig(void)
 {
-    int file;
-
-    file = open(configname,O_CREAT | O_BINARY | O_WRONLY);
-
+    const int file = open(configname, O_CREAT | O_WRONLY);
     if (file != -1)
     {
         word tmp=0xfefc;
@@ -1643,7 +1639,9 @@ int main (int argc, char *argv[])
 {
     printf("Hallo!");
     fprintf(stderr, "Holla!");
+#if defined _WIN32
     _fmode=O_BINARY;                // DON'T create save games in text mode!!
+#endif
 
 #ifdef BETA
     //

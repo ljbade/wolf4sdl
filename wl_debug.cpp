@@ -167,14 +167,14 @@ void PictureGrabber (void)
         fname[7]=i%10+'0';
         fname[6]=(i/10)%10+'0';
         fname[5]=i/100+'0';
-        file=open(fname,O_BINARY | O_RDONLY);
+        file = open(fname, O_RDONLY);
         if(file==-1) break;
         close(file);
     }
 
     // overwrites WSHOT999.BMP if all wshot files exist
 
-    file=open(fname,O_CREAT| O_BINARY | O_WRONLY);
+    file=open(fname, O_CREAT | O_WRONLY);
     if(file==-1)
     {
         CenterWindow(22,3);

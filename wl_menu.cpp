@@ -3314,8 +3314,8 @@ SetupControlPanel (void)
                 char temp[32];
 
                 SaveGamesAvail[which] = 1;
-//                              handle=open(f.ff_name,O_BINARY);
-                handle = open (f.name, O_BINARY);
+//                              handle=open(f.ff_name, O_RDONLY;
+                handle = open (f.name,  O_RDONLY);
                 read (handle, temp, 32);
                 close (handle);
                 strcpy (&SaveGameNames[which][0], temp);
