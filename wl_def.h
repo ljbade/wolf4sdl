@@ -1386,40 +1386,9 @@ extern  void    HelpScreens(void);
 extern  void    EndText(void);
 
 
-#if 0
-fixed FixedMul(fixed a, fixed b);
-#pragma aux FixedMul = \
-        "imul ebx" \
-        "add  eax, 8000h" \
-        "adc  edx,0h" \
-        "shrd eax,edx,16" \
-        parm [eax] [ebx] \
-        value [eax] \
-        modify exact [eax edx]
-#endif
-
-inline fixed FixedMul(fixed a, fixed b)
+static inline fixed FixedMul(fixed a, fixed b)
 {
-/*    fixed res;
-    __asm__( "imull %2\n\t"
-             "addl $0x8000, %%eax\n\t"
-             "adcl $0, %%edx\n\t"
-             "shrd $16, %%edx, %%eax"
-             : "=a" (res)
-             : "a" (a), "r" (b)
-             : "%edx");
-    return res;*/
-	fixed res;
-	_asm
-	{
-		mov eax, dword ptr a
-		imul dword ptr b
-		add eax, 0x00008000
-		adc edx, 0
-		shrd eax, edx, 16
-		mov dword ptr res, eax
-	}
-	return res;
+	return (long long)a * b + 0x8000 >> 16;
 }
 
 #if 0
