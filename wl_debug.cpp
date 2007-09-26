@@ -150,7 +150,8 @@ void CountObjects (void)
 // TODO: Suport other screensizes
 void PictureGrabber (void)
 {
-    char *fname="WSHOT000.BMP";
+    static char fname[] = "WSHOT000.BMP";
+
     int file;
     byte buffer[320];
     byte *wolfpal=(byte *)(gamepal);

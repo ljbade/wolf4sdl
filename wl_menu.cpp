@@ -346,7 +346,7 @@ static byte *ExtScanNames[] =   // Names corresponding to ExtScanCodes
                                         };*/
 
 #else
-static char *ScanNames[SDLK_LAST] =
+static const char* const ScanNames[SDLK_LAST] =
     {
         "?","?","?","?","?","?","?","?",                                //   0
         "BkSp","Tab","?","?","?","Return","?","?",                      //   8

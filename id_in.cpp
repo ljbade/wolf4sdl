@@ -130,7 +130,7 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
     dir_SouthWest,	dir_South,	dir_SouthEast
 };
 
-static	char *ParmStrings[] = {"nojoys","nomouse",0};
+static const char* const ParmStrings[] = { "nojoys", "nomouse", 0 };
 
 boolean NumLockPanic=false;
 
