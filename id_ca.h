@@ -52,7 +52,6 @@ extern long      *audiostarts;  // array of offsets in audio / audiot
 
 //#define CA_FarRead(handle,dest,length) (read(handle,dest,length)==length)
 //#define CA_FarWrite(handle,source,length) (write(handle,source,length)==length)
-boolean CA_ReadFile (const char *filename, memptr *ptr);
 boolean CA_LoadFile (const char *filename, memptr *ptr);
 boolean CA_WriteFile (const char *filename, void *ptr, long length);
 

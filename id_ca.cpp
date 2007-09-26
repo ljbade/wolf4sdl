@@ -162,34 +162,6 @@ void CAL_GetGrChunkLength (int chunk)
     chunkcomplen = GRFILEPOS(chunk+1)-GRFILEPOS(chunk)-4;
 }
 
-/*
-==========================
-=
-= CA_ReadFile
-=
-= Reads a file into an allready allocated buffer
-=
-==========================
-*/
-
-boolean CA_ReadFile (const char *filename, memptr *ptr)
-{
-    int handle;
-    long size;
-
-    if ((handle = open(filename,O_RDONLY | O_BINARY)) == -1)
-        return false;
-
-    size = filelength (handle);
-    if (!read (handle,*ptr,size))
-    {
-        close (handle);
-        return false;
-    }
-    close (handle);
-    return true;
-}
-
 
 /*
 ==========================
