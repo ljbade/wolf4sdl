@@ -211,7 +211,8 @@ boolean CA_LoadFile (const char *filename, memptr *ptr)
     if ((handle = open(filename,O_RDONLY | O_BINARY)) == -1)
         return false;
 
-    size = filelength (handle);
+    size = lseek(handle, 0, SEEK_END);
+    lseek(handle, 0, SEEK_SET);
     *ptr=malloc(size);
     if (!read (handle,*ptr,size))
     {
