@@ -1087,8 +1087,6 @@ boolean IN_CheckAck (void)
 
 void IN_Ack (void)
 {
-	if(!IN_Started) { getch(); return; }
-
 	IN_StartAck ();
 
     do
