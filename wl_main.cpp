@@ -1641,8 +1641,6 @@ extern SDL_Thread *eventThread;*/
 
 int main (int argc, char *argv[])
 {
-    printf("Hallo!");
-    fprintf(stderr, "Holla!");
 #if defined _WIN32
     _fmode=O_BINARY;                // DON'T create save games in text mode!!
 #endif
