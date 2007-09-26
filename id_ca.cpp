@@ -704,8 +704,6 @@ void CAL_SetupMapFile (void)
 
 void CAL_SetupAudioFile (void)
 {
-    int handle;
-    long length;
     char fname[13];
 
 //
@@ -714,13 +712,10 @@ void CAL_SetupAudioFile (void)
     strcpy(fname,aheadname);
     strcat(fname,extension);
 
-    if ((handle = open(fname, O_RDONLY | O_BINARY)) == -1)
-        CA_CannotOpen(fname);
-
-    length = filelength(handle);
-    audiostarts=(long *) malloc(length);
-    read(handle, audiostarts, length);
-    close(handle);
+    void* ptr;
+    if (!CA_LoadFile(fname, &ptr))
+    		CA_CannotOpen(fname);
+    audiostarts = (long*)ptr;
 
 //
 // open the data file
