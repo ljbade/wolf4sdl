@@ -36,7 +36,7 @@
 
 #pragma pack(1)
 
-#include "FOREIGN.H"
+#include "foreign.h"
 
 #ifndef SPEAR
     #include "audiowl6.h"
@@ -78,10 +78,10 @@ typedef struct
 #include "id_us.h"
 #include "id_ca.h"
 
-#include "WL_MENU.H"
+#include "wl_menu.h"
 
 #ifdef SPEAR
-#include "F_SPEAR.H"
+#include "f_spear.h"
 #endif
 
 #define outportb outp

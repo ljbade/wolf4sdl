@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "WL_DEF.H"
+#include "wl_def.h"
 #pragma hdrstop
 
 /*

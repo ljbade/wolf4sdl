@@ -1,7 +1,7 @@
 // WL_GAME.C
 
 #include <math.h>
-#include "WL_DEF.H"
+#include "wl_def.h"
 #include <SDL_mixer.h>
 #pragma hdrstop
 

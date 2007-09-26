@@ -1,6 +1,6 @@
 // WL_MAIN.C
 
-#include "WL_DEF.H"
+#include "wl_def.h"
 #pragma hdrstop
 #include <SDL_syswm.h>
 

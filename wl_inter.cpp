@@ -1,6 +1,6 @@
 // WL_INTER.C
 
-#include "WL_DEF.H"
+#include "wl_def.h"
 #pragma hdrstop
 
 LRstruct LevelRatios[LRpack];
