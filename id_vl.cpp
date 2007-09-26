@@ -1,9 +1,6 @@
 // ID_VL.C
 
-#include <dos.h>
-//#include <mem.h>
 #include <string.h>
-#include <conio.h>
 #include "wl_def.h"
 #pragma hdrstop
 

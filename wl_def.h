@@ -23,10 +23,7 @@
 #define DEMOSEXTERN
 #define CARMACIZED
 
-#include <conio.h>
-#include <io.h>
 #include <fcntl.h>
-#include <dos.h>
 #include <math.h>
 #include <ctype.h>
 #include <stdio.h>

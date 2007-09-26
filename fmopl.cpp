@@ -76,7 +76,6 @@ Revision History:
 		verify volume of the FM part on the Y8950
 */
 
-#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
