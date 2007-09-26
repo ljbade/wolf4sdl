@@ -1,5 +1,7 @@
 // WL_DEBUG.C
 
+#include <unistd.h>
+
 #include "wl_def.h"
 #pragma hdrstop
 
