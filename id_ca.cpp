@@ -65,7 +65,7 @@ byte    grneeded[NUMCHUNKS];
 
 word    RLEWtag;
 
-char    audioname[13]="AUDIO.";
+char audioname[13] = "audio.";
 
 /*
 =============================================================================
@@ -75,14 +75,14 @@ char    audioname[13]="AUDIO.";
 =============================================================================
 */
 
-char extension[5],      // Need a string, not constant to change cache files
-     gheadname[10]="VGAHEAD.",
-     gfilename[10]="VGAGRAPH.",
-     gdictname[10]="VGADICT.",
-     mheadname[10]="MAPHEAD.",
-     mfilename[10]="MAPTEMP.",
-     aheadname[10]="AUDIOHED.",
-     afilename[10]="AUDIOT.";
+char extension[5]; // Need a string, not constant to change cache files
+static const char gheadname[] = "vgahead.";
+static const char gfilename[] = "vgagraph.";
+static const char gdictname[] = "vgadict.";
+static const char mheadname[] = "maphead.";
+static const char mfilename[] = "maptemp.";
+static const char aheadname[] = "audiohed.";
+static const char afilename[] = "audiot.";
 
 void CA_CannotOpen(const char *string);
 
@@ -655,7 +655,7 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef CARMACIZED
-    strcpy(fname,"GAMEMAPS.");
+    strcpy(fname, "gamemaps.");
     strcat(fname,extension);
 
     if ((maphandle = open(fname, O_RDONLY | O_BINARY)) == -1)

@@ -20,7 +20,7 @@ word wallspot[SCRWIDTH+1];*/
 
 void PM_Startup()
 {
-        char    fname[13]={"VSWAP."};
+        char fname[13] = "vswap.";
         strcat(fname,extension);
 
         FILE *file=fopen(fname,"rb");
