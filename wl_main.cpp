@@ -1223,6 +1223,7 @@ static void InitGame(int argc, char* argv[])
     struct SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
 
+#if defined _WIN32
     if(SDL_GetWMInfo(&wmInfo) != -1)
     {
         HWND hwndSDL = wmInfo.window;
@@ -1232,6 +1233,7 @@ static void InitGame(int argc, char* argv[])
         ShowWindow(hwndSDL, SW_SHOW);
     }
     else exit(1);
+#endif
 
     IN_Startup ();
     PM_Startup ();
