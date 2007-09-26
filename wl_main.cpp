@@ -894,7 +894,7 @@ boolean MS_CheckParm (const char *check)
             if (!*parm++)
                 break;                  // hit end of string without an alphanum
 
-        if ( !stricmp(check,parm) )
+        if (!strcasecmp(check, parm))
             return true;
     }
 
