@@ -637,17 +637,12 @@ static void processEvent(SDL_Event *event)
                 Keyboard[LastScan] = 1;
             if(LastScan == SDLK_PAUSE)
                 Paused = true;
-            fprintf(stderr, "SDL_KEYDOWN: %i\n", sym);
-
             break;
 		}
 
         case SDL_KEYUP:
             if(event->key.keysym.sym<SDLK_LAST)
                 Keyboard[event->key.keysym.sym] = 0;
-            fprintf(stderr, "SDL_KEYUP: %i\n", event->key.keysym.sym);
-            if(event->key.keysym.sym == 273)
-                fprintf(stderr, "BREAKPOINT!");
             break;
     }
 }
