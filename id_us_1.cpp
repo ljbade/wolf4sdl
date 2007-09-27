@@ -259,7 +259,7 @@ US_PrintUnsigned(longword n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintSigned(long n)
+US_PrintSigned(int32_t n)
 {
 	char	buffer[32];
 

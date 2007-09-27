@@ -230,7 +230,7 @@ enum menuitems
 //
 typedef struct {
                 int kill,secret,treasure;
-                long time;
+                int32_t time;
                 } LRstruct;
 
 extern LRstruct LevelRatios[];

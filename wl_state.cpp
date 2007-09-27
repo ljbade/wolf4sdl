@@ -43,7 +43,7 @@ void    SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state);
 void    NewState (objtype *ob, statetype *state);
 
 boolean TryWalk (objtype *ob);
-void    MoveObj (objtype *ob, long move);
+void    MoveObj (objtype *ob, int32_t move);
 
 void    KillActor (objtype *ob);
 void    DamageActor (objtype *ob, unsigned damage);
@@ -89,8 +89,8 @@ void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
 
         newobj->tilex = (short) tilex;
         newobj->tiley = (short) tiley;
-        newobj->x = ((long)tilex<<TILESHIFT)+TILEGLOBAL/2;
-        newobj->y = ((long)tiley<<TILESHIFT)+TILEGLOBAL/2;
+        newobj->x = ((int32_t)tilex<<TILESHIFT)+TILEGLOBAL/2;
+        newobj->y = ((int32_t)tiley<<TILESHIFT)+TILEGLOBAL/2;
         newobj->dir = nodir;
 
         actorat[tilex][tiley] = newobj;
@@ -650,9 +650,9 @@ void SelectRunDir (objtype *ob)
 =================
 */
 
-void MoveObj (objtype *ob, long move)
+void MoveObj (objtype *ob, int32_t move)
 {
-        long    deltax,deltay;
+        int32_t    deltax,deltay;
 
         switch (ob->dir)
         {
@@ -1041,7 +1041,7 @@ boolean CheckLine (objtype *ob)
         int     x,y;
         int     xdist,ydist,xstep,ystep;
         int     partial,delta;
-        long    ltemp;
+        int32_t    ltemp;
         int     xfrac,yfrac,deltafrac;
         unsigned value,intercept;
 
@@ -1073,14 +1073,14 @@ boolean CheckLine (objtype *ob)
 
                 deltafrac = abs(x2-x1);
                 delta = y2-y1;
-                ltemp = ((long)delta<<8)/deltafrac;
+                ltemp = ((int32_t)delta<<8)/deltafrac;
                 if (ltemp > 0x7fffl)
                         ystep = 0x7fff;
                 else if (ltemp < -0x7fffl)
                         ystep = -0x7fff;
                 else
                         ystep = ltemp;
-                yfrac = y1 + (((long)ystep*partial) >>8);
+                yfrac = y1 + (((int32_t)ystep*partial) >>8);
 
                 x = xt1+xstep;
                 xt2 += xstep;
@@ -1127,14 +1127,14 @@ boolean CheckLine (objtype *ob)
 
                 deltafrac = abs(y2-y1);
                 delta = x2-x1;
-                ltemp = ((long)delta<<8)/deltafrac;
+                ltemp = ((int32_t)delta<<8)/deltafrac;
                 if (ltemp > 0x7fffl)
                         xstep = 0x7fff;
                 else if (ltemp < -0x7fffl)
                         xstep = -0x7fff;
                 else
                         xstep = ltemp;
-                xfrac = x1 + (((long)xstep*partial) >>8);
+                xfrac = x1 + (((int32_t)xstep*partial) >>8);
 
                 y = yt1 + ystep;
                 yt2 += ystep;
@@ -1186,7 +1186,7 @@ boolean CheckLine (objtype *ob)
 
 boolean CheckSight (objtype *ob)
 {
-        long            deltax,deltay;
+        int32_t            deltax,deltay;
 
 //
 // don't bother tracing a line if the area isn't connected to the player's

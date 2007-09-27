@@ -43,7 +43,7 @@ typedef struct
 typedef struct
 {
     word RLEWtag;
-    long headeroffsets[100];
+    int32_t headeroffsets[100];
     byte tileinfo[];
 } mapfiletype;
 
@@ -91,7 +91,7 @@ static const char afilename[] = "audiot.";
 void CA_CannotOpen(const char *string);
 
 byte grstarts[(NUMCHUNKS+1)*3];
-long *audiostarts;   // array of offsets in audio / audiot
+int32_t *audiostarts;   // array of offsets in audio / audiot
 
 #ifdef GRHEADERLINKED
 huffnode *grhuffman;
@@ -111,7 +111,7 @@ int    grhandle;               // handle to EGAGRAPH
 int    maphandle;              // handle to MAPTEMP / GAMEMAPS
 int    audiohandle;            // handle to AUDIOT / AUDIO
 
-long   chunkcomplen,chunkexplen;
+int32_t   chunkcomplen,chunkexplen;
 
 SDMode oldsoundmode;
 
@@ -119,14 +119,14 @@ SDMode oldsoundmode;
 #ifdef THREEBYTEGRSTARTS
 #define FILEPOSSIZE     3
 //#define       GRFILEPOS(c) (*(long far *)(((byte far *)grstarts)+(c)*3)&0xffffff)
-long GRFILEPOS(int c)
+int32_t GRFILEPOS(int c)
 {
-    long value;
+    int32_t value;
     int     offset;
 
     offset = c*3;
 
-    value = *(long *)(grstarts+offset);
+    value = *(int32_t *)(grstarts+offset);
 
     value &= 0x00ffffffl;
 
@@ -177,7 +177,7 @@ void CAL_GetGrChunkLength (int chunk)
 ==========================
 */
 
-boolean CA_WriteFile (const char *filename, void *ptr, long length)
+boolean CA_WriteFile (const char *filename, void *ptr, int32_t length)
 {
     const int handle = open(filename, O_CREAT | O_WRONLY);
     if (handle == -1)
@@ -206,7 +206,7 @@ boolean CA_WriteFile (const char *filename, void *ptr, long length)
 
 boolean CA_LoadFile (const char *filename, memptr *ptr)
 {
-    long size;
+    int32_t size;
 
     const int handle = open(filename, O_RDONLY);
     if (handle == -1)
@@ -232,7 +232,7 @@ boolean CA_LoadFile (const char *filename, memptr *ptr)
 ============================================================================
 */
 
-void CAL_HuffExpand(byte *source, byte *dest, long length,
+void CAL_HuffExpand(byte *source, byte *dest, int32_t length,
         huffnode *hufftable, boolean screenhack)
 {
     byte *end;//,*srcend;
@@ -447,9 +447,9 @@ void CAL_CarmackExpand (word *source, word *dest, int length)
 ======================
 */
 
-long CA_RLEWCompress (word *source, long length, word *dest, word rlewtag)
+int32_t CA_RLEWCompress (word *source, int32_t length, word *dest, word rlewtag)
 {
-    long complength;
+    int32_t complength;
     word value,count;
     unsigned i;
     word *start,*end;
@@ -504,7 +504,7 @@ long CA_RLEWCompress (word *source, long length, word *dest, word rlewtag)
 ======================
 */
 
-void CA_RLEWexpand (word *source, word *dest, long length, word rlewtag)
+void CA_RLEWexpand (word *source, word *dest, int32_t length, word rlewtag)
 {
     word value,count,i;
     word *end=dest+length/2;
@@ -561,7 +561,7 @@ void CAL_SetupGrFile (void)
 #ifdef GRHEADERLINKED
 
     grhuffman = (huffnode *)&EGAdict;
-    grstarts = (long _seg *)FP_SEG(&EGAhead);
+    grstarts = (int32_t _seg *)FP_SEG(&EGAhead);
 
 #else
 
@@ -635,7 +635,7 @@ void CAL_SetupMapFile (void)
 {
     int     i;
     int handle;
-    long length,pos;
+    int32_t length,pos;
     char fname[13];
 
 //
@@ -722,7 +722,7 @@ void CAL_SetupAudioFile (void)
     void* ptr;
     if (!CA_LoadFile(fname, &ptr))
     		CA_CannotOpen(fname);
-    audiostarts = (long*)ptr;
+    audiostarts = (int32_t*)ptr;
 
 //
 // open the data file
@@ -816,7 +816,7 @@ void CA_Shutdown (void)
 
 void CA_CacheAudioChunk (int chunk)
 {
-    long    pos,compressed;
+    int32_t    pos,compressed;
 
     if (audiosegs[chunk])
         return;                             // already in memory
@@ -905,7 +905,7 @@ cachein:
 
 void CAL_ExpandGrChunk (int chunk, byte *source)
 {
-    long    expanded;
+    int32_t    expanded;
 
     if (chunk >= STARTTILE8 && chunk < STARTEXTERNS)
     {
@@ -934,7 +934,7 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
         //
         // everything else has an explicit size longword
         //
-        expanded = *(long *) source;
+        expanded = *(int32_t *) source;
         source += 4;                    // skip over length
     }
 
@@ -961,7 +961,7 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
 
 void CA_CacheGrChunk (int chunk)
 {
-    long pos,compressed;
+    int32_t pos,compressed;
     byte *bigbufferseg;
     byte *source;
     int  next;
@@ -1019,7 +1019,7 @@ void CA_CacheGrChunk (int chunk)
 
 void CA_CacheScreen (int chunk)
 {
-    long    pos,compressed,expanded;
+    int32_t    pos,compressed,expanded;
     memptr  bigbufferseg;
     byte    *source;
     int             next;
@@ -1039,7 +1039,7 @@ void CA_CacheScreen (int chunk)
     read(grhandle,bigbufferseg,compressed);
     source = (byte *) bigbufferseg;
 
-    expanded = *(long *) source;
+    expanded = *(int32_t *) source;
     source += 4;                    // skip over length
 
 //
@@ -1073,7 +1073,7 @@ void CA_CacheScreen (int chunk)
 
 void CA_CacheMap (int mapnum)
 {
-    long    pos,compressed;
+    int32_t    pos,compressed;
     int             plane;
     memptr  *dest;
     memptr bigbufferseg;
@@ -1081,7 +1081,7 @@ void CA_CacheMap (int mapnum)
     word *source;
 #ifdef CARMACIZED
     memptr  buffer2seg;
-    long    expanded;
+    int32_t    expanded;
 #endif
 
     mapon = mapnum;

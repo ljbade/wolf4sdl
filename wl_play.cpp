@@ -1454,7 +1454,7 @@ think:
 =
 ===================
 */
-long funnyticount;
+int32_t funnyticount;
 
 
 void PlayLoop (void)

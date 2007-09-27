@@ -63,7 +63,7 @@ int      viewheight;
 short    centerx;
 int      shootdelta;           // pixels away from centerx a target can be
 fixed    scale,maxslope;
-long     heightnumerator;
+int32_t     heightnumerator;
 int      minheightdiv;
 
 
@@ -218,7 +218,7 @@ noconfig:
 
 void WriteConfig(void)
 {
-    const int file = open(configname, O_CREAT | O_WRONLY);
+    const int file = open(configname, O_CREAT | O_WRONLY, 0644);
     if (file != -1)
     {
         word tmp=0xfefc;
@@ -288,7 +288,7 @@ void DiskFlopAnim(int x,int y)
 }
 
 
-long DoChecksum(byte *source,unsigned size,long checksum)
+int32_t DoChecksum(byte *source,unsigned size,int32_t checksum)
 {
     unsigned i;
 
@@ -313,7 +313,7 @@ extern statetype s_player;
 boolean SaveTheGame(FILE *file,int x,int y)
 {
 //    struct diskfree_t dfree;
-//    long avail,size,checksum;
+//    int32_t avail,size,checksum;
     int checksum;
     objtype *ob;
     objtype nullobj;
@@ -322,7 +322,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
 /*    if (_dos_getdiskfree(0,&dfree))
         Quit("Error in _dos_getdiskfree call");
 
-    avail = (long)dfree.avail_clusters *
+    avail = (int32_t)dfree.avail_clusters *
                   dfree.bytes_per_sector *
                   dfree.sectors_per_cluster;
 
@@ -390,7 +390,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
     ob = player;
     DiskFlopAnim(x,y);
     memcpy(&nullobj,ob,sizeof(nullobj));
-    nullobj.state=(statetype *) ((long)nullobj.state-(long)&s_player);
+    nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_player);
     fwrite(&nullobj,sizeof(nullobj),1,file);
     ob = ob->next;
 
@@ -398,7 +398,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
     for (; ob ; ob=ob->next)
     {
         memcpy(&nullobj,ob,sizeof(nullobj));
-        nullobj.state=(statetype *) ((long)nullobj.state-(long)&s_grdstand);
+        nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_grdstand);
         fwrite(&nullobj,sizeof(nullobj),1,file);
     }
     nullobj.active = ac_badobject;          // end of file marker
@@ -414,7 +414,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
     for(int i=0;i<MAXSTATS;i++)
     {
         memcpy(&nullstat,statobjlist+i,sizeof(nullstat));
-        nullstat.visspot=(byte *) ((long) nullstat.visspot-(long)spotvis);
+        nullstat.visspot=(byte *) ((uintptr_t) nullstat.visspot-(uintptr_t)spotvis);
         fwrite(&nullstat,sizeof(nullstat),1,file);
         checksum = DoChecksum((byte *)&nullstat,sizeof(nullstat),checksum);
     }
@@ -462,7 +462,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
 
 boolean LoadTheGame(FILE *file,int x,int y)
 {
-    long checksum,oldchecksum;
+    int32_t checksum,oldchecksum;
     objtype nullobj;
     statobj_t nullstat;
 
@@ -505,7 +505,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
     InitActorList ();
     DiskFlopAnim(x,y);
     fread (player,sizeof(*player),1,file);
-    player->state=(statetype *) ((long)player->state+(long)&s_player);
+    player->state=(statetype *) ((uintptr_t)player->state+(uintptr_t)&s_player);
 
     while (1)
     {
@@ -514,7 +514,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
         if (nullobj.active == ac_badobject)
             break;
         GetNewActor ();
-        nullobj.state=(statetype *) ((long)nullobj.state+(long)&s_grdstand);
+        nullobj.state=(statetype *) ((uintptr_t)nullobj.state+(uintptr_t)&s_grdstand);
         // don't copy over the links
         memcpy (newobj,&nullobj,sizeof(nullobj)-8);
     }
@@ -530,7 +530,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
     {
         fread(&nullstat,sizeof(nullstat),1,file);
         checksum = DoChecksum((byte *)&nullstat,sizeof(nullstat),checksum);
-        nullstat.visspot=(byte *) ((long)nullstat.visspot+(long)spotvis);
+        nullstat.visspot=(byte *) ((uintptr_t)nullstat.visspot+(uintptr_t)spotvis);
         memcpy(statobjlist+i,&nullstat,sizeof(nullstat));
     }
 
@@ -658,8 +658,8 @@ void BuildTables (void)
     for(int i=0;i<FINEANGLES/8;i++)
     {
         double tang=tan((i+0.5)/radtoint);
-        finetangent[i]=(long)(tang*GLOBAL1);
-        finetangent[FINEANGLES/4-1-i]=(long)((1/tang)*GLOBAL1);
+        finetangent[i]=(int32_t)(tang*GLOBAL1);
+        finetangent[FINEANGLES/4-1-i]=(int32_t)((1/tang)*GLOBAL1);
     }
 
     //
@@ -671,7 +671,7 @@ void BuildTables (void)
     float anglestep=(float)(PI/2/ANGLEQUAD);
     for(int i=0;i<=ANGLEQUAD;i++)
     {
-        fixed value=(long)(GLOBAL1*sin(angle));
+        fixed value=(int32_t)(GLOBAL1*sin(angle));
         sintable[i]=sintable[i+ANGLES]=sintable[ANGLES/2-i]=value;
         sintable[ANGLES-i]=sintable[ANGLES/2+i]=-value;
         angle+=anglestep;
@@ -691,7 +691,7 @@ void BuildTables (void)
 ====================
 */
 
-void CalcProjection (long focal)
+void CalcProjection (int32_t focal)
 {
     int     i;
     int    intang;
@@ -724,7 +724,7 @@ void CalcProjection (long focal)
     for (i=0;i<halfview;i++)
     {
         // start 1/2 pixel over, so viewangle bisects two middle pixels
-        tang = (long)i*VIEWGLOBAL/viewwidth/facedist;
+        tang = (int32_t)i*VIEWGLOBAL/viewwidth/facedist;
         angle = atan(tang);
         intang = angle*radtoint;
         pixelangle[halfview-1-i] = intang;

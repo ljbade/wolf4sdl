@@ -557,7 +557,7 @@ void DoorOpening (int door)
 {
         unsigned             area1,area2;
         word *map;
-        long    position;
+        int32_t    position;
 
         position = doorposition[door];
         if (!position)
@@ -625,7 +625,7 @@ void DoorClosing (int door)
 {
         unsigned             area1,area2;//,move;
         word *map;
-        long    position;
+        int32_t    position;
         int             tilex,tiley;
 
         tilex = doorobjlist[door].tilex;
@@ -794,7 +794,7 @@ void MovePWalls (void)
 {
         int             oldblock,oldtile;
 		  static int ppressed = 0;
-		  static long ptimecount = 0;
+		  static int32_t ptimecount = 0;
 
         if (!pwallstate)
                 return;

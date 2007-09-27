@@ -28,6 +28,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 //#include <mem.h>
 #include <SDL.h>
 
@@ -52,11 +53,11 @@
     #include "F_SPEAR.H"
 #endif
 
-typedef unsigned char byte;
-typedef unsigned short word;
-typedef long fixed;
-typedef unsigned long longword;
-typedef char boolean;
+typedef uint8_t byte;
+typedef uint16_t word;
+typedef int32_t fixed;
+typedef uint32_t longword;
+typedef int8_t boolean;
 typedef void * memptr;
 
 typedef struct
@@ -111,7 +112,7 @@ typedef struct
 
 #define SIGN(x)         ((x)>0?1:-1)
 #define ABS(x)          ((int)(x)>0?(x):-(x))
-#define LABS(x)         ((long)(x)>0?(x):-(x))
+#define LABS(x)         ((int32_t)(x)>0?(x):-(x))
 
 #define abs(x) ABS(x)
 
@@ -758,7 +759,7 @@ typedef struct objstruct
 
     byte        flags;              //      FL_SHOOTABLE, etc
 
-    long        distance;           // if negative, wait for that door to open
+    int32_t     distance;           // if negative, wait for that door to open
     dirtype     dir;
 
     fixed       x,y;
@@ -771,7 +772,7 @@ typedef struct objstruct
 
     short       angle;
     short       hitpoints;
-    long        speed;
+    int32_t     speed;
 
     short       temp1,temp2,hidden;
     struct objstruct *next,*prev;
@@ -820,7 +821,7 @@ typedef struct
 {
     short       difficulty;
     short       mapon;
-    long        oldscore,score,nextextra;
+    int32_t     oldscore,score,nextextra;
     short       lives;
     short       health;
     short       ammo;
@@ -832,8 +833,8 @@ typedef struct
 
     short       episode,secretcount,treasurecount,killcount,
                 secrettotal,treasuretotal,killtotal;
-    long        TimeCount;
-    long        killx,killy;
+    int32_t     TimeCount;
+    int32_t     killx,killy;
     boolean     victoryflag;            // set during victory animations
 } gametype;
 
@@ -859,7 +860,7 @@ extern int mapon;
 extern int ChunksInFile;
 extern int PMSpriteStart;
 extern int PMSoundStart;
-extern long *PageOffsets;
+extern int32_t *PageOffsets;
 extern word *PageLengths;
 extern byte *Pages;
 
@@ -880,7 +881,7 @@ extern  int      viewscreenx, viewscreeny;
 extern  int      viewwidth;
 extern  int      viewheight;
 extern  short    centerx;
-extern  long     heightnumerator;
+extern  int32_t  heightnumerator;
 extern  fixed    scale;
 
 extern  int      dirangle[9];
@@ -902,7 +903,7 @@ void             NewGame (int difficulty,int episode);
 extern  boolean  MS_CheckParm (const char *string);
 
 void            Quit (const char *errorStr, ...);
-void            CalcProjection (long focal);
+void            CalcProjection (int32_t focal);
 void            NewViewSize (int width);
 boolean         SetViewSize (unsigned width, unsigned height);
 boolean         LoadTheGame(FILE *file,int x,int y);
@@ -966,7 +967,7 @@ void    RecordDemo (void);
 extern  int                     doornum; */
 
 #ifdef SPEAR
-extern  long            spearx,speary;
+extern  int32_t            spearx,speary;
 extern  unsigned        spearangle;
 extern  boolean         spearflag;
 #endif
@@ -981,7 +982,7 @@ void ClearMemory (void);*/
 
 
 // JAB
-#define PlaySoundLocTile(s,tx,ty)       PlaySoundLocGlobal(s,(((long)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((long)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
+#define PlaySoundLocTile(s,tx,ty)       PlaySoundLocGlobal(s,(((int32_t)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((int32_t)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
 #define PlaySoundLocActor(s,ob)         PlaySoundLocGlobal(s,(ob)->x,(ob)->y)
 void    PlaySoundLocGlobal(word s,fixed gx,fixed gy);
 void UpdateSoundLoc(void);
@@ -1056,7 +1057,7 @@ void    StartBonusFlash (void);
 extern  byte        update[UPDATEHIGH][UPDATEWIDE];
 
 #ifdef SPEAR
-extern  long        funnyticount;           // FOR FUNNY BJ FACE
+extern  int32_t     funnyticount;           // FOR FUNNY BJ FACE
 #endif
 
 extern  objtype     *objfreelist;     // *obj,*player,*lastobj,
@@ -1075,7 +1076,7 @@ extern  int         singlestep, extravbls;
 void IntroScreen (void);
 void PG13(void);
 void DrawHighScores(void);
-void CheckHighScore (long score,word other);
+void CheckHighScore (int32_t score,word other);
 void Victory (void);
 void LevelCompleted (void);
 void ClearSplitVWB (void);
@@ -1105,13 +1106,13 @@ int DebugKeys (void);
 // math tables
 //
 extern  short pixelangle[MAXVIEWWIDTH];
-extern  long finetangent[FINEANGLES/4];
+extern  int32_t finetangent[FINEANGLES/4];
 extern  fixed sintable[];
 extern  fixed *costable;
 extern  int wallheight[MAXVIEWWIDTH];
 extern  word horizwall[],vertwall[];
-extern  long    lasttimecount;
-extern  long    frameon;
+extern  int32_t    lasttimecount;
+extern  int32_t    frameon;
 
 extern  unsigned screenloc[3];
 extern  unsigned freelatch;
@@ -1190,7 +1191,7 @@ boolean TryWalk (objtype *ob);
 void    SelectChaseDir (objtype *ob);
 void    SelectDodgeDir (objtype *ob);
 void    SelectRunDir (objtype *ob);
-void    MoveObj (objtype *ob, long move);
+void    MoveObj (objtype *ob, int32_t move);
 boolean SightPlayer (objtype *ob);
 
 void    KillActor (objtype *ob);
@@ -1212,12 +1213,12 @@ extern  boolean running;
 extern  short   anglefrac;
 extern  int     facecount;
 extern  word    plux,pluy;         // player coordinates scaled to unsigned
-extern  long    thrustspeed;
+extern  int32_t    thrustspeed;
 
-void    Thrust (int angle, long speed);
+void    Thrust (int angle, int32_t speed);
 void    SpawnPlayer (int tilex, int tiley, int dir);
 void    TakeDamage (int points,objtype *attacker);
-void    GivePoints (long points);
+void    GivePoints (int32_t points);
 void    GetBonus (statobj_t *check);
 void    GiveWeapon (int weapon);
 void    GiveAmmo (int ammo);
@@ -1385,7 +1386,7 @@ extern  void    EndText(void);
 
 static inline fixed FixedMul(fixed a, fixed b)
 {
-	return (long long)a * b + 0x8000 >> 16;
+	return (int64_t)a * b + 0x8000 >> 16;
 }
 
 #if 0

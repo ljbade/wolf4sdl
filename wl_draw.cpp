@@ -29,8 +29,8 @@
 static byte *vbuf = NULL;
 unsigned vbufPitch = 0;
 
-long    lasttimecount;
-long    frameon;
+int32_t    lasttimecount;
+int32_t    frameon;
 boolean fpscounter;
 
 int fps_frames=0, fps_time=0, fps=0;
@@ -41,7 +41,7 @@ int wallheight[MAXVIEWWIDTH];
 // math tables
 //
 short pixelangle[MAXVIEWWIDTH];
-long finetangent[FINEANGLES/4];
+int32_t finetangent[FINEANGLES/4];
 fixed sintable[ANGLES+ANGLES/4];
 fixed *costable = sintable+(ANGLES/4);
 
@@ -67,7 +67,7 @@ void    ThreeDRefresh (void);
 // wall optimization variables
 //
 int     lastside;               // true for vertical
-long    lastintercept;
+int32_t    lastintercept;
 int     lasttilehit;
 int     lasttexture;
 
@@ -84,7 +84,7 @@ int     pixx;
 
 short   xtile,ytile;
 short   xtilestep,ytilestep;
-long    xintercept,yintercept;
+int32_t    xintercept,yintercept;
 word    xstep,ystep;
 word    xspot,yspot;
 int     texdelta;
@@ -199,8 +199,8 @@ boolean TransformTile (int tx, int ty, short *dispx, short *dispheight)
 //
 // translate point to view centered coordinates
 //
-    gx = ((long)tx<<TILESHIFT)+0x8000-viewx;
-    gy = ((long)ty<<TILESHIFT)+0x8000-viewy;
+    gx = ((int32_t)tx<<TILESHIFT)+0x8000-viewx;
+    gy = ((int32_t)ty<<TILESHIFT)+0x8000-viewy;
 
 //
 // calculate newx
@@ -1174,7 +1174,7 @@ void DrawPlayerWeapon (void)
 
 void CalcTics (void)
 {
-    long    newtime;
+    int32_t    newtime;
 
 //
 // calculate tics since last refresh for adaptive timing
@@ -1233,7 +1233,7 @@ void    FixOfs (void)
 
 void AsmRefresh()
 {
-    long xstep,ystep;
+    int32_t xstep,ystep;
     longword xpartial,ypartial;
 
 #ifdef DEBUGRAYTRACER
@@ -1340,7 +1340,7 @@ vertentry:
             {
                 if(tilehit&0x80)
                 {
-                    long yintbuf=yintercept+(ystep>>1);
+                    int32_t yintbuf=yintercept+(ystep>>1);
                     if(*((word *)&yintbuf+1)!=*((word *)&yintercept+1))
                         goto passvert;
                     if((word)yintbuf<doorposition[tilehit&0x7f])
@@ -1355,7 +1355,7 @@ vertentry:
                     {
                         if(pwalldir==di_west || pwalldir==di_east)
                         {
-	                        long yintbuf;
+	                        int32_t yintbuf;
                             int pwallposnorm;
                             int pwallposinv;
                             if(pwalldir==di_west)
@@ -1407,8 +1407,8 @@ vertentry:
                             {
                                 if(*((word *)&yintercept+1)==pwally && xtile==pwallx)
                                 {
-                                    if(pwalldir==di_south && (long)((word)yintercept)+ystep<(pwallposi<<10)
-                                            || pwalldir==di_north && (long)((word)yintercept)+ystep>(pwallposi<<10))
+                                    if(pwalldir==di_south && (int32_t)((word)yintercept)+ystep<(pwallposi<<10)
+                                            || pwalldir==di_north && (int32_t)((word)yintercept)+ystep>(pwallposi<<10))
                                         goto passvert;
 
                                     MARKPIX(5,15);
@@ -1448,8 +1448,8 @@ vertentry:
                                 }
                                 else
                                 {
-                                    if(pwalldir==di_south && (long)((word)yintercept)+ystep>(pwallposi<<10)
-                                            || pwalldir==di_north && (long)((word)yintercept)+ystep<(pwallposi<<10))
+                                    if(pwalldir==di_south && (int32_t)((word)yintercept)+ystep>(pwallposi<<10)
+                                            || pwalldir==di_north && (int32_t)((word)yintercept)+ystep<(pwallposi<<10))
                                         goto passvert;
 
                                     MARKPIX(3,3);
@@ -1513,7 +1513,7 @@ horizentry:
             {
                 if(tilehit&0x80)
                 {
-                    long xintbuf=xintercept+(xstep>>1);
+                    int32_t xintbuf=xintercept+(xstep>>1);
                     if(*((word *)&xintbuf+1)!=*((word *)&xintercept+1))
                         goto passhoriz;
                     if((word)xintbuf<doorposition[tilehit&0x7f])
@@ -1528,7 +1528,7 @@ horizentry:
                     {
                        if(pwalldir==di_north || pwalldir==di_south)
                         {
-                            long xintbuf;
+                            int32_t xintbuf;
                             int pwallposnorm;
                             int pwallposinv;
                             if(pwalldir==di_north)
@@ -1580,8 +1580,8 @@ horizentry:
                             {
                                 if(*((word *)&xintercept+1)==pwallx && ytile==pwally)
                                 {
-                                    if(pwalldir==di_east && (long)((word)xintercept)+xstep<(pwallposi<<10)
-                                            || pwalldir==di_west && (long)((word)xintercept)+xstep>(pwallposi<<10))
+                                    if(pwalldir==di_east && (int32_t)((word)xintercept)+xstep<(pwallposi<<10)
+                                            || pwalldir==di_west && (int32_t)((word)xintercept)+xstep>(pwallposi<<10))
                                         goto passhoriz;
 
                                     MARKPIX(3,15);
@@ -1622,8 +1622,8 @@ horizentry:
                                 }
                                 else
                                 {
-                                    if(pwalldir==di_east && (long)((word)xintercept)+xstep>(pwallposi<<10)
-                                            || pwalldir==di_west && (long)((word)xintercept)+xstep<(pwallposi<<10))
+                                    if(pwalldir==di_east && (int32_t)((word)xintercept)+xstep>(pwallposi<<10)
+                                            || pwalldir==di_west && (int32_t)((word)xintercept)+xstep<(pwallposi<<10))
                                         goto passhoriz;
 
                                     MARKPIX(3,3);

@@ -116,7 +116,7 @@ void
 Victory (void)
 {
 #ifndef SPEARDEMO
-    long sec;
+    int32_t sec;
     int i, min, kr, sr, tr, x;
     char tempstr[8];
 
@@ -442,7 +442,7 @@ LevelCompleted (void)
     byte *temp = vbuf;
 #endif
     char tempstr[10];
-    long bonus, timeleft = 0;
+    int32_t bonus, timeleft = 0;
     times parTimes[] = {
 #ifndef SPEAR
         //
@@ -666,7 +666,7 @@ LevelCompleted (void)
         {
             for (i = 0; i <= timeleft; i++)
             {
-                ltoa ((long) i * PAR_AMOUNT, tempstr, 10);
+                ltoa ((int32_t) i * PAR_AMOUNT, tempstr, 10);
                 x = 36 - strlen (tempstr) * 2;
                 Write (x, 7, tempstr);
                 if (!(i % (PAR_AMOUNT / 10)))
@@ -833,7 +833,7 @@ LevelCompleted (void)
         x = RATIOXX - strlen (tempstr) * 2;
         Write (x, 18, tempstr);
 
-        bonus = (long) timeleft *PAR_AMOUNT +
+        bonus = (int32_t) timeleft *PAR_AMOUNT +
             (PERCENT100AMT * (kr >= 100)) +
             (PERCENT100AMT * (sr >= 100)) + (PERCENT100AMT * (tr >= 100));
 
@@ -966,7 +966,7 @@ PreloadUpdate (unsigned current, unsigned total)
 
 
     VWB_Bar (WindowX + 5, WindowY + WindowH - 3, w, 2, BLACK);
-    w = ((long) w * current) / total;
+    w = ((int32_t) w * current) / total;
     if (w)
     {
         VWB_Bar (WindowX + 5, WindowY + WindowH - 3, w, 2, 0x37);       //SECONDCOLOR);
@@ -1186,7 +1186,7 @@ DrawHighScores (void)
 */
 
 void
-CheckHighScore (long score, word other)
+CheckHighScore (int32_t score, word other)
 {
     word i, j;
     int n;

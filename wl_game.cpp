@@ -32,7 +32,7 @@ gametype        gamestate;
 byte            bordercol=VIEWCOLOR;        // color of the Change View/Ingame border
 
 #ifdef SPEAR
-long            spearx,speary;
+int32_t         spearx,speary;
 unsigned        spearangle;
 boolean         spearflag;
 #endif
@@ -1009,7 +1009,7 @@ void StartDemoRecord (int levelnumber)
 
 void FinishDemoRecord (void)
 {
-        long    length,level;
+        int32_t    length,level;
 
         demorecord = false;
 
@@ -1206,7 +1206,7 @@ void PlayDemo (int demonumber)
 void Died (void)
 {
         float fangle;
-        long    dx,dy;
+        int32_t    dx,dy;
         int             iangle,curangle,clockwise,counter,change;
 
         if (screenfaded)
@@ -1395,7 +1395,7 @@ startplayloop:
                         SD_PlaySound(GETSPEARSND);
                         if (DigiMode != sds_Off)
                         {
-                                long lasttimecount = TimeCount;
+                                int32_t lasttimecount = TimeCount;
 
                                 while(TimeCount < lasttimecount+150)
                                 //while(DigiPlaying!=false)

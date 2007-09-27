@@ -389,7 +389,7 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
 {
 	int		 pixperframe;
 	unsigned x,y,p,frame;
-	long	 rndval;
+	int32_t  rndval;
 
 	rndval = 0;
 	pixperframe = width * height / frames; //64000/frames;
@@ -425,8 +425,10 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
 
 			rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
 
-			if (x>width || y>height)
+			if (x>=width || y>=height)
 			{
+                if(rndval == 0)     // entire sequence has been completed
+                    goto finished;
 			    p--;
 				continue;
 			}
@@ -439,12 +441,7 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
                 = *(srcptr + (y1 + y) * source->pitch + x1 + x);
 
 			if (rndval == 0)		// entire sequence has been completed
-			{
-			    VL_UnlockSurface(source);
-                VL_UnlockSurface(dest);
-                SDL_UpdateRect(dest, 0, 0, 0, 0);
-				return false;
-			}
+                goto finished;
 		}
         VL_UnlockSurface(dest);
         SDL_UpdateRect(dest, 0, 0, 0, 0);
@@ -452,4 +449,10 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
 		while (GetTimeCount()<frame)		// don't go too fast
             SDL_Delay(5);
 	} while (1);
+
+finished:
+    VL_UnlockSurface(source);
+    VL_UnlockSurface(dest);
+    SDL_UpdateRect(dest, 0, 0, 0, 0);
+	return false;
 }

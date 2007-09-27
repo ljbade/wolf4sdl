@@ -64,7 +64,7 @@ void DebugMemory (void)
 {
         int     i;
         char    scratch[80],str[10];
-        long    mem;
+        int32_t mem;
         spritetype _seg *block;
 
         CenterWindow (16,7);
@@ -159,7 +159,7 @@ void PictureGrabber (void)
     byte *wolfpal=(byte *)(gamepal);
     int i,x;
 
-    unsigned long col;
+    uint32_t col;
     byte bmpheads[54]={'B','M',0x8e,0x3f,0,0,0,0,0,0,0x36,4,0,0,
         40,0,0,0,0x40,1,0,0,200,0,0,0,1,0,8,0,0,0,0,0,
         0,0xfa,0,0,0xc4,0x0e,0,0,0xc4,0x0e,0,0,0,0,0,0,0,0,0,0};
@@ -190,9 +190,9 @@ void PictureGrabber (void)
     write(file,bmpheads,sizeof(bmpheads));
     for(i=0;i<256;i++)                              // 1024 bytes palette
     {
-        col=(((((unsigned long)wolfpal[i*3])<<10)+
-             (((unsigned long)wolfpal[i*3+1])<<2))<<8)+
-             (((unsigned long)wolfpal[i*3+2])<<2);
+        col=(((((uint32_t)wolfpal[i*3])<<10)+
+             (((uint32_t)wolfpal[i*3+1])<<2))<<8)+
+             (((uint32_t)wolfpal[i*3+2])<<2);
         write(file,&col,4);
     }
 
@@ -355,7 +355,7 @@ static  char    buf[10];
                 US_Print("\n Address: ");
 //              addr = PM_GetPageAddress(i);
                 addr = Pages+i*4096;
-                sprintf(buf,"0x%08X",(long) addr);
+                sprintf(buf,"0x%08X",(int32_t) addr);
                 US_Print(buf);
 
                 if (addr)

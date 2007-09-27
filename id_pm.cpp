@@ -8,7 +8,7 @@ FILE *mapfile=NULL;*/
 int ChunksInFile;
 int PMSpriteStart;
 int PMSoundStart;
-long *PageOffsets;
+int32_t *PageOffsets;
 word *PageLengths;
 byte *Pages;
 
@@ -34,8 +34,8 @@ void PM_Startup()
         PMSoundStart=0;
         fread(&PMSoundStart,sizeof(word),1,file);
 
-        PageOffsets=(long *) malloc(ChunksInFile*sizeof(long));
-        fread(PageOffsets,sizeof(long),ChunksInFile,file);
+        PageOffsets=(int32_t *) malloc(ChunksInFile*sizeof(int32_t));
+        fread(PageOffsets,sizeof(int32_t),ChunksInFile,file);
 
         PageLengths=(word *) malloc(ChunksInFile*sizeof(word));
         fread(PageLengths,sizeof(word),ChunksInFile,file);
