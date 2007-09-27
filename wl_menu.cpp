@@ -284,7 +284,7 @@ int EpisodeSelect[6] = { 1 };
 
 
 int SaveGamesAvail[10], StartGame, SoundStatus = 1, pickquick;
-char SaveGameNames[10][32], SaveName[13] = "SAVEGAM?.";
+char SaveGameNames[10][32], SaveName[13] = "savegam?.";
 
 
 ////////////////////////////////////////////////////////////////////
@@ -3272,12 +3272,8 @@ DrawOutline (int x, int y, int w, int h, int color1, int color2)
 void
 SetupControlPanel (void)
 {
-//      struct ffblk f;
-    struct _finddata_t f;
-    long handle;
+    struct stat statbuf;
     char name[13];
-    int which;
-
 
     //
     // CACHE GRAPHICS & SOUNDS
@@ -3301,33 +3297,21 @@ SetupControlPanel (void)
     //
     // SEE WHICH SAVE GAME FILES ARE AVAILABLE & READ STRING IN
     //
-    strcpy (name, SaveName);
-//      if (!findfirst(name,&f,0))
-    handle = _findfirst (name, &f);
-    if (handle != -1)
+    strcpy(name, SaveName);
+    for(int i=0; i<10; i++)
     {
-        long rc;
-        do
+        name[7] = '0' + i;
+        if(!stat(name, &statbuf))
         {
-//                      which=f.ff_name[7]-'0';
-            which = f.name[7] - '0';
-            if (which < 10)
-            {
-                int handle;
-                char temp[32];
+            int handle;
+            char temp[32];
 
-                SaveGamesAvail[which] = 1;
-//                              handle=open(f.ff_name, O_RDONLY;
-                handle = open (f.name,  O_RDONLY);
-                read (handle, temp, 32);
-                close (handle);
-                strcpy (&SaveGameNames[which][0], temp);
-            }
-            rc = _findnext (handle, &f);
+            SaveGamesAvail[i] = 1;
+            handle = open(name, O_RDONLY);
+            read(handle, temp, 32);
+            close(handle);
+            strcpy(&SaveGameNames[i][0], temp);
         }
-        while (rc != -1);
-//              } while(!findnext(&f));
-        _findclose (handle);
     }
 
 #ifdef NOTYET
@@ -4155,24 +4139,18 @@ ShootSnd (void)
 void
 CheckForEpisodes (void)
 {
-//      struct ffblk f;
-    struct _finddata_t f;
-    long handle;
+    struct stat statbuf;
 
 //
 // JAPANESE VERSION
 //
 #ifdef JAPAN
 #ifdef JAPDEMO
-    handle = _findfirst ("*.WJ1", &f);
-    if (handle != -1)
-//      if (!findfirst("*.WJ1",&f,FA_ARCH))
+    if(!stat("vswap.wj1", &statbuf))
     {
-        strcpy (extension, "WJ1");
+        strcpy (extension, "wj1");
 #else
-    handle = _findfirst ("*.WJ6", &f);
-    if (handle != -1)
-//      if (!findfirst("*.WJ6",&f,FA_ARCH))
+    if(!stat("vswap.wj6", &statbuf))
     {
         strcpy (extension, "WJ6");
 #endif
@@ -4192,21 +4170,17 @@ CheckForEpisodes (void)
 // ENGLISH
 //
 #ifdef UPLOAD
-    handle = _findfirst ("*.WL1", &f);
-    if (handle != -1)
-//      if (!findfirst("*.WL1",&f,FA_ARCH))
+    if(!stat("vswap.wl1", &statbuf))
     {
-        strcpy (extension, "WL1");
+        strcpy (extension, "wl1");
     }
     else
         Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
 #else
 #ifndef SPEAR
-    handle = _findfirst ("*.WL6", &f);
-    if (handle != -1)
-//      if (!findfirst("*.WL6",&f,FA_ARCH))
+    if(!stat("vswap.wl6", &statbuf))
     {
-        strcpy (extension, "WL6");
+        strcpy (extension, "wl6");
         NewEmenu[2].active =
             NewEmenu[4].active =
             NewEmenu[6].active =
@@ -4217,21 +4191,15 @@ CheckForEpisodes (void)
     }
     else
     {
-        handle = _findfirst ("*.WL3", &f);
-        if (handle != -1)
-//              if (!findfirst("*.WL3",&f,FA_ARCH))
+        if(!stat("vswap.wl3", &statbuf))
         {
-            strcpy (extension, "WL3");
+            strcpy (extension, "wl3");
             NewEmenu[2].active = NewEmenu[4].active = EpisodeSelect[1] = EpisodeSelect[2] = 1;
         }
         else
         {
-            handle = _findfirst ("*.WL1", &f);
-            if (handle != -1)
-//                      if (!findfirst("*.WL1",&f,FA_ARCH))
-            {
-                strcpy (extension, "WL1");
-            }
+            if(!stat("vswap.wl1", &statbuf))
+                strcpy (extension, "wl1");
             else
                 Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
         }
@@ -4242,18 +4210,14 @@ CheckForEpisodes (void)
 
 #ifdef SPEAR
 #ifndef SPEARDEMO
-    handle = _findfirst ("*.SOD", &f);
-    if (handle != -1)
-//      if (!findfirst("*.SOD",&f,FA_ARCH))
+    if(!stat("vswap.sod", &statbuf))
     {
         strcpy (extension, "SOD");
     }
     else
         Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
 #else
-    handle = _findfirst ("*.SDM", &f);
-    if (handle != -1)
-//      if (!findfirst("*.SDM",&f,FA_ARCH))
+    if(!stat("vswap.sdm", &statbuf))
     {
         strcpy (extension, "SDM");
     }
@@ -4261,8 +4225,6 @@ CheckForEpisodes (void)
         Quit ("NO SPEAR OF DESTINY DEMO DATA FILES TO BE FOUND!");
 #endif
 #endif
-    if (handle != -1)
-        _findclose (handle);
 
     strcat (configname, extension);
     strcat (SaveName, extension);

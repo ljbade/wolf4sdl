@@ -72,7 +72,7 @@ void    Quit (const char *error,...);
 boolean startgame,loadedgame,virtualreality;
 int     mouseadjustment;
 
-char    configname[13]="CONFIG.";
+char    configname[13]="config.";
 
 
 /*
