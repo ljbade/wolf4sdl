@@ -3274,7 +3274,6 @@ DrawOutline (int x, int y, int w, int h, int color1, int color2)
 void
 SetupControlPanel (void)
 {
-    struct stat statbuf;
     char name[13];
 
     //
@@ -3303,13 +3302,12 @@ SetupControlPanel (void)
     for(int i=0; i<10; i++)
     {
         name[7] = '0' + i;
-        if(!stat(name, &statbuf))
+        const int handle = open(name, O_RDONLY);
+        if (handle >= 0)
         {
-            int handle;
             char temp[32];
 
             SaveGamesAvail[i] = 1;
-            handle = open(name, O_RDONLY);
             read(handle, temp, 32);
             close(handle);
             strcpy(&SaveGameNames[i][0], temp);
