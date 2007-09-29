@@ -1633,9 +1633,6 @@ static void DemoLoop(int argc, char* argv[])
 
 //===========================================================================
 
-/*int eventThreadFunc(void *arg);
-
-extern SDL_Thread *eventThread;*/
 
 /*
 ==========================
@@ -1671,12 +1668,6 @@ int main (int argc, char *argv[])
     InitGame(argc, argv);
 
     DemoLoop(argc, argv);
-
-/*    eventThread = SDL_CreateThread(DemoLoop, NULL);
-    if(eventThread == NULL)
-        Quit("Unable to create game thread: %s\n", SDL_GetError());
-
-    eventThreadFunc(NULL);*/
 
     Quit("Demo loop exited???");
     return 1;

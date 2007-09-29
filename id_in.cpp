@@ -34,7 +34,6 @@
 =============================================================================
 */
 
-SDL_Thread *eventThread = NULL;
 
 //
 // configuration variables
@@ -668,75 +667,6 @@ void IN_ProcessEvents()
     }
 }
 
-#if 0
-boolean inEventLoop = false;
-
-int eventThreadFunc(void *arg)
-{
-    SDL_Event event;
-    SDLMod mod;
-
-    inEventLoop = true;
-
-    while (true)
-    {
-        SDL_WaitEvent(&event);
-
-        switch (event.type)
-        {
-            // exit if the window is closed
-            case SDL_QUIT:
-                Quit(NULL);
-
-            // check for keypresses
-            case SDL_KEYDOWN:
-                LastScan = event.key.keysym.sym;
-                mod = SDL_GetModState();
-//                if((mod & KMOD_ALT))
-                if(Keyboard[sc_Alt])
-                {
-                    if(event.key.keysym.sym==SDLK_F4)
-                        Quit(NULL);
-/*                    if(event.key.keysym.sym==SDLK_RETURN)
-                    {
-                        ToggleFullscreen(0);
-                        return;
-                    }*/
-                }
-                int sym = event.key.keysym.sym;
-                if(sym >= 'a' && sym <= 'z')
-                    sym -= 32;  // convert to uppercase
-
-                if(mod & (KMOD_SHIFT | KMOD_CAPS))
-                {
-                    if(ShiftNames[sym])
-                        LastASCII = ShiftNames[sym];
-                }
-                else
-                {
-                    if(ASCIINames[sym])
-                        LastASCII = ASCIINames[sym];
-                }
-                if(LastScan<SDLK_LAST)
-                    Keyboard[LastScan] = 1;
-                if(LastScan == SDLK_PAUSE)
-                    Paused = true;
-                fprintf(stderr, "SDL_KEYDOWN: %i\n", sym);
-
-                break;
-
-            case SDL_KEYUP:
-                if(event.key.keysym.sym<SDLK_LAST)
-                    Keyboard[event.key.keysym.sym] = 0;
-                fprintf(stderr, "SDL_KEYUP: %i\n", event.key.keysym.sym);
-                if(event.key.keysym.sym == 273)
-                    fprintf(stderr, "BREAKPOINT!");
-                break;
-        }
-    }
-    return 0;
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -753,10 +683,6 @@ IN_Startup(void)
 		return;
 
     IN_ClearKeysDown();
-
-/*    eventThread = SDL_CreateThread(eventThreadFunc, NULL);
-    if(eventThread == NULL)
-        Quit("Unable to create event thread: %s\n", SDL_GetError());*/
 
 #ifdef NOTYET
 	checkjoys = true;
