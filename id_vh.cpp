@@ -31,7 +31,7 @@ int     bufferwidth,bufferheight;
 
 //==========================================================================
 
-void VW_DrawPropString (const char *string)
+void VWB_DrawPropString(const char* string)
 {
 	fontstruct  *font;
 	int		    width, step, height;
@@ -244,13 +244,6 @@ void VWB_DrawPic (int x, int y, int chunknum)
 		VL_MemToScreen (grsegs[chunknum],width,height,x,y);
 }
 
-void VWB_DrawPropString	 (const char *string)
-{
-	int x;
-	x=px;
-	VW_DrawPropString (string);
-//	VW_MarkUpdateBlock(x,py,px-1,py+bufferheight-1);
-}
 
 void VWB_Bar (int x, int y, int width, int height, int color)
 {
