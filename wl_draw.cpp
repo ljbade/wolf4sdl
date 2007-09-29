@@ -35,12 +35,12 @@ boolean fpscounter;
 
 int fps_frames=0, fps_time=0, fps=0;
 
-int wallheight[MAXVIEWWIDTH];
+int *wallheight;
 
 //
 // math tables
 //
-short pixelangle[MAXVIEWWIDTH];
+short *pixelangle;
 int32_t finetangent[FINEANGLES/4];
 fixed sintable[ANGLES+ANGLES/4];
 fixed *costable = sintable+(ANGLES/4);

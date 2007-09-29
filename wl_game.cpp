@@ -778,14 +778,14 @@ void DrawPlayBorderSides (void)
 {
     int     xl,yl;
 
-    xl = 160-viewwidth/2;
-    yl = (200-STATUSLINES-viewheight)/2;
+    xl = screenWidth/2-viewwidth/2;
+    yl = (screenHeight-STATUSLINES-viewheight)/2;
 
-    VWB_Bar (0,0,xl-1,200-STATUSLINES,bordercol);
-    VWB_Bar (xl+viewwidth+1,0,xl-2,200-STATUSLINES,bordercol);
+    VWB_Bar (0,0,xl-1,screenHeight-STATUSLINES,bordercol);
+    VWB_Bar (xl+viewwidth+1,0,xl-2,screenHeight-STATUSLINES,bordercol);
 
-    VWB_Bar (0,0,320,yl-1,bordercol);
-    VWB_Bar (0,yl+viewheight+1,320,yl-1,bordercol);
+    VWB_Bar (0,0,screenWidth,yl-1,bordercol);
+    VWB_Bar (0,yl+viewheight+1,screenWidth,yl-1,bordercol);
 
     VWB_Vlin (yl-1,yl+viewheight,xl-1,0);
     VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,bordercol-2);
@@ -883,10 +883,10 @@ void DrawPlayBorder (void)
         if (bordercol != VIEWCOLOR)
                 DrawStatusBorder(bordercol);
 
-        VWB_Bar (0,0,320,200-STATUSLINES,bordercol);
+        VWB_Bar (0,0,screenWidth,screenHeight-STATUSLINES,bordercol);
 
-        xl = 160-viewwidth/2;
-        yl = (200-STATUSLINES-viewheight)/2;
+        xl = screenWidth/2-viewwidth/2;
+        yl = (screenHeight-STATUSLINES-viewheight)/2;
         VWB_Bar (xl,yl,viewwidth,viewheight,0);
 
         VWB_Hlin (xl-1,xl+viewwidth,yl-1,0);

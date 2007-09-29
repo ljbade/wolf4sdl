@@ -91,6 +91,9 @@ void	VL_SetVGAPlaneMode (void)
 
     curSurface = screenBuffer;
     curPitch = bufferPitch;
+
+    pixelangle = (short *) malloc(screenWidth * sizeof(short));
+    wallheight = (int *) malloc(screenWidth * sizeof(int));
 }
 
 /*

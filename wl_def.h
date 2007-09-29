@@ -124,9 +124,6 @@ typedef struct
 =============================================================================
 */
 
-#define SCRWIDTH 320
-#define SCRHEIGHT 200
-
 #define MAXTICS 10
 #define DEMOTICS        4
 
@@ -204,10 +201,6 @@ typedef struct
 
 #define MINDIST         (0x5800l)
 #define mindist MINDIST
-
-#define MAXSCALEHEIGHT  256             // largest scale on largest view
-
-#define MAXVIEWWIDTH    320
 
 #define MAPSIZE         64              // maps are 64*64
 #define mapshift        6               // 2^mapshift = MAPSIZE
@@ -918,12 +911,6 @@ extern  byte far        *scalermemory;
 extern  unsigned        viewangles;
 
 extern  boolean         virtualreality;
-//
-// math tables
-//
-extern  int                     pixelangle[MAXVIEWWIDTH];
-extern  long            far finetangent[FINEANGLES/4];
-extern  fixed           far sintable[],far *costable;
 
 //
 // derived constants
@@ -1104,11 +1091,11 @@ int DebugKeys (void);
 //
 // math tables
 //
-extern  short pixelangle[MAXVIEWWIDTH];
+extern  short *pixelangle;
 extern  int32_t finetangent[FINEANGLES/4];
 extern  fixed sintable[];
 extern  fixed *costable;
-extern  int wallheight[MAXVIEWWIDTH];
+extern  int *wallheight;
 extern  word horizwall[],vertwall[];
 extern  int32_t    lasttimecount;
 extern  int32_t    frameon;

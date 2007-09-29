@@ -1329,8 +1329,8 @@ boolean SetViewSize (unsigned width, unsigned height)
     viewheight = height&~1;                 // must be even
     centerx = viewwidth/2-1;
     shootdelta = viewwidth/10;
-    viewscreenx = (320-viewwidth) / 2;
-    viewscreeny = (200-STATUSLINES-viewheight)/2;
+    viewscreenx = (screenWidth-viewwidth) / 2;
+    viewscreeny = (screenHeight-STATUSLINES-viewheight)/2;
     screenofs = viewscreeny*screenWidth+viewscreenx;
 
 //
@@ -1361,7 +1361,7 @@ void ShowViewSize (int width)
 void NewViewSize (int width)
 {
     viewsize = width;
-    SetViewSize (width*16,width*16*HEIGHTRATIO);
+    SetViewSize (width*16*screenWidth/320,width*16*HEIGHTRATIO*screenHeight/200);
 }
 
 
