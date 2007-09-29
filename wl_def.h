@@ -892,7 +892,6 @@ extern  unsigned screenofs;
 
 extern  boolean  startgame;
 extern  char     str[80];
-extern  char     str2[20];
 extern  char     configname[13];
 
 extern  int      tedlevelnum;

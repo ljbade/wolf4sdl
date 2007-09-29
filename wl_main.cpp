@@ -44,7 +44,7 @@ extern byte signon[];
 =============================================================================
 */
 
-char    str[80],str2[20];
+char    str[80];
 int     tedlevelnum;
 boolean tedlevel;
 boolean nospr;

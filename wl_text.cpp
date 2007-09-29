@@ -479,23 +479,14 @@ void PageLayout (boolean shownumber)
 
         if (shownumber)
         {
-                #ifdef SPANISH
-                strcpy (str,"Hoja ");
-                itoa (pagenum,str2,10);
-                strcat (str,str2);
-                strcat (str," de ");
-                py = 183;
+#ifdef SPANISH
+                sprintf(str, "Hoja %d de %d", pagenum, numpages);
                 px = 208;
-                #else
-                strcpy (str,"pg ");
-                itoa (pagenum,str2,10);
-                strcat (str,str2);
-                strcat (str," of ");
-                py = 183;
+#else
+                sprintf(str, "pg %d of %d", pagenum, numpages);
                 px = 213;
-                #endif
-                itoa (numpages,str2,10);
-                strcat (str,str2);
+#endif
+                py = 183;
                 fontcolor = 0x4f;                          //12^BACKCOLOR;
 
                 VWB_DrawPropString (str);
