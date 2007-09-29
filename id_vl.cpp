@@ -53,6 +53,8 @@ void	VL_Shutdown (void)
 
 void	VL_SetVGAPlaneMode (void)
 {
+    SDL_WM_SetCaption("Wolfenstein 3D", NULL);
+
     screen = SDL_SetVideoMode(screenWidth, screenHeight, 8,
         SDL_HWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0));
     if(!screen)
