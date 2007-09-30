@@ -19,6 +19,10 @@
 
 #include "wl_def.h"
 
+
+#define	MaxPlayers 4
+#define	MaxJoys    2
+
 //
 // joystick constants
 //
@@ -44,14 +48,13 @@ boolean		JoyPadPresent;
 
 
 // 	Global variables
-//boolean		Keyboard[NumCodes];
 volatile boolean    Keyboard[SDLK_LAST];
 volatile boolean	Paused;
 volatile char		LastASCII;
 volatile ScanCode	LastScan;
 
 //KeyboardDef	KbdDefs = {0x1d,0x38,0x47,0x48,0x49,0x4b,0x4d,0x4f,0x50,0x51};
-KeyboardDef KbdDefs = {
+static KeyboardDef KbdDefs = {
     sc_Control,             // button0
     sc_Alt,                 // button1
     sc_Home,                // upleft
@@ -64,14 +67,15 @@ KeyboardDef KbdDefs = {
     sc_PgDn                 // downright
 };
 
-JoystickDef	JoyDefs[MaxJoys];
-ControlType	Controls[MaxPlayers];
+static JoystickDef JoyDefs[MaxJoys];
+static ControlType Controls[MaxPlayers];
 
 longword	MouseDownCount;
 
-Demo		DemoMode = demo_Off;
-byte 		*DemoBuffer;
-word		DemoOffset,DemoSize;
+static Demo  DemoMode   = demo_Off;
+static byte* DemoBuffer;
+static word  DemoOffset;
+static word  DemoSize;
 
 /*
 =============================================================================

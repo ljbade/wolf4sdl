@@ -19,27 +19,13 @@ typedef struct
 
 //===========================================================================
 
-#define BUFFERSIZE 0x1000
-extern byte bufferseg[BUFFERSIZE];
-
-extern  char            audioname[13];
-
-extern  byte            *tinf;
 extern  int                     mapon;
 
 extern  word *mapsegs[MAPPLANES];
-extern  maptype *mapheaderseg[NUMMAPS];
 extern  byte *audiosegs[NUMSNDCHUNKS];
 extern  byte *grsegs[NUMCHUNKS];
 
-extern  byte            grneeded[NUMCHUNKS];
-
-extern  char            *titleptr[8];
-
 extern  char            extension[5];
-
-extern byte grstarts[(NUMCHUNKS+1)*3];  // array of offsets in egagraph, -1 for sparse
-extern int32_t      *audiostarts;  // array of offsets in audio / audiot
 
 //===========================================================================
 

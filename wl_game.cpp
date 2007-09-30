@@ -42,7 +42,6 @@ boolean         spearflag;
 //
 int ElevatorBackTo[]={1,1,7,3,5,3};
 
-void ScanInfoPlane (void);
 void SetupGameLevel (void);
 void DrawPlayScreen (void);
 void LoadLatchMem (void);
@@ -217,7 +216,7 @@ void UpdateSoundLoc(void)
 ==========================
 */
 
-void ScanInfoPlane (void)
+static void ScanInfoPlane(void)
 {
     unsigned x,y;
     int      tile;
@@ -651,12 +650,6 @@ void SetupGameLevel (void)
 //
     CA_CacheMap (gamestate.mapon+10*gamestate.episode);
     mapon-=gamestate.episode*10;
-
-/*      mapwidth = mapheaderseg[mapon]->width;
-    mapheight = mapheaderseg[mapon]->height;
-
-    if (mapwidth != 64 || mapheight != 64)
-            Quit ("Map not 64*64!");*/
 
 //
 // copy the wall data to a data segment array

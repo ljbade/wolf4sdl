@@ -285,8 +285,12 @@ int color_norml[] = {
 int EpisodeSelect[6] = { 1 };
 
 
-int SaveGamesAvail[10], StartGame, SoundStatus = 1, pickquick;
-char SaveGameNames[10][32], SaveName[13] = "savegam?.";
+static int SaveGamesAvail[10];
+static int StartGame;
+static int SoundStatus = 1;
+static int pickquick;
+static char SaveGameNames[10][32];
+static char SaveName[13] = "savegam?.";
 
 
 ////////////////////////////////////////////////////////////////////
@@ -4157,7 +4161,6 @@ CheckForEpisodes (void)
         strcat (configname, extension);
         strcat (SaveName, extension);
         strcat (PageFileName, extension);
-        strcat (audioname, extension);
         strcat (demoname, extension);
         EpisodeSelect[1] =
             EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] = EpisodeSelect[5] = 1;
@@ -4229,7 +4232,6 @@ CheckForEpisodes (void)
     strcat (configname, extension);
     strcat (SaveName, extension);
 //      strcat(PageFileName,extension);
-    strcat (audioname, extension);
     strcat (demoname, extension);
 
 #ifdef ABCAUS

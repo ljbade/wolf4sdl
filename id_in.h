@@ -12,11 +12,6 @@
 #define	__DEBUG_InputMgr__
 #endif
 
-#define	MaxPlayers	4
-#define	MaxKbds		2
-#define	MaxJoys		2
-#define	NumCodes	128
-
 typedef	int		ScanCode;
 #define	sc_None			0
 #define	sc_Bad			0xff
@@ -169,15 +164,6 @@ extern	boolean		MousePresent;
 extern	volatile boolean	Paused;
 extern	volatile char		LastASCII;
 extern	volatile ScanCode	LastScan;
-extern	KeyboardDef	KbdDefs;
-extern	JoystickDef	JoyDefs[];
-extern	ControlType	Controls[MaxPlayers];
-
-extern	Demo		DemoMode;
-extern	byte 		*DemoBuffer; // _seg
-extern	word		DemoOffset,DemoSize;
-
-//extern union REGS regs;
 
 
 // Function prototypes

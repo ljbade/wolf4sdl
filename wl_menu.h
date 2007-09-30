@@ -108,7 +108,7 @@ typedef struct {
                 short allowed[4];
                 } CustomCtrls;
 
-extern CP_itemtype MainMenu[],NewEMenu[];
+extern CP_itemtype MainMenu[];
 extern CP_iteminfo MainItems;
 
 //
@@ -195,13 +195,6 @@ void CheckForEpisodes(void);
 
 void FreeMusic(void);
 
-//
-// VARIABLES
-//
-extern int SaveGamesAvail[10];
-extern int StartGame,SoundStatus;
-extern char SaveGameNames[10][32];
-extern char SaveName[13];
 
 enum {MOUSE,JOYSTICK,KEYBOARDBTNS,KEYBOARDMOVE};        // FOR INPUT TYPES
 

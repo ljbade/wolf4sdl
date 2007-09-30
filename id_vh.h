@@ -16,23 +16,6 @@
 
 typedef struct
 {
-    short	width,
-            height,
-            orgx,orgy,
-            xl,yl,xh,yh,
-            shifts;
-} spritetabletype;
-
-typedef	struct
-{
-	word sourceoffset[MAXSHIFTS];
-	word planesize[MAXSHIFTS];
-	word width[MAXSHIFTS];
-	byte data[];
-} spritetype;		// the memptr for each sprite points to this
-
-typedef struct
-{
 	short width,height;
 } pictabletype;
 
@@ -50,7 +33,6 @@ typedef struct
 
 extern	pictabletype	*pictable;
 extern	pictabletype	*picmtable;
-extern	spritetabletype *spritetable;
 
 extern	byte            fontcolor;
 extern	int             fontnumber;
@@ -128,4 +110,3 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest, int x1, int y1,
 
 #define NUMLATCHPICS	100
 extern	SDL_Surface *latchpics[NUMLATCHPICS];
-extern	unsigned freelatch;

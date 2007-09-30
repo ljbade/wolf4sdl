@@ -14,13 +14,7 @@
 //
 //	Globals:
 //		ingame - Flag set by game indicating if a game is in progress
-//      abortgame - Flag set if the current game should be aborted (if a load
-//			game fails)
 //		loadedgame - Flag set if a game was loaded
-//		abortprogram - Normally nil, this points to a terminal error message
-//			if the program needs to abort
-//		restartgame - Normally set to gd_Continue, this is set to one of the
-//			difficulty levels if a new game should be started
 //		PrintX, PrintY - Where the User Mgr will print (global coords)
 //		WindowX,WindowY,WindowW,WindowH - The dimensions of the current
 //			window
@@ -34,7 +28,6 @@
 
 
 //	Global variables
-		char		*abortprogram;
 		boolean		NoWait;
 		word		PrintX,PrintY;
 		word		WindowX,WindowY,WindowW,WindowH;
@@ -44,10 +37,6 @@
 
 static	const char	*ParmStrings[] = {"TEDLEVEL","NOWAIT",0};
 static	boolean		US_Started;
-
-		boolean		Button0,Button1,
-					CursorBad;
-		int			CursorX,CursorY;
 
 		void		(*USL_MeasureString)(const char *,word *,word *) = VW_MeasurePropString;
 		void		(*USL_DrawString)(const char *) = VWB_DrawPropString;

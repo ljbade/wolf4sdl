@@ -1,22 +1,13 @@
 #include "wl_def.h"
 
-// defines
-
-/*FILE *grfile=NULL;
-FILE *mapfile=NULL;*/
 
 int ChunksInFile;
 int PMSpriteStart;
 int PMSoundStart;
-int32_t *PageOffsets;
+static int32_t* PageOffsets;
 word *PageLengths;
 byte *Pages;
 
-/*float radtoint;
-
-short minheightdiv;
-
-word wallspot[SCRWIDTH+1];*/
 
 void PM_Startup()
 {

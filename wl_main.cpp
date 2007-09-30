@@ -47,8 +47,6 @@ extern byte signon[];
 char    str[80];
 int     tedlevelnum;
 boolean tedlevel;
-boolean nospr;
-boolean IsA386;
 int     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
                        5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 
@@ -62,14 +60,15 @@ int      viewwidth;
 int      viewheight;
 short    centerx;
 int      shootdelta;           // pixels away from centerx a target can be
-fixed    scale,maxslope;
+fixed    scale;
 int32_t     heightnumerator;
-int      minheightdiv;
 
 
 void    Quit (const char *error,...);
 
-boolean startgame,loadedgame,virtualreality;
+boolean startgame;
+boolean loadedgame;
+static boolean virtualreality;
 int     mouseadjustment;
 
 char    configname[13]="config.";
@@ -715,7 +714,6 @@ void CalcProjection (int32_t focal)
     // the heightbuffer.  The pixel height is height>>2
     //
     heightnumerator = (TILEGLOBAL*scale)>>6;
-    minheightdiv = heightnumerator/0x7fff + 1;
 
     //
     // calculate the angle offset from view angle of each pixel's ray
@@ -730,13 +728,6 @@ void CalcProjection (int32_t focal)
         pixelangle[halfview-1-i] = intang;
         pixelangle[halfview+i] = -intang;
     }
-
-    //
-    // if a point's abs(y/x) is greater than maxslope, the point is outside
-    // the view area
-    //
-    maxslope = finetangent[pixelangle[0]];
-    maxslope >>= 8;
 }
 
 

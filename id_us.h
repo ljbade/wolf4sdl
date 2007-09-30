@@ -47,33 +47,16 @@ typedef	struct
         px,py;
 } WindowRec;	// Record used to save & restore screen windows
 
-typedef	enum
-{
-    gd_Continue,
-    gd_Easy,
-    gd_Normal,
-    gd_Hard
-} GameDiff;
-
 //	Hack import for TED launch support
 extern	boolean		tedlevel;
 extern	int			tedlevelnum;
-extern	void		TEDDeath(void);
 
 extern	boolean		ingame,		// Set by game code if a game is in progress
-					abortgame,	// Set if a game load failed
 					loadedgame,	// Set if the current game was loaded
-					NoWait,
-					HighScoresDirty;
-extern	char		*abortprogram;	// Set to error msg if program is dying
-extern	GameDiff	restartgame;	// Normally gd_Continue, else starts game
+					NoWait;
 extern	word		PrintX,PrintY;	// Current printing location in the window
 extern	word		WindowX,WindowY,// Current location of window
 					WindowW,WindowH;// Current size of window
-
-extern	boolean		Button0,Button1,
-					CursorBad;
-extern	int			CursorX,CursorY;
 
 extern	void		(*USL_MeasureString)(const char *,word *,word *);
 extern void			(*USL_DrawString)(const char *);

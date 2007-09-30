@@ -32,9 +32,9 @@ boolean madenoise;              // true when shooting or screaming
 
 exit_t playstate;
 
-musicnames lastmusicchunk = (musicnames) - 1;
+static musicnames lastmusicchunk = (musicnames) - 1;
 
-int DebugOk;
+static int DebugOk;
 
 objtype objlist[MAXACTORS];
 objtype *newobj, *obj, *player, *lastobj, *objfreelist, *killerobj;

@@ -50,14 +50,19 @@ TEXT FORMATTING COMMANDS
 =============================================================================
 */
 
-int                     pagenum,numpages;
+static int pagenum;
+static int numpages;
 
-unsigned leftmargin[TEXTROWS],rightmargin[TEXTROWS];
-char            *text;
-unsigned rowon;
+static unsigned leftmargin[TEXTROWS];
+static unsigned rightmargin[TEXTROWS];
+static char*    text;
+static unsigned rowon;
 
-int                     picx,picy,picnum,picdelay;
-boolean         layoutdone;
+static int     picx;
+static int     picy;
+static int     picnum;
+static int     picdelay;
+static boolean layoutdone;
 
 //===========================================================================
 

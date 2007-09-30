@@ -56,20 +56,17 @@ typedef struct
 =============================================================================
 */
 
-byte    bufferseg[BUFFERSIZE];
+#define BUFFERSIZE 0x1000
+static byte bufferseg[BUFFERSIZE];
 
 int     mapon;
 
 word    *mapsegs[MAPPLANES];
-maptype *mapheaderseg[NUMMAPS];
+static maptype* mapheaderseg[NUMMAPS];
 byte    *audiosegs[NUMSNDCHUNKS];
 byte    *grsegs[NUMCHUNKS];
 
-byte    grneeded[NUMCHUNKS];
-
 word    RLEWtag;
-
-char audioname[13] = "audio.";
 
 /*
 =============================================================================
@@ -90,8 +87,8 @@ static const char afilename[] = "audiot.";
 
 void CA_CannotOpen(const char *string);
 
-byte grstarts[(NUMCHUNKS+1)*3];
-int32_t *audiostarts;   // array of offsets in audio / audiot
+static byte     grstarts[(NUMCHUNKS + 1) * 3];
+static int32_t* audiostarts; // array of offsets in audio / audiot
 
 #ifdef GRHEADERLINKED
 huffnode *grhuffman;
@@ -119,7 +116,7 @@ SDMode oldsoundmode;
 #ifdef THREEBYTEGRSTARTS
 #define FILEPOSSIZE     3
 //#define       GRFILEPOS(c) (*(long far *)(((byte far *)grstarts)+(c)*3)&0xffffff)
-int32_t GRFILEPOS(int c)
+static int32_t GRFILEPOS(int c)
 {
     int32_t value;
     int     offset;

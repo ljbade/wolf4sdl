@@ -853,7 +853,6 @@ extern int mapon;
 extern int ChunksInFile;
 extern int PMSpriteStart;
 extern int PMSoundStart;
-extern int32_t *PageOffsets;
 extern word *PageLengths;
 extern byte *Pages;
 
@@ -903,26 +902,6 @@ boolean         SaveTheGame(FILE *file,int x,int y);
 void            ShowViewSize (int width);
 void            ShutdownId (void);
 
-/*extern        boolean         nospr;
-extern  boolean         IsA386;
-
-extern  byte far        *scalermemory;
-
-extern  unsigned        viewangles;
-
-extern  boolean         virtualreality;
-
-//
-// derived constants
-//
-extern  fixed   maxslope;
-extern  int             minheightdiv;
-
-
-void            HelpScreens (void);
-void            OrderingInfo (void);
-void            TEDDeath(void);*/
-
 
 /*
 =============================================================================
@@ -949,8 +928,6 @@ void    DrawAllPlayBorderSides (void);
 void    PlayDemo (int demonumber);
 void    RecordDemo (void);
 
-/*extern        boolean         ingame,fizzlein;
-extern  int                     doornum; */
 
 #ifdef SPEAR
 extern  int32_t            spearx,speary;
@@ -958,11 +935,6 @@ extern  unsigned        spearangle;
 extern  boolean         spearflag;
 #endif
 
-/*
-void    ScanInfoPlane (void);
-void    NormalScreen (void);
-void    FizzleOut (void);
-void ClearMemory (void);*/
 
 #define ClearMemory SD_StopDigitized
 
@@ -1101,7 +1073,6 @@ extern  int32_t    lasttimecount;
 extern  int32_t    frameon;
 
 extern  unsigned screenloc[3];
-extern  unsigned freelatch;
 
 extern  boolean fizzlein, fpscounter;
 
@@ -1163,10 +1134,6 @@ typedef struct
 #define TURNTICS        10
 #define SPDPATROL       512
 #define SPDDOG          1500
-
-
-extern  dirtype opposite[9];
-extern  dirtype diagonal[9][9];
 
 
 void    InitHitRect (objtype *ob, unsigned radius);

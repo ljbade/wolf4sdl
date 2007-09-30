@@ -3,16 +3,7 @@
 #include "wl_def.h"
 
 //#define	SCREENWIDTH		80
-#define CHARWIDTH		2
 #define TILEWIDTH		4
-#define GRPLANES		4
-#define BYTEPIXELS		4
-
-#define SCREENXMASK		(~3)
-#define SCREENXPLUS		(3)
-#define SCREENXDIV		(4)
-
-//#define VIEWWIDTH		80
 
 // TODO: Check this for higher resolutions
 #define PIXTOBLOCK		4		// 16 pixels to an update block
@@ -27,7 +18,6 @@ SDL_Surface     *latchpics[NUMLATCHPICS];
 int	    px,py;
 byte	fontcolor,backcolor;
 int	    fontnumber;
-int     bufferwidth,bufferheight;
 
 //==========================================================================
 
@@ -35,14 +25,14 @@ void VWB_DrawPropString(const char* string)
 {
 	fontstruct  *font;
 	int		    width, step, height;
-	byte	    *source, *dest, *origdest;
-	byte	    ch, mask;
+	byte	    *source, *dest;
+	byte	    ch;
 
     byte *vbuf = LOCK();
 
 	font = (fontstruct *) grsegs[STARTFONT+fontnumber];
-	height = bufferheight = font->height;
-	dest = origdest = vbuf + py * curPitch + px;
+	height = font->height;
+	dest = vbuf + py * curPitch + px;
 
 	while ((ch = *string++)!=0)
 	{
@@ -61,8 +51,6 @@ void VWB_DrawPropString(const char* string)
 			dest++;
 		}
 	}
-	bufferheight = height;
-	bufferwidth = ((dest+1)-origdest)*4;
 
 	UNLOCK();
 }
