@@ -1291,7 +1291,7 @@ void Died (void)
 //
         FinishPaletteShifts ();
 
-        VW_Bar (viewscreenx,viewscreeny,viewwidth,viewheight,4);
+        VL_BarScaledCoord (viewscreenx,viewscreeny,viewwidth,viewheight,4);
 
         IN_ClearKeysDown ();
 
