@@ -19,6 +19,7 @@ unsigned screenHeight = 200;
 unsigned screenPitch;
 unsigned bufferPitch;
 unsigned curPitch;
+unsigned scaleFactor;
 
 boolean	 screenfaded;
 unsigned bordercolor;
@@ -91,6 +92,9 @@ void	VL_SetVGAPlaneMode (void)
 
     curSurface = screenBuffer;
     curPitch = bufferPitch;
+
+    scaleFactor = screenWidth/320;
+    if(screenHeight/200 < scaleFactor) scaleFactor = screenHeight/200;
 
     pixelangle = (short *) malloc(screenWidth * sizeof(short));
     wallheight = (int *) malloc(screenWidth * sizeof(int));
@@ -413,14 +417,14 @@ void VL_Vlin (int x, int y, int height, int color)
 =================
 */
 
-void VL_Bar (int x, int y, int width, int height, int color)
+void VL_BarScaledCoord (int scx, int scy, int scwidth, int scheight, int color)
 {
     VL_LockSurface(curSurface);
-    Uint8 *dest = ((byte *) curSurface->pixels) + y * curPitch + x;
+    Uint8 *dest = ((byte *) curSurface->pixels) + scy * curPitch + scx;
 
-	while (height--)
+	while (scheight--)
 	{
-		memset(dest, color, width);
+		memset(dest, color, scwidth);
 		dest += curPitch;
 	}
     VL_UnlockSurface(curSurface);
@@ -476,15 +480,21 @@ void VL_MemToLatch(byte *source, int width, int height,
 =================
 */
 
-void VL_MemToScreen (byte *source, int width, int height, int x, int y)
+void VL_MemToScreenScaledCoord (byte *source, int width, int height, int scx, int scy)
 {
     VL_LockSurface(curSurface);
     byte *vbuf = (byte *) curSurface->pixels;
-    for(int j=0; j<height; j++)
+    for(int j=0,scj=0; j<height; j++, scj+=scaleFactor)
     {
-        for(int i=0; i<width; i++)
+        for(int i=0,sci=0; i<width; i++, sci+=scaleFactor)
         {
-            vbuf[(j+y)*curPitch+i+x] = source[(j*(width>>2)+(i>>2))+(i&3)*(width>>2)*height];
+            for(int m=0; m<scaleFactor; m++)
+            {
+                for(int n=0; n<scaleFactor; n++)
+                {
+                    vbuf[(scj+m+scy)*curPitch+sci+n+scx] = source[(j*(width>>2)+(i>>2))+(i&3)*(width>>2)*height];
+                }
+            }
         }
     }
     VL_UnlockSurface(curSurface);
@@ -500,18 +510,39 @@ void VL_MemToScreen (byte *source, int width, int height, int x, int y)
 =================
 */
 
-void VL_LatchToScreen(SDL_Surface *source, int x, int y)
+void VL_LatchToScreenScaledCoord(SDL_Surface *source, int xsrc, int ysrc,
+    int width, int height, int scxdest, int scydest)
 {
-    SDL_Rect destrect = { x, y, 0, 0 }; // width and height are ignored
-    SDL_BlitSurface(source, NULL, curSurface, &destrect);
-}
+    if(scaleFactor == 1)
+    {
+        SDL_Rect srcrect = { xsrc, ysrc, width, height };
+        SDL_Rect destrect = { scxdest, scydest, 0, 0 }; // width and height are ignored
+        SDL_BlitSurface(source, &srcrect, curSurface, &destrect);
+    }
+    else
+    {
+        VL_LockSurface(source);
+        byte *src = (byte *) source->pixels;
+        unsigned srcPitch = source->pitch;
 
-void VL_LatchToScreen(SDL_Surface *source, int xsrc, int ysrc, int width,
-    int height, int xdest, int ydest)
-{
-    SDL_Rect srcrect = { xsrc, ysrc, width, height };
-    SDL_Rect destrect = { xdest, ydest, 0, 0 }; // width and height are ignored
-    SDL_BlitSurface(source, &srcrect, curSurface, &destrect);
+        VL_LockSurface(curSurface);
+        byte *vbuf = (byte *) curSurface->pixels;
+        for(int j=0,scj=0; j<height; j++, scj+=scaleFactor)
+        {
+            for(int i=0,sci=0; i<width; i++, sci+=scaleFactor)
+            {
+                for(int m=0; m<scaleFactor; m++)
+                {
+                    for(int n=0; n<scaleFactor; n++)
+                    {
+                        vbuf[(scydest+scj+m)*curPitch+scxdest+sci+n] = src[(ysrc + j)*srcPitch + xsrc + i];
+                    }
+                }
+            }
+        }
+        VL_UnlockSurface(curSurface);
+        VL_UnlockSurface(source);
+    }
 }
 
 //===========================================================================

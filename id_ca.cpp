@@ -1047,9 +1047,16 @@ void CA_CacheScreen (int chunk)
     CAL_HuffExpand (source,pic,expanded,grhuffman,true);
 
     byte *vbuf = LOCK();
-    for(int y = 0; y < 200; y++)
-        for(int x = 0; x < 320; x++)
-            vbuf[y * screenPitch + x] = pic[(y * 80 + (x >> 2)) + (x & 3) * 80 * 200];
+    for(int y = 0, scy = 0; y < 200; y++, scy += scaleFactor)
+    {
+        for(int x = 0, scx = 0; x < 320; x++, scx += scaleFactor)
+        {
+            byte col = pic[(y * 80 + (x >> 2)) + (x & 3) * 80 * 200];
+            for(int i = 0; i < scaleFactor; i++)
+                for(int j = 0; j < scaleFactor; j++)
+                    vbuf[(scy + i) * screenPitch + scx + j] = col;
+        }
+    }
     UNLOCK();
     free(pic);
     VW_MarkUpdateBlock (0,0,319,199);

@@ -250,7 +250,8 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
         vbuf = temp;*/
 
-        LatchDrawPic (x,200-STATUSLINES+y,picnum);
+        LatchDrawPicScaledCoord ((screenWidth-scaleFactor*320)/16 + scaleFactor*x,
+            screenHeight-scaleFactor*(STATUSLINES-y),picnum);
 }
 
 

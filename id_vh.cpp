@@ -32,7 +32,7 @@ void VWB_DrawPropString(const char* string)
 
 	font = (fontstruct *) grsegs[STARTFONT+fontnumber];
 	height = font->height;
-	dest = vbuf + py * curPitch + px;
+	dest = vbuf + scaleFactor * (py * curPitch + px);
 
 	while ((ch = *string++)!=0)
 	{
@@ -43,12 +43,16 @@ void VWB_DrawPropString(const char* string)
 			for(int i=0;i<height;i++)
 			{
 				if(source[i*step])
-					dest[i*curPitch]=fontcolor;
+                {
+                    for(int sy=0; sy<scaleFactor; sy++)
+                        for(int sx=0; sx<scaleFactor; sx++)
+        					dest[(scaleFactor*i+sy)*curPitch+sx]=fontcolor;
+                }
 			}
 
 			source++;
 			px++;
-			dest++;
+			dest+=scaleFactor;
 		}
 	}
 
@@ -232,6 +236,17 @@ void VWB_DrawPic (int x, int y, int chunknum)
 		VL_MemToScreen (grsegs[chunknum],width,height,x,y);
 }
 
+void VWB_DrawPicScaledCoord (int scx, int scy, int chunknum)
+{
+	int	picnum = chunknum - STARTPICS;
+	unsigned width,height;
+
+	width = pictable[picnum].width;
+	height = pictable[picnum].height;
+
+    VL_MemToScreenScaledCoord (grsegs[chunknum],width,height,scx,scy);
+}
+
 
 void VWB_Bar (int x, int y, int width, int height, int color)
 {
@@ -241,20 +256,26 @@ void VWB_Bar (int x, int y, int width, int height, int color)
 
 void VWB_Plot (int x, int y, int color)
 {
-//	if (VW_MarkUpdateBlock (x,y,x,y))
-		VW_Plot(x,y,color);
+    if(scaleFactor == 1)
+        VW_Plot(x,y,color);
+    else
+        VW_Bar(x, y, 1, 1, color);
 }
 
 void VWB_Hlin (int x1, int x2, int y, int color)
 {
-//	if (VW_MarkUpdateBlock (x1,y,x2,y))
-		VW_Hlin(x1,x2,y,color);
+    if(scaleFactor == 1)
+    	VW_Hlin(x1,x2,y,color);
+    else
+        VW_Bar(x1, y, x2-x1+1, 1, color);
 }
 
 void VWB_Vlin (int y1, int y2, int x, int color)
 {
-//	if (VW_MarkUpdateBlock (x,y1,x,y2))
+    if(scaleFactor == 1)
 		VW_Vlin(y1,y2,x,color);
+    else
+        VW_Bar(x, y1, 1, y2-y1+1, color);
 }
 
 
@@ -277,6 +298,11 @@ void VWB_Vlin (int y1, int y2, int x, int color)
 void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
 {
 	VL_LatchToScreen (latchpics[2+picnum-LATCHPICS_LUMP_START], x*8, y);
+}
+
+void LatchDrawPicScaledCoord (unsigned scx, unsigned scy, unsigned picnum)
+{
+	VL_LatchToScreenScaledCoord (latchpics[2+picnum-LATCHPICS_LUMP_START], scx*8, scy);
 }
 
 

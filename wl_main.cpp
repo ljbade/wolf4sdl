@@ -1321,7 +1321,7 @@ boolean SetViewSize (unsigned width, unsigned height)
     centerx = viewwidth/2-1;
     shootdelta = viewwidth/10;
     viewscreenx = (screenWidth-viewwidth) / 2;
-    viewscreeny = (screenHeight-STATUSLINES-viewheight)/2;
+    viewscreeny = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
     screenofs = viewscreeny*screenWidth+viewscreenx;
 
 //
