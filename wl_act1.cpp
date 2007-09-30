@@ -444,10 +444,10 @@ void CloseDoor (int door)
                                 return;
                 }
                 check = actorat[tilex-1][tiley];
-                if (check && ((check->x+MINDIST) >> TILESHIFT) == tilex )
+                if (ISPOINTER(check) && ((check->x+MINDIST) >> TILESHIFT) == tilex )
                         return;
                 check = actorat[tilex+1][tiley];
-                if (check && ((check->x-MINDIST) >> TILESHIFT) == tilex )
+                if (ISPOINTER(check) && ((check->x-MINDIST) >> TILESHIFT) == tilex )
                         return;
         }
         else if (!doorobjlist[door].vertical)
@@ -460,10 +460,10 @@ void CloseDoor (int door)
                                 return;
                 }
                 check = actorat[tilex][tiley-1];
-                if (check && ((check->y+MINDIST) >> TILESHIFT) == tiley )
+                if (ISPOINTER(check) && ((check->y+MINDIST) >> TILESHIFT) == tiley )
                         return;
                 check = actorat[tilex][tiley+1];
-                if (check && ((check->y-MINDIST) >> TILESHIFT) == tiley )
+                if (ISPOINTER(check) && ((check->y-MINDIST) >> TILESHIFT) == tiley )
                         return;
         }
 

@@ -371,7 +371,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
         {
             word actnum;
             objtype *objptr=actorat[i][j];
-            if((uintptr_t)objptr&~0xffff)
+            if(ISPOINTER(objptr))
                 actnum=0x8000 | (word)(objptr-objlist);
             else
                 actnum=(word)(uintptr_t)objptr;

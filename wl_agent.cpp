@@ -854,7 +854,7 @@ boolean TryMove (objtype *ob)
                 for (x=xl;x<=xh;x++)
                 {
                         check = actorat[x][y];
-                        if (check > objlist && (check->flags & FL_SHOOTABLE) )
+                        if (ISPOINTER(check) && check != player && (check->flags & FL_SHOOTABLE) )
                         {
                                 deltax = ob->x - check->x;
                                 if (deltax < -MINACTORDIST || deltax > MINACTORDIST)

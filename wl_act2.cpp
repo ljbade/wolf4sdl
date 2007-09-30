@@ -283,7 +283,7 @@ boolean ProjectileTryMove (objtype *ob)
                 for (x=xl;x<=xh;x++)
                 {
                         check = actorat[x][y];
-                        if (check && check<objlist)
+                        if (check && !ISPOINTER(check))
                                 return false;
                 }
 
@@ -1952,7 +1952,7 @@ moveok:
                         tile = (unsigned)actorat[x][y];
                         if (!tile)
                                 continue;
-                        if (tile<256)
+                        if (!ISPOINTER(tile))
                                 return;
                         if (((objtype *)tile)->flags&FL_SHOOTABLE)
                                 return;
@@ -3750,7 +3750,7 @@ boolean CheckPosition (objtype *ob)
                 for (x=xl;x<=xh;x++)
                 {
                         check = actorat[x][y];
-                        if (check && check<objlist)
+                        if (check && !ISPOINTER(check))
                                 return false;
                 }
 
@@ -3785,8 +3785,8 @@ void    A_StartDeathCam (objtype *ob)
         }
 
         gamestate.victoryflag = true;
-        VW_Bar (0,0,320,200-STATUSLINES,bordercol);
-        FizzleFade(screenBuffer, screen, 0, 0, 320, 200-STATUSLINES, 70, false);
+        VL_BarScaledCoord (0,0,screenWidth,screenHeight-scaleFactor*STATUSLINES,bordercol);
+        FizzleFade(screenBuffer, screen, 0, 0, screenWidth, screenHeight-scaleFactor*STATUSLINES, 70, false);
 
         if (bordercol != VIEWCOLOR)
         {

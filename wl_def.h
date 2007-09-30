@@ -1365,6 +1365,8 @@ void PM_Shutdown();
 
 #define GetTicks() ((SDL_GetTicks()*7)/100)
 
+#define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
+
 
 static inline char* itoa(int value, char* string, int radix)
 {
