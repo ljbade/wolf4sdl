@@ -1427,8 +1427,7 @@ int SD_PlayDigitized(word which,int leftpos,int rightpos)
 
 //    SDL_PlayDigiSegment(addr,len,false);
 
-//    Mix_Chunk *sample = SoundChunks[which];
-	Mix_Chunk *sample = SoundChunks[0];
+    Mix_Chunk *sample = SoundChunks[which];
     if(sample == NULL)
     {
         printf("SoundChunks[%i] is NULL! (which = %i)\n",
