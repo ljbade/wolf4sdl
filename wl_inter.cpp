@@ -965,12 +965,12 @@ PreloadUpdate (unsigned current, unsigned total)
     unsigned w = WindowW - 10;
 
 
-    VWB_Bar (WindowX + 5, WindowY + WindowH - 3, w, 2, BLACK);
+    VWB_BarScaledCoord (WindowX + 5, WindowY + WindowH - 3, w, 2, BLACK);
     w = ((int32_t) w * current) / total;
     if (w)
     {
-        VWB_Bar (WindowX + 5, WindowY + WindowH - 3, w, 2, 0x37);       //SECONDCOLOR);
-        VWB_Bar (WindowX + 5, WindowY + WindowH - 3, w - 1, 1, 0x32);
+        VWB_BarScaledCoord (WindowX + 5, WindowY + WindowH - 3, w, 2, 0x37);       //SECONDCOLOR);
+        VWB_BarScaledCoord (WindowX + 5, WindowY + WindowH - 3, w - 1, 1, 0x32);
 
     }
     VW_UpdateScreen ();
@@ -989,13 +989,15 @@ PreloadGraphics (void)
     DrawLevel ();
     ClearSplitVWB ();           // set up for double buffering in split screen
 
-    VWB_Bar (0, 0, 320, 200 - STATUSLINES, bordercol);
-    LatchDrawPic (20 - 14, 80 - 3 * 8, GETPSYCHEDPIC);
+    VWB_BarScaledCoord (0, 0, screenWidth, screenHeight - scaleFactor*STATUSLINES, bordercol);
+    LatchDrawPicScaledCoord ((screenWidth-scaleFactor*224)/16,
+        (screenHeight-scaleFactor*(STATUSLINES+48))/2, GETPSYCHEDPIC);
 
-    WindowX = 160 - 14 * 8;
-    WindowY = 80 - 3 * 8;
-    WindowW = 28 * 8;
-    WindowH = 48;
+    WindowX = (screenWidth - scaleFactor*224)/2;
+    WindowY = (screenHeight-scaleFactor*(STATUSLINES+48))/2;
+    WindowW = scaleFactor * 28 * 8;
+    WindowH = scaleFactor * 48;
+
     VW_UpdateScreen ();
     VW_FadeIn ();
 
