@@ -882,7 +882,6 @@ void KillActor (objtype *ob)
                 gamestate.killx = player->x;
                 gamestate.killy = player->y;
                 NewState (ob,&s_schabbdie1);
-                A_DeathScream(ob);
                 break;
         case fakeobj:
                 GivePoints (2000);
@@ -898,7 +897,6 @@ void KillActor (objtype *ob)
                 gamestate.killx = player->x;
                 gamestate.killy = player->y;
                 NewState (ob,&s_hitlerdie1);
-                A_DeathScream(ob);
                 break;
 #else
         case spectreobj:
