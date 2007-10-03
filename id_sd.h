@@ -211,6 +211,7 @@ extern  SDSMode         DigiMode;
 extern  SMMode          MusicMode;
 extern  boolean         DigiPlaying;
 extern  int             DigiMap[];
+extern  int             DigiChannel[];
 //extern  volatile longword TimeCount;                                    // Global time in ticks
 #define GetTimeCount()  ((SDL_GetTicks()*7)/100)
 #define Delay(wolfticks) SDL_Delay(wolfticks * 100 / 7)
