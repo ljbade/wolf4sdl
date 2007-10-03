@@ -1339,7 +1339,10 @@ Sint16 GetSample(float csample, byte *samples, int size)
     if(cursample+1 < size) s2 = (float) ((char) (samples[cursample+1] - 128));
 
     float val = s0*sf*(sf-1)/2 - s1*(sf*sf-1) + s2*(sf+1)*sf/2;
-    return (Sint16) (val*256);   // convert to 16bit
+    int32_t intval = (int32_t) (val * 256);
+    if(intval < -32768) intval = -32768;
+    else if(intval > 32767) intval = 32767;
+    return (Sint16) intval;
 }
 
 void SD_PrepareSound(int which)
