@@ -28,7 +28,10 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
+#if defined _WIN32
+#else
+	#include <stdint.h>
+#endif
 //#include <mem.h>
 #include <SDL.h>
 

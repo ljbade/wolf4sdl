@@ -1,6 +1,10 @@
 // WL_MAIN.C
 
-#include <unistd.h>
+#ifdef _WIN32
+	#include <io.h>
+#else
+	#include <unistd.h>
+#endif
 
 #include "wl_def.h"
 #pragma hdrstop
@@ -885,7 +889,11 @@ boolean MS_CheckParm (const char *check)
             if (!*parm++)
                 break;                  // hit end of string without an alphanum
 
+#ifdef _WIN32
+		if (!stricmp(check, parm))
+#else
         if (!strcasecmp(check, parm))
+#endif
             return true;
     }
 
