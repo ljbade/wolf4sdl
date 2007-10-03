@@ -115,7 +115,7 @@ extern CP_iteminfo MainItems;
 // FUNCTION PROTOTYPES
 //
 
-void    US_ControlPanel(byte);
+void    US_ControlPanel(ScanCode);
 
 void SetupControlPanel(void);
 void CleanupControlPanel(void);
@@ -187,7 +187,7 @@ int CP_ExitOptions(int);
 int CP_Quit(int);
 int CP_ViewScores(int);
 int  CP_EndGame(int);
-int  CP_CheckQuick(int scancode);
+int  CP_CheckQuick(ScanCode scancode);
 int CustomControls(int);
 int MouseSensitivity(int);
 

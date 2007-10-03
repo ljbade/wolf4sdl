@@ -412,7 +412,7 @@ static const char* const ScanNames[SDLK_LAST] =
 //
 ////////////////////////////////////////////////////////////////////
 void
-US_ControlPanel (byte scancode)
+US_ControlPanel (ScanCode scancode)
 {
     int which;
 
@@ -775,13 +775,13 @@ BossKey (void)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_CheckQuick (int scancode)
+CP_CheckQuick (ScanCode scancode)
 {
     switch (scancode)
     {
-            //
-            // END GAME
-            //
+        //
+        // END GAME
+        //
         case sc_F7:
             CA_CacheGrChunk (STARTFONT + 1);
 
@@ -796,15 +796,14 @@ CP_CheckQuick (int scancode)
                 pickquick = gamestate.lives = 0;
             }
 
-//                      DrawAllPlayBorder();
             WindowH = 200;
             fontnumber = 0;
             MainMenu[savegame].active = 0;
             return 1;
 
-            //
-            // QUICKSAVE
-            //
+        //
+        // QUICKSAVE
+        //
         case sc_F8:
             if (SaveGamesAvail[LSItems.curpos] && pickquick)
             {
@@ -839,10 +838,7 @@ CP_CheckQuick (int scancode)
                 DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
-                {
-//                                      VW_FadeIn ();           // bugfix
                     ContinueMusic (lastgamemusicoffset);
-                }
 
                 if (loadedgame)
                     playstate = ex_abort;
@@ -866,9 +862,9 @@ CP_CheckQuick (int scancode)
             }
             return 1;
 
-            //
-            // QUICKLOAD
-            //
+        //
+        // QUICKLOAD
+        //
         case sc_F9:
             if (SaveGamesAvail[LSItems.curpos] && pickquick)
             {
@@ -884,7 +880,6 @@ CP_CheckQuick (int scancode)
                 if (Confirm (string))
                     CP_LoadGame (1);
 
-//                              DrawAllPlayBorder();
                 fontnumber = 0;
             }
             else
@@ -904,7 +899,7 @@ CP_CheckQuick (int scancode)
 
                 VW_FadeOut ();
 
-                StartCPMusic (MENUSONG);
+                lastgamemusicoffset = StartCPMusic (MENUSONG);
                 pickquick = CP_LoadGame (0);    // loads lastgamemusicoffs
 
                 SETFONTCOLOR (0, 15);
@@ -912,10 +907,7 @@ CP_CheckQuick (int scancode)
                 DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
-                {
-//                                      VW_FadeIn ();           // bugfix
                     ContinueMusic (lastgamemusicoffset);
-                }
 
                 if (loadedgame)
                     playstate = ex_abort;
@@ -940,9 +932,9 @@ CP_CheckQuick (int scancode)
             }
             return 1;
 
-            //
-            // QUIT
-            //
+        //
+        // QUIT
+        //
         case sc_F10:
             CA_CacheGrChunk (STARTFONT + 1);
 
@@ -964,13 +956,6 @@ CP_CheckQuick (int scancode)
                 SD_StopSound ();
                 MenuFadeOut ();
 
-#ifdef NOTYET
-                //
-                // SHUT-UP THE ADLIB
-                //
-                for (int i = 1; i <= 0xf5; i++)
-                    alOut (i, 0);
-#endif
                 Quit (NULL);
             }
 
