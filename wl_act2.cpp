@@ -3452,79 +3452,78 @@ void T_Path (objtype *ob)
 
 void T_Shoot (objtype *ob)
 {
-        int     dx,dy,dist;
-        int     hitchance,damage;
+    int     dx,dy,dist;
+    int     hitchance,damage;
 
-        hitchance = 128;
+    hitchance = 128;
 
-        if (!areabyplayer[ob->areanumber])
-                return;
+    if (!areabyplayer[ob->areanumber])
+        return;
 
-        if (!CheckLine (ob))                    // player is behind a wall
-          return;
-
+    if (CheckLine (ob))                    // player is not behind a wall
+    {
         dx = abs(ob->tilex - player->tilex);
         dy = abs(ob->tiley - player->tiley);
         dist = dx>dy ? dx:dy;
 
         if (ob->obclass == ssobj || ob->obclass == bossobj)
-                dist = dist*2/3;                                        // ss are better shots
+            dist = dist*2/3;                                        // ss are better shots
 
         if (thrustspeed >= RUNSPEED)
         {
-                if (ob->flags&FL_VISABLE)
-                        hitchance = 160-dist*16;                // player can see to dodge
-                else
-                        hitchance = 160-dist*8;
+            if (ob->flags&FL_VISABLE)
+                hitchance = 160-dist*16;                // player can see to dodge
+            else
+                hitchance = 160-dist*8;
         }
         else
         {
-                if (ob->flags&FL_VISABLE)
-                        hitchance = 256-dist*16;                // player can see to dodge
-                else
-                        hitchance = 256-dist*8;
+            if (ob->flags&FL_VISABLE)
+                hitchance = 256-dist*16;                // player can see to dodge
+            else
+                hitchance = 256-dist*8;
         }
 
-// see if the shot was a hit
+        // see if the shot was a hit
 
         if (US_RndT()<hitchance)
         {
-                if (dist<2)
-                        damage = US_RndT()>>2;
-                else if (dist<4)
-                        damage = US_RndT()>>3;
-                else
-                        damage = US_RndT()>>4;
+            if (dist<2)
+                damage = US_RndT()>>2;
+            else if (dist<4)
+                damage = US_RndT()>>3;
+            else
+                damage = US_RndT()>>4;
 
-                TakeDamage (damage,ob);
+            TakeDamage (damage,ob);
         }
+    }
 
-        switch(ob->obclass)
-        {
-         case ssobj:
-           PlaySoundLocActor(SSFIRESND,ob);
-           break;
+    switch(ob->obclass)
+    {
+        case ssobj:
+            PlaySoundLocActor(SSFIRESND,ob);
+            break;
 #ifndef SPEAR
-         case giftobj:
-         case fatobj:
-           PlaySoundLocActor(MISSILEFIRESND,ob);
-           break;
-         case mechahitlerobj:
-         case realhitlerobj:
-         case bossobj:
-           PlaySoundLocActor(BOSSFIRESND,ob);
-           break;
-         case schabbobj:
-           PlaySoundLocActor(SCHABBSTHROWSND,ob);
-           break;
-         case fakeobj:
-           PlaySoundLocActor(FLAMETHROWERSND,ob);
-           break;
+        case giftobj:
+        case fatobj:
+            PlaySoundLocActor(MISSILEFIRESND,ob);
+            break;
+        case mechahitlerobj:
+        case realhitlerobj:
+        case bossobj:
+            PlaySoundLocActor(BOSSFIRESND,ob);
+            break;
+        case schabbobj:
+            PlaySoundLocActor(SCHABBSTHROWSND,ob);
+            break;
+        case fakeobj:
+            PlaySoundLocActor(FLAMETHROWERSND,ob);
+            break;
 #endif
-         default:
-           PlaySoundLocActor(NAZIFIRESND,ob);
-        }
-
+        default:
+            PlaySoundLocActor(NAZIFIRESND,ob);
+    }
 }
 
 
