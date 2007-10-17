@@ -276,7 +276,6 @@ void PollKeyboardButtons (void)
 
 void PollMouseButtons (void)
 {
-#ifdef NOTYET
     int buttons;
 
     buttons = IN_MouseButtons ();
@@ -287,7 +286,6 @@ void PollMouseButtons (void)
         buttonstate[buttonmouse[1]] = true;
     if (buttons & 4)
         buttonstate[buttonmouse[2]] = true;
-#endif
 }
 
 
@@ -367,7 +365,6 @@ void PollKeyboardMove (void)
 }
 
 
-#ifdef NOTYET
 /*
 ===================
 =
@@ -378,18 +375,21 @@ void PollKeyboardMove (void)
 
 void PollMouseMove (void)
 {
-//      short mousexmove,mouseymove;
     int mousexmove, mouseymove;
 
-    Mouse (MDelta);
-    mousexmove = (short) _CX;
-    mouseymove = (short) _DX;
+    SDL_GetMouseState(&mousexmove, &mouseymove);
+    if(IN_IsInputGrabbed())
+        IN_CenterMouse();
+
+    mousexmove -= screenWidth / 2;
+    mouseymove -= screenHeight / 2;
 
     controlx += mousexmove * 10 / (13 - mouseadjustment);
     controly += mouseymove * 20 / (13 - mouseadjustment);
 }
 
 
+#ifdef NOTYET
 
 /*
 ===================
@@ -530,10 +530,10 @@ void PollControls (void)
 //
     PollKeyboardButtons ();
 
-#ifdef NOTYET
-    if (mouseenabled)
+    if (mouseenabled && IN_IsInputGrabbed())
         PollMouseButtons ();
 
+#ifdef NOTYET
     if (joystickenabled)
         PollJoystickButtons ();
 #endif
@@ -543,10 +543,10 @@ void PollControls (void)
 //
     PollKeyboardMove ();
 
-#ifdef NOTYET
-    if (mouseenabled)
+    if (mouseenabled && IN_IsInputGrabbed())
         PollMouseMove ();
 
+#ifdef NOTYET
     if (joystickenabled)
         PollJoystickMove ();
 #endif
@@ -770,8 +770,8 @@ void CheckKeys (void)
         Paused = false;
         vbuf = temp;
         SD_MusicOn ();
-        if (MousePresent)
-            Mouse (MDelta);     // Clear accumulated mouse movement
+        if (MousePresent && IN_IsInputGrabbed())
+            IN_CenterMouse();     // Clear accumulated mouse movement
         TimeCount = oldTimeCount;
         return;
     }
@@ -905,10 +905,8 @@ void CheckKeys (void)
         if (loadedgame)
             playstate = ex_abort;
         lasttimecount = GetTimeCount();
-#ifdef NOTYET
-        if (MousePresent)
-            Mouse (MDelta);     // Clear accumulated mouse movement
-#endif
+        if (MousePresent && IN_IsInputGrabbed())
+            IN_CenterMouse();     // Clear accumulated mouse movement
         return;
     }
 
@@ -924,10 +922,9 @@ void CheckKeys (void)
         if (DebugKeys () && viewsize < 18)
             DrawAllPlayBorder ();       // dont let the blue borders flash
 
-#ifdef NOTYET
-        if (MousePresent)
-            Mouse (MDelta);     // Clear accumulated mouse movement
-#endif
+        if (MousePresent && IN_IsInputGrabbed())
+            IN_CenterMouse();     // Clear accumulated mouse movement
+
         lasttimecount = GetTimeCount();
         return;
     }
@@ -1469,10 +1466,8 @@ void PlayLoop (void)
     memset (buttonstate, 0, sizeof (buttonstate));
     ClearPaletteShifts ();
 
-#ifdef NOTYET
-    if (MousePresent)
-        Mouse (MDelta);         // Clear accumulated mouse movement
-#endif
+    if (MousePresent && IN_IsInputGrabbed())
+        IN_CenterMouse();         // Clear accumulated mouse movement
 
     if (demoplayback)
         IN_StartAck ();

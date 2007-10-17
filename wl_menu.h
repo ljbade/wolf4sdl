@@ -40,7 +40,8 @@
 #endif
 
 #define SENSITIVE       60
-#define CENTER          SENSITIVE*2
+#define CENTERX         ((int) screenWidth / 2)
+#define CENTERY         ((int) screenHeight / 2)
 
 #define MENU_X  76
 #define MENU_Y  55

@@ -812,8 +812,8 @@ void EndText (void)
 
         SETFONTCOLOR(0,15);
         IN_ClearKeysDown();
-        if (MousePresent)
-                Mouse(MDelta);  // Clear accumulated mouse movement
+        if (MousePresent && IN_IsInputGrabbed())
+                IN_CenterMouse();  // Clear accumulated mouse movement
 
         FreeMusic ();
 //      CA_DownLevel ();
@@ -848,10 +848,8 @@ void EndText (void)
         VW_FadeOut();
         SETFONTCOLOR(0,15);
         IN_ClearKeysDown();
-#ifdef NOTYET
-        if (MousePresent)
-                Mouse(MDelta);  // Clear accumulated mouse movement
-#endif
+        if (MousePresent && IN_IsInputGrabbed())
+                IN_CenterMouse();  // Clear accumulated mouse movement
 
         FreeMusic ();
 //      CA_DownLevel ();

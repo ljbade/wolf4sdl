@@ -77,6 +77,8 @@ static byte* DemoBuffer;
 static word  DemoOffset;
 static word  DemoSize;
 
+static bool GrabInput = false;
+
 /*
 =============================================================================
 
@@ -239,10 +241,9 @@ INL_KeyService(void)
 static void
 INL_GetMouseDelta(int *x,int *y)
 {
-	Mouse(MDelta);
-	*x = (short)_CX;
-	*y = (short)_DX;
+    SDL_GetRelativeMouseState(x, y);
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -250,16 +251,20 @@ INL_GetMouseDelta(int *x,int *y)
 //		mouse driver
 //
 ///////////////////////////////////////////////////////////////////////////
-static word
+static int
 INL_GetMouseButtons(void)
 {
-	word	buttons;
+    int buttons = SDL_GetMouseState(NULL, NULL);
+    int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+    int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+    buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
+    if(middlePressed) buttons |= 1 << 2;
+    if(rightPressed) buttons |= 1 << 1;
 
-	Mouse(MButtons);
-	buttons = _BX;
-	return(buttons);
+    return buttons;
 }
 
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	IN_GetJoyAbs() - Reads the absolute position of the specified joystick
@@ -608,7 +613,14 @@ static void processEvent(SDL_Event *event)
 
         // check for keypresses
         case SDL_KEYDOWN:
-		{
+        {
+            if(event->key.keysym.sym==SDLK_SCROLLOCK)
+            {
+                GrabInput = !GrabInput;
+                SDL_WM_GrabInput(GrabInput ? SDL_GRAB_ON : SDL_GRAB_OFF);
+                return;
+            }
+
             LastScan = event->key.keysym.sym;
             mod = SDL_GetModState();
 //                if((mod & KMOD_ALT))
@@ -711,7 +723,9 @@ IN_Startup(void)
 		JoysPresent[i] = checkjoys? INL_StartJoy(i) : false;
 #endif
 
-	IN_Started = true;
+    SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+    MousePresent = true;
+    IN_Started = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -850,12 +864,18 @@ IN_ReadControl(int player,ControlInfo *info)
                 buttons = INL_GetJoyButtons(type - ctrl_Joystick);
                 realdelta = true;
                 break;
+#endif
             case ctrl_Mouse:
-                INL_GetMouseDelta(&dx,&dy);
-                buttons = INL_GetMouseButtons();
+            {
+                buttons = SDL_GetRelativeMouseState(&dx, &dy);
+                int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+                int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+                buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
+                if(middlePressed) buttons |= 1 << 2;
+                if(rightPressed) buttons |= 1 << 1;
                 realdelta = true;
                 break;
-#endif
+            }
 		}
 	}
 
@@ -970,19 +990,20 @@ void IN_StartAck(void)
 
 #ifdef NOTYET
 	buttons = IN_JoyButtons () << 4;
+#endif
+
 	if (MousePresent)
 		buttons |= IN_MouseButtons ();
 
 	for (i=0;i<8;i++,buttons>>=1)
 		if (buttons&1)
 			btnstate[i] = true;
-#endif
 }
 
 
 boolean IN_CheckAck (void)
 {
-	unsigned i,buttons;
+	int i,buttons;
 
     IN_ProcessEvents();
 //
@@ -993,6 +1014,8 @@ boolean IN_CheckAck (void)
 
 #ifdef NOTYET
 	buttons = IN_JoyButtons () << 4;
+#endif
+
 	if (MousePresent)
 		buttons |= IN_MouseButtons ();
 
@@ -1004,7 +1027,6 @@ boolean IN_CheckAck (void)
 		}
 		else
 			btnstate[i]=false;
-#endif
 
 	return false;
 }
@@ -1055,19 +1077,15 @@ boolean IN_UserInput(longword delay)
 =
 ===================
 */
-#ifdef NOTYET
-byte	IN_MouseButtons (void)
+int IN_MouseButtons (void)
 {
 	if (MousePresent)
-	{
-		Mouse(MButtons);
-		return (byte)_BX;
-	}
+		return INL_GetMouseButtons();
 	else
 		return 0;
 }
 
-
+#ifdef NOTYET
 /*
 ===================
 =
@@ -1088,3 +1106,13 @@ byte	IN_JoyButtons (void)
 }
 
 #endif
+
+bool IN_IsInputGrabbed()
+{
+    return GrabInput;
+}
+
+void IN_CenterMouse()
+{
+    SDL_WarpMouse(screenWidth / 2, screenHeight / 2);
+}

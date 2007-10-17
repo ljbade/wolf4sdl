@@ -49,7 +49,7 @@ typedef	int		ScanCode;
 #define	sc_F11			SDLK_F11
 #define	sc_F12			SDLK_F12
 
-#define sc_ScrollLock		SDLK_SCROLLLOCK
+#define sc_ScrollLock		SDLK_SCROLLOCK
 #define sc_PrintScreen		SDLK_PRINT
 
 #define	sc_1			SDLK_1
@@ -194,11 +194,13 @@ void IN_WaitAndProcessEvents();
 void IN_ProcessEvents();
 
 
-byte	IN_MouseButtons (void);
+int     IN_MouseButtons (void);
 byte	IN_JoyButtons (void);
 
 void INL_GetJoyDelta(word joy,int *dx,int *dy);
 void IN_StartAck(void);
 boolean IN_CheckAck (void);
+bool IN_IsInputGrabbed();
+void IN_CenterMouse();
 
 #endif

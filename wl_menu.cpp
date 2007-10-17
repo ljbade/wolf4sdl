@@ -844,10 +844,8 @@ CP_CheckQuick (ScanCode scancode)
                     playstate = ex_abort;
                 lasttimecount = GetTimeCount ();
 
-#ifdef NOTYET
-                if (MousePresent)
-                    Mouse (MDelta);     // Clear accumulated mouse movement
-#endif
+                if (MousePresent && IN_IsInputGrabbed())
+                    IN_CenterMouse();     // Clear accumulated mouse movement
 
 #ifndef SPEAR
                 UNCACHEGRCHUNK (C_CURSOR1PIC);
@@ -914,10 +912,8 @@ CP_CheckQuick (ScanCode scancode)
 
                 lasttimecount = GetTimeCount ();
 
-#ifdef NOTYET
-                if (MousePresent)
-                    Mouse (MDelta);     // Clear accumulated mouse movement
-#endif
+                if (MousePresent && IN_IsInputGrabbed())
+                    IN_CenterMouse();     // Clear accumulated mouse movement
 
 #ifndef SPEAR
                 UNCACHEGRCHUNK (C_CURSOR1PIC);
@@ -1946,16 +1942,16 @@ CP_Control (int)
         which = HandleMenu (&CtlItems, &CtlMenu[0], NULL);
         switch (which)
         {
-#ifdef NOTYET
             case MOUSEENABLE:
                 mouseenabled ^= 1;
-                _CX = _DX = CENTER;
-                Mouse (4);
+                if(IN_IsInputGrabbed())
+                    IN_CenterMouse();
                 DrawCtlScreen ();
                 CusItems.curpos = -1;
                 ShootSnd ();
                 break;
 
+#ifdef NOTYET
             case JOYENABLE:
                 joystickenabled ^= 1;
                 if (joystickenabled)
@@ -2403,10 +2399,8 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 //
                 switch (type)
                 {
-#ifdef NOTYET
                     case MOUSE:
-                        Mouse (3);
-                        button = _BX;
+                        button = IN_MouseButtons();
                         switch (button)
                         {
                             case 1:
@@ -2438,6 +2432,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                         }
                         break;
 
+#ifdef NOTYET
                     case JOYSTICK:
                         if (ci.button0)
                             result = 1;
@@ -3307,13 +3302,11 @@ SetupControlPanel (void)
         }
     }
 
-#ifdef NOTYET
     //
     // CENTER MOUSE
     //
-    _CX = _DX = CENTER;
-    Mouse (4);
-#endif
+    if(IN_IsInputGrabbed())
+        IN_CenterMouse();
 }
 
 
@@ -3727,64 +3720,49 @@ ReadAnyControl (ControlInfo * ci)
 {
     int mouseactive = 0;
 
-
     IN_ReadControl (0, ci);
 
-#ifdef NOTYET
-    if (mouseenabled)
+    if (mouseenabled && IN_IsInputGrabbed())
     {
-        int mousey, mousex;
+        int mousex, mousey, buttons;
+        buttons = SDL_GetMouseState(&mousex, &mousey);
 
-
-        // READ MOUSE MOTION COUNTERS
-        // RETURN DIRECTION
-        // HOME MOUSE
-        // CHECK MOUSE BUTTONS
-
-        Mouse (3);
-        mousex = _CX;
-        mousey = _DX;
-
-        if (mousey < CENTER - SENSITIVE)
+        if(mousey - CENTERY < -SENSITIVE)
         {
             ci->dir = dir_North;
-            _CX = _DX = CENTER;
-            Mouse (4);
             mouseactive = 1;
         }
-        else if (mousey > CENTER + SENSITIVE)
+        else if(mousey - CENTERY > SENSITIVE)
         {
             ci->dir = dir_South;
-            _CX = _DX = CENTER;
-            Mouse (4);
             mouseactive = 1;
         }
 
-        if (mousex < CENTER - SENSITIVE)
+        if(mousex - CENTERX < -SENSITIVE)
         {
             ci->dir = dir_West;
-            _CX = _DX = CENTER;
-            Mouse (4);
             mouseactive = 1;
         }
-        else if (mousex > CENTER + SENSITIVE)
+        else if(mousex - CENTERX > SENSITIVE)
         {
             ci->dir = dir_East;
-            _CX = _DX = CENTER;
-            Mouse (4);
             mouseactive = 1;
         }
 
-        if (IN_MouseButtons ())
+        if(mouseactive)
+            IN_CenterMouse();
+
+        if (buttons)
         {
-            ci->button0 = IN_MouseButtons () & 1;
-            ci->button1 = IN_MouseButtons () & 2;
-            ci->button2 = IN_MouseButtons () & 4;
+            ci->button0 = buttons & 1;
+            ci->button1 = buttons & 2;
+            ci->button2 = buttons & 4;
             ci->button3 = false;
             mouseactive = 1;
         }
     }
 
+#ifdef NOTYET
     if (joystickenabled && !mouseactive)
     {
         int jx, jy, jb;
