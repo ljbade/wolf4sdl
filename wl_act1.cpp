@@ -316,11 +316,9 @@ void ConnectAreas (void)
 
 void InitAreas (void)
 {
+        memset (areabyplayer,0,sizeof(areabyplayer));
         if (player->areanumber < NUMAREAS)
-        {
-                memset (areabyplayer,0,sizeof(areabyplayer));
                 areabyplayer[player->areanumber] = true;
-        }
 }
 
 
