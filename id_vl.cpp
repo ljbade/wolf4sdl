@@ -4,21 +4,19 @@
 #include "wl_def.h"
 #pragma hdrstop
 
+boolean fullscreen = true;
+unsigned screenWidth = 640;
+unsigned screenHeight = 400;
+
 SDL_Surface *screen = NULL;
+unsigned screenPitch;
+
 SDL_Surface *screenBuffer = NULL;
+unsigned bufferPitch;
 
 SDL_Surface *curSurface = NULL;
-
-//byte *vbuf=(byte *)0xa0000;
-//byte *vdisp=(byte *)0xa0000;
-
-boolean fullscreen = false;
-
-unsigned screenWidth = 320;
-unsigned screenHeight = 200;
-unsigned screenPitch;
-unsigned bufferPitch;
 unsigned curPitch;
+
 unsigned scaleFactor;
 
 boolean	 screenfaded;
