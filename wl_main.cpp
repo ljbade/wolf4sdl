@@ -1223,12 +1223,10 @@ static void InitGame(int argc, char* argv[])
     }
     atexit(SDL_Quit);
 
-    SignonScreen ();
-
+#if defined _WIN32
     struct SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
 
-#if defined _WIN32
     if(SDL_GetWMInfo(&wmInfo) != -1)
     {
         HWND hwndSDL = wmInfo.window;
@@ -1239,6 +1237,8 @@ static void InitGame(int argc, char* argv[])
     }
     else exit(1);
 #endif
+
+    SignonScreen ();
 
     IN_Startup ();
     PM_Startup ();
