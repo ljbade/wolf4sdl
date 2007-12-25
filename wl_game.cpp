@@ -1378,11 +1378,7 @@ restartgame:
                 else
                         died = false;
 
-                fizzlein = true;
-
                 DrawLevel ();
-
-                VW_FadeIn();      //
 
 #ifdef SPEAR
 startplayloop:
