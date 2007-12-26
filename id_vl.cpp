@@ -55,7 +55,7 @@ void	VL_SetVGAPlaneMode (void)
     SDL_WM_SetCaption("Wolfenstein 3D", NULL);
 
     screen = SDL_SetVideoMode(screenWidth, screenHeight, 8,
-        SDL_HWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0));
+        SDL_SWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0));
     if(!screen)
     {
         printf("Unable to set %ix%ix8 video mode: %s\n", screenWidth,
@@ -73,7 +73,7 @@ void	VL_SetVGAPlaneMode (void)
     SDL_SetColors(screen, gamepal, 0, 256);
     memcpy(curpal, gamepal, sizeof(SDL_Color) * 256);
 
-    screenBuffer = SDL_CreateRGBSurface(SDL_HWSURFACE, screenWidth,
+    screenBuffer = SDL_CreateRGBSurface(SDL_SWSURFACE, screenWidth,
         screenHeight, 8, 0, 0, 0, 0);
     if(!screenBuffer)
     {
