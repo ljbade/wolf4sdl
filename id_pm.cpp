@@ -43,8 +43,8 @@ void PM_Startup()
 
 void PM_Shutdown()
 {
-    if(PageLengths != null)
+    if(PageLengths != NULL)
         free(PageLengths);
-    if(Pages != null)
+    if(Pages != NULL)
         free(Pages);
 }
