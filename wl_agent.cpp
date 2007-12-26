@@ -810,7 +810,7 @@ boolean TryMove (objtype *ob)
 				for (x=xl;x<=xh;x++)
 				{
 					check = actorat[x][y];
-					if (check && check<objlist)
+					if (check && !ISPOINTER(check))
 					{
 						if(tilemap[x][y]==64 && x==pwallx && y==pwally)	// front of moving pushwall?
 						{
