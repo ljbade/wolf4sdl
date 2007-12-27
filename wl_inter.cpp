@@ -962,15 +962,17 @@ LevelCompleted (void)
 boolean
 PreloadUpdate (unsigned current, unsigned total)
 {
-    unsigned w = WindowW - 10;
+    unsigned w = WindowW - scaleFactor * 10;
 
-
-    VWB_BarScaledCoord (WindowX + 5, WindowY + WindowH - 3, w, 2, BLACK);
+    VWB_BarScaledCoord (WindowX + scaleFactor * 5, WindowY + WindowH - scaleFactor * 3,
+        w, scaleFactor * 2, BLACK);
     w = ((int32_t) w * current) / total;
     if (w)
     {
-        VWB_BarScaledCoord (WindowX + 5, WindowY + WindowH - 3, w, 2, 0x37);       //SECONDCOLOR);
-        VWB_BarScaledCoord (WindowX + 5, WindowY + WindowH - 3, w - 1, 1, 0x32);
+        VWB_BarScaledCoord (WindowX + scaleFactor * 5, WindowY + WindowH - scaleFactor * 3,
+            w, scaleFactor * 2, 0x37);       //SECONDCOLOR);
+        VWB_BarScaledCoord (WindowX + scaleFactor * 5, WindowY + WindowH - scaleFactor * 3,
+            w - scaleFactor * 1, scaleFactor * 1, 0x32);
 
     }
     VW_UpdateScreen ();
@@ -994,7 +996,7 @@ PreloadGraphics (void)
         (screenHeight-scaleFactor*(STATUSLINES+48))/2, GETPSYCHEDPIC);
 
     WindowX = (screenWidth - scaleFactor*224)/2;
-    WindowY = (screenHeight-scaleFactor*(STATUSLINES+48))/2;
+    WindowY = (screenHeight - scaleFactor*(STATUSLINES+48))/2;
     WindowW = scaleFactor * 28 * 8;
     WindowH = scaleFactor * 48;
 
