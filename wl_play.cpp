@@ -743,24 +743,19 @@ void CheckKeys (void)
 //
 // pause key weirdness can't be checked as a scan code
 //
-#ifdef NOTYET
     if (Paused)
     {
-        byte *temp = vbuf;
-        int oldTimeCount = TimeCount;
-        vbuf = vdisp;
+        int lastoffs = StopMusic();
         LatchDrawPic (20 - 4, 80 - 2 * 8, PAUSEDPIC);
-        SD_MusicOff ();
+        VH_UpdateScreen();
         IN_Ack ();
         Paused = false;
-        vbuf = temp;
-        SD_MusicOn ();
+        ContinueMusic(lastoffs);
         if (MousePresent && IN_IsInputGrabbed())
             IN_CenterMouse();     // Clear accumulated mouse movement
-        TimeCount = oldTimeCount;
+        lasttimecount = GetTimeCount();
         return;
     }
-#endif
 
 #ifdef NOTYET
 #ifdef DEBUGKEYS
