@@ -1207,6 +1207,8 @@ static void InitGame()
     else exit(1);
 #endif
 
+    IN_ProcessEvents();
+
     SignonScreen ();
 
     IN_Startup ();
@@ -1400,13 +1402,9 @@ void Quit (const char *errorStr, ...)
     {
 #ifdef NOTYET
         memcpy((byte *)0xb8000,screen+7,7*160);
-        SetTextCursor(0,0);
-#endif
-        puts(" ");      // temp fix for screen pointer assignment
-#ifdef NOTYET
         SetTextCursor(9,3);
 #endif
-        puts(error);          // printf(error);
+        puts(error);
 #ifdef NOTYET
         SetTextCursor(0,7);
 #endif
@@ -1420,10 +1418,6 @@ void Quit (const char *errorStr, ...)
         #ifndef JAPAN
         memcpy((byte *)0xb8000,screen+7,24*160); // 24 for SPEAR/UPLOAD compatibility
         #endif
-        SetTextCursor(0,0);
-#endif
-        puts(" ");      // temp fix for screen pointer assignment
-#ifdef NOTYET
         SetTextCursor(0,23);
 #endif
     }
@@ -1603,6 +1597,7 @@ static void DemoLoop()
 
 void CheckParameters(int argc, char *argv[])
 {
+    bool hasError = false;
     for(int i = 1; i < argc; i++)
     {
         char *arg = argv[i];
@@ -1624,21 +1619,51 @@ void CheckParameters(int argc, char *argv[])
         else IFARG("nowait")
             param_nowait = true;
         else IFARG("tedlevel")
-            param_tedlevel = atoi(argv[++i]);
-        else
         {
-            printf("Wolf4SDL v1.1 by Chaos-Software\n"
-                "Original Wolfenstein 3D by id Software\n\n"
-                "Usage: Wolf4SDL [options]\n"
-                "Options:\n"
-                " --tedlevel <level>     Starts the game in the given level\n"
-                " --baby                 Sets the difficulty to baby for tedlevel\n"
-                " --easy                 Sets the difficulty to easy for tedlevel\n"
-                " --normal               Sets the difficulty to normal for tedlevel\n"
-                " --hard                 Sets the difficulty to hard for tedlevel\n"
-                " --nowait               Skips intro screens\n");
-            exit(1);
+            if(++i >= argc)
+            {
+                printf("The tedlevel option is missing a level argument!\n");
+                hasError = true;
+            }
+            else param_tedlevel = atoi(argv[i]);
         }
+        else IFARG("windowed")
+            fullscreen = false;
+        else IFARG("res")
+        {
+            if(i + 2 >= argc)
+            {
+                printf("The res option needs a width and a height argument!\n");
+                hasError = true;
+            }
+            else
+            {
+                screenWidth = atoi(argv[++i]);
+                screenHeight = atoi(argv[++i]);
+                if(screenWidth % 320)
+                    printf("Screen width must be a multiple of 320!\n"), hasError = true;
+                if(screenHeight % 200)
+                    printf("Screen height mus be a multiple of 200!\n"), hasError = true;
+            }
+        }
+        else hasError = true;
+    }
+    if(hasError)
+    {
+        printf("Wolf4SDL v1.1 by Chaos-Software\n"
+            "Original Wolfenstein 3D by id Software\n\n"
+            "Usage: Wolf4SDL [options]\n"
+            "Options:\n"
+            " --tedlevel <level>     Starts the game in the given level\n"
+            " --baby                 Sets the difficulty to baby for tedlevel\n"
+            " --easy                 Sets the difficulty to easy for tedlevel\n"
+            " --normal               Sets the difficulty to normal for tedlevel\n"
+            " --hard                 Sets the difficulty to hard for tedlevel\n"
+            " --nowait               Skips intro screens\n"
+            " --windowed             Starts the game in a window\n"
+            "                        (Use this when you have palette problems)\n"
+            " --res <width> <height> Sets the screen resolution (must be multiple of 320x200)\n");
+        exit(1);
     }
 }
 
