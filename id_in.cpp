@@ -979,7 +979,7 @@ boolean	btnstate[8];
 
 void IN_StartAck(void)
 {
-	unsigned i,buttons;
+	int i, buttons = 0;
 
     IN_ProcessEvents();
 //
@@ -1003,7 +1003,7 @@ void IN_StartAck(void)
 
 boolean IN_CheckAck (void)
 {
-	int i,buttons;
+	int i, buttons = 0;
 
     IN_ProcessEvents();
 //
