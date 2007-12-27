@@ -3883,7 +3883,7 @@ GetYorN (int x, int y, int pic)
     {
         IN_WaitAndProcessEvents();
 #ifndef SPEAR
-        if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm ("goobers"))
+        if (Keyboard[sc_Tab] && Keyboard[sc_P] && param_debugmode)
             PicturePause ();
 #endif
 

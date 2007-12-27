@@ -47,13 +47,8 @@ typedef	struct
         px,py;
 } WindowRec;	// Record used to save & restore screen windows
 
-//	Hack import for TED launch support
-extern	boolean		tedlevel;
-extern	int			tedlevelnum;
-
 extern	boolean		ingame,		// Set by game code if a game is in progress
-					loadedgame,	// Set if the current game was loaded
-					NoWait;
+					loadedgame;	// Set if the current game was loaded
 extern	word		PrintX,PrintY;	// Current printing location in the window
 extern	word		WindowX,WindowY,// Current location of window
 					WindowW,WindowH;// Current size of window
@@ -68,13 +63,9 @@ extern	HighScore	Scores[];
 
 #define	US_HomeWindow()	{PrintX = WindowX; PrintY = WindowY;}
 
-void US_Startup(int argc, char* argv[]);
-void US_Setup(void);
-void US_Shutdown(void);
+void            US_Startup(void);
+void            US_Shutdown(void);
 void			US_InitRndT(boolean randomize);
-void			US_SetLoadSaveHooks(boolean (*load)(int),
-									boolean (*save)(int),
-									void (*reset)(void));
 void			US_TextScreen(void),
 				US_UpdateTextScreen(void),
 				US_FinishTextScreen(void);
@@ -98,7 +89,6 @@ void			US_DisplayHighScores(int which);
 extern	boolean	US_UpdateCursor(void);
 boolean         US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
                              int maxchars,int maxwidth);
-extern	int		US_CheckParm(const char *parm,const char **strings);
 
 void	        USL_PrintInCenter(const char *s,Rect r);
 char 	        *USL_GiveSaveName(word game);

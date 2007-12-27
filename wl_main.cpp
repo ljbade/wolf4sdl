@@ -49,8 +49,6 @@ extern byte signon[];
 */
 
 char    str[80];
-int     tedlevelnum;
-boolean tedlevel;
 int     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
                        5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 
@@ -76,6 +74,14 @@ static boolean virtualreality;
 int     mouseadjustment;
 
 char    configname[13]="config.";
+
+//
+// Command line parameter variables
+//
+boolean param_debugmode = false;
+boolean param_nowait = false;
+int     param_difficulty = 1;           // default is "normal"
+int     param_tedlevel = -1;            // default is not to start a level
 
 
 /*
@@ -838,7 +844,7 @@ void FinishSignon (void)
 
     VH_UpdateScreen();
 
-    if (!NoWait)
+    if (!param_nowait)
         IN_Ack ();
 
     #ifndef JAPAN
@@ -858,46 +864,9 @@ void FinishSignon (void)
 
     SETFONTCOLOR(0,15);
 #else
-    if (!NoWait)
+    if (!param_nowait)
         VW_WaitVBL(3*70);
 #endif
-}
-
-//===========================================================================
-
-/*
-=================
-=
-= MS_CheckParm
-=
-=================
-*/
-
-static int    __argc; // XXX TODO0000
-static char** __argv; // XXX TODO0000
-
-boolean MS_CheckParm (const char *check)
-{
-    int             i;
-    char    *parm;
-
-    for (i = 1;i<__argc;i++)
-    {
-        parm = __argv[i];
-
-        while ( !isalpha(*parm) )       // skip - / \ etc.. in front of parm
-            if (!*parm++)
-                break;                  // hit end of string without an alphanum
-
-#ifdef _WIN32
-		if (!stricmp(check, parm))
-#else
-        if (!strcasecmp(check, parm))
-#endif
-            return true;
-    }
-
-    return false;
 }
 
 //===========================================================================
@@ -1206,7 +1175,7 @@ void DoJukebox(void)
 ==========================
 */
 
-static void InitGame(int argc, char* argv[])
+static void InitGame()
 {
 #ifndef SPEARDEMO
     boolean didjukebox=false;
@@ -1244,7 +1213,7 @@ static void InitGame(int argc, char* argv[])
     PM_Startup ();
     SD_Startup ();
     CA_Startup ();
-    US_Startup(argc, argv);
+    US_Startup();
 
     // TODO: Will any memory checking be needed someday??
 #ifdef NOTYET
@@ -1474,9 +1443,8 @@ void Quit (const char *errorStr, ...)
 =====================
 */
 
-static  const char *ParmStrings[] = {"baby","easy","normal","hard",""};
 
-static void DemoLoop(int argc, char* argv[])
+static void DemoLoop()
 {
     static int LastDemo;
     int i,level;
@@ -1484,27 +1452,17 @@ static void DemoLoop(int argc, char* argv[])
 //
 // check for launch from ted
 //
-    if (tedlevel)
+    if (param_tedlevel != -1)
     {
-        NoWait = true;
-        NewGame(1,0);
-
-        for (i = 1; i < argc; i++)
-        {
-            level = US_CheckParm(argv[i], ParmStrings);
-            if (level != -1)
-            {
-                gamestate.difficulty=level;
-                break;
-            }
-        }
+        param_nowait = true;
+        NewGame(param_difficulty,0);
 
 #ifndef SPEAR
-        gamestate.episode = tedlevelnum/10;
-        gamestate.mapon = tedlevelnum%10;
+        gamestate.episode = param_tedlevel/10;
+        gamestate.mapon = param_tedlevel%10;
 #else
         gamestate.episode = 0;
-        gamestate.mapon = tedlevelnum;
+        gamestate.mapon = param_tedlevel;
 #endif
         GameLoop();
         Quit (NULL);
@@ -1522,7 +1480,7 @@ static void DemoLoop(int argc, char* argv[])
         #ifndef GOODTIMES
         #ifndef SPEAR
         #ifndef JAPAN
-        if (!NoWait)
+        if (!param_nowait)
             NonShareware();
         #endif
         #else
@@ -1539,7 +1497,7 @@ static void DemoLoop(int argc, char* argv[])
     StartCPMusic(INTROSONG);
 
 #ifndef JAPAN
-    if (!NoWait)
+    if (!param_nowait)
         PG13 ();
 #endif
 
@@ -1547,12 +1505,11 @@ static void DemoLoop(int argc, char* argv[])
 
     while (1)
     {
-        while (!NoWait)
+        while (!param_nowait)
         {
 //
 // title page
 //
-//            MM_SortMem ();
 #ifndef DEMOTEST
 
 #ifdef SPEAR
@@ -1614,11 +1571,7 @@ static void DemoLoop(int argc, char* argv[])
         VW_FadeOut ();
 
 #ifdef DEBUGKEYS
-#ifndef SPEAR
-        if (Keyboard[sc_Tab] && MS_CheckParm("goobers"))
-#else
-        if (Keyboard[sc_Tab] && MS_CheckParm("debugmode"))
-#endif
+        if (Keyboard[sc_Tab] && param_debugmode)
             RecordDemo ();
         else
             US_ControlPanel (0);
@@ -1638,6 +1591,56 @@ static void DemoLoop(int argc, char* argv[])
 
 //===========================================================================
 
+/* Perhaps use case insensitive check?
+#ifdef _WIN32
+#define IFARG(str) if(!stricmp(arg, (str)))
+#else
+#define IFARG(str) if(!strcasecmp(arg, (str)))
+#endif
+*/
+
+#define IFARG(str) if(!strcmp(arg, (str)))
+
+void CheckParameters(int argc, char *argv[])
+{
+    for(int i = 1; i < argc; i++)
+    {
+        char *arg = argv[i];
+        while(!isalpha(*arg)) arg++;
+#ifndef SPEAR
+        IFARG("goobers")
+#else
+        IFARG("debugmode")
+#endif
+            param_debugmode = true;
+        else IFARG("baby")
+            param_difficulty = 0;
+        else IFARG("easy")
+            param_difficulty = 1;
+        else IFARG("normal")
+            param_difficulty = 2;
+        else IFARG("hard")
+            param_difficulty = 3;
+        else IFARG("nowait")
+            param_nowait = true;
+        else IFARG("tedlevel")
+            param_tedlevel = atoi(argv[++i]);
+        else
+        {
+            printf("Wolf4SDL v1.1 by Chaos-Software\n"
+                "Original Wolfenstein 3D by id Software\n\n"
+                "Usage: Wolf4SDL [options]\n"
+                "Options:\n"
+                " --tedlevel <level>     Starts the game in the given level\n"
+                " --baby                 Sets the difficulty to baby for tedlevel\n"
+                " --easy                 Sets the difficulty to easy for tedlevel\n"
+                " --normal               Sets the difficulty to normal for tedlevel\n"
+                " --hard                 Sets the difficulty to hard for tedlevel\n"
+                " --nowait               Skips intro screens\n");
+            exit(1);
+        }
+    }
+}
 
 /*
 ==========================
@@ -1649,8 +1652,7 @@ static void DemoLoop(int argc, char* argv[])
 
 int main (int argc, char *argv[])
 {
-    __argc = argc; // XXX TODO0000
-    __argv = argv; // XXX TODO0000
+    CheckParameters(argc, argv);
 
 #if defined _WIN32
     _fmode=O_BINARY;                // DON'T create save games in text mode!!
@@ -1670,9 +1672,9 @@ int main (int argc, char *argv[])
 
     CheckForEpisodes();
 
-    InitGame(argc, argv);
+    InitGame();
 
-    DemoLoop(argc, argv);
+    DemoLoop();
 
     Quit("Demo loop exited???");
     return 1;

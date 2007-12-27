@@ -567,7 +567,7 @@ int DebugKeys (void)
         }
         if (Keyboard[sc_E])             // E = quit level
         {
-                if (tedlevel)
+                if (param_tedlevel != -1)
                         Quit (NULL);
                 playstate = ex_completed;
 //              gamestate.mapon++;

@@ -889,13 +889,16 @@ extern  boolean  startgame;
 extern  char     str[80];
 extern  char     configname[13];
 
-extern  int      tedlevelnum;
-extern  boolean  tedlevel;
+//
+// Command line parameter variables
+//
+extern  boolean  param_debugmode;
+extern  boolean  param_nowait;
+extern  int      param_difficulty;
+extern  int      param_tedlevel;
 
-void             NewGame (int difficulty,int episode);
 
-extern  boolean  MS_CheckParm (const char *string);
-
+void            NewGame (int difficulty,int episode);
 void            Quit (const char *errorStr, ...);
 void            CalcProjection (int32_t focal);
 void            NewViewSize (int width);
@@ -1342,17 +1345,6 @@ static inline fixed FixedMul(fixed a, fixed b)
 {
 	return (int64_t)a * b + 0x8000 >> 16;
 }
-
-#if 0
-extern "C"
-{
-    void US_InitRndT(int randomize);
-    #pragma aux US_InitRndT parm [EAX] modify exact [ax cx edx]
-
-    int US_RndT();
-    #pragma aux US_RndT value [EAX] modify exact [eax ebx]
-}
-#endif
 
 
 extern byte fontcolor,backcolor;

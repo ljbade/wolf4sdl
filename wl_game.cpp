@@ -1235,8 +1235,7 @@ void Died (void)
         SD_WaitSoundDone ();
         ClearMemory();                  // Tricob's "Out of Memory" fix
 
-        if (tedlevel == false)  // SO'S YA DON'T GET KILLED WHILE LAUNCHING!
-          gamestate.lives--;
+        gamestate.lives--;
 
         if (gamestate.lives > -1)
         {

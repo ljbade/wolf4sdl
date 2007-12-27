@@ -703,13 +703,7 @@ void CheckKeys (void)
     // OPEN UP DEBUG KEYS
     //
 #ifdef DEBUGKEYS
-#ifndef SPEAR
-    if (Keyboard[sc_BackSpace] && Keyboard[sc_LShift] && Keyboard[sc_Alt]       /* &&
-                                                                                   MS_CheckParm("goobers") */ )
-#else
-    if (Keyboard[sc_BackSpace] &&
-        Keyboard[sc_LShift] && Keyboard[sc_Alt] && MS_CheckParm ("debugmode"))
-#endif
+    if (Keyboard[sc_BackSpace] && Keyboard[sc_LShift] && Keyboard[sc_Alt] && param_debugmode)
     {
         ClearMemory ();
         CA_CacheGrChunk (STARTFONT + 1);

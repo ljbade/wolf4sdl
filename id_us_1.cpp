@@ -28,14 +28,12 @@
 
 
 //	Global variables
-		boolean		NoWait;
 		word		PrintX,PrintY;
 		word		WindowX,WindowY,WindowW,WindowH;
 
 //	Internal variables
 #define	ConfigVersion	1
 
-static	const char	*ParmStrings[] = {"TEDLEVEL","NOWAIT",0};
 static	boolean		US_Started;
 
 		void		(*USL_MeasureString)(const char *,word *,word *) = VW_MeasurePropString;
@@ -85,34 +83,12 @@ static byte rndtable[] = {
 //	US_Startup() - Starts the User Mgr
 //
 ///////////////////////////////////////////////////////////////////////////
-void US_Startup(int argc, char* argv[])
+void US_Startup()
 {
-	int	i,n;
-
 	if (US_Started)
 		return;
 
 	US_InitRndT(true);		// Initialize the random number generator
-
-	// Check for TED launching here
-	for (i = 1; i < argc; i++)
-	{
-		n = US_CheckParm(argv[i], ParmStrings);
-		switch(n)
-		{
-#ifdef DEBUGKEYS
-		 case 0:
-		   tedlevelnum = atoi(argv[i + 1]);
-		   if (tedlevelnum >= 0)
-		     tedlevel = true;
-		   break;
-#endif
-
-		 case 1:
-		   NoWait = true;
-		   break;
-		}
-	}
 
 	US_Started = true;
 }
@@ -131,43 +107,6 @@ US_Shutdown(void)
 
 	US_Started = false;
 }
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	US_CheckParm() - checks to see if a string matches one of a set of
-//		strings. The check is case insensitive. The routine returns the
-//		index of the string that matched, or -1 if no matches were found
-//
-///////////////////////////////////////////////////////////////////////////
-int
-US_CheckParm(const char *parm,const char **strings)
-{
-	char	cp,cs;
-	const char *p,*s;
-	int		i;
-
-	while (!isalpha(*parm))	// Skip non-alphas
-		parm++;
-
-	for (i = 0;*strings && **strings;i++)
-	{
-		for (s = *strings++,p = parm,cs = cp = 0;cs == cp;)
-		{
-			cs = *s++;
-			if (!cs)
-				return(i);
-			cp = *p++;
-
-			if (isupper(cs))
-				cs = tolower(cs);
-			if (isupper(cp))
-				cp = tolower(cp);
-		}
-	}
-
-	return(-1);
-}
-
 
 //	Window/Printing routines
 
