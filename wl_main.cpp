@@ -1354,8 +1354,8 @@ void ShowViewSize (int width)
     oldwidth = viewwidth;
     oldheight = viewheight;
 
-    viewwidth = width*16;
-    viewheight = width*16*HEIGHTRATIO;
+    viewwidth = width*16*screenWidth/320;
+    viewheight = width*16*HEIGHTRATIO*screenHeight/200;
     DrawPlayBorder ();
 
     viewheight = oldheight;

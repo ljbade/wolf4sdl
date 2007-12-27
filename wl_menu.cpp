@@ -2953,7 +2953,7 @@ CP_ChangeView (int)
     WindowX = WindowY = 0;
     WindowW = 320;
     WindowH = 200;
-    newview = oldview = viewwidth / 16;
+    newview = oldview = viewsize;
     DrawChangeView (oldview);
 
     do
@@ -3030,7 +3030,7 @@ DrawChangeView (int view)
 
     PrintY = 161;
     WindowX = 0;
-    WindowY = 320;
+    WindowY = 320;                                  // TODO: Check this!
     SETFONTCOLOR (HIGHLIGHT, BKGDCOLOR);
 
     US_CPrint (STR_SIZE1 "\n");
@@ -3064,24 +3064,9 @@ CP_Quit (int)
 #endif
     {
         VW_UpdateScreen ();
-/*              _asm mov eax,3
-                _asm int 0x10
-                printf("Vor MusicOff()\n");
-                IN_Ack();*/
         SD_MusicOff ();
-/*              printf("Vor StopSound()\n");
-                IN_Ack();*/
         SD_StopSound ();
-/*              printf("Nach StopSound()\n");
-                IN_Ack();*/
         MenuFadeOut ();
-        //
-        // SHUT-UP THE ADLIB
-        //
-#ifdef NOTYET
-        for (int i = 1; i <= 0xf5; i++)
-            alOut (i, 0);
-#endif
         Quit (NULL);
     }
 
