@@ -108,9 +108,9 @@ huffnode        audiohuffman[255];
 #endif
 */
 
-int    grhandle;               // handle to EGAGRAPH
-int    maphandle;              // handle to MAPTEMP / GAMEMAPS
-int    audiohandle;            // handle to AUDIOT / AUDIO
+int    grhandle = -1;               // handle to EGAGRAPH
+int    maphandle = -1;              // handle to MAPTEMP / GAMEMAPS
+int    audiohandle = -1;            // handle to AUDIOT / AUDIO
 
 int32_t   chunkcomplen,chunkexplen;
 
@@ -780,14 +780,18 @@ void CA_Shutdown (void)
 {
     int i,start;
 
-    close (maphandle);
-    close (grhandle);
-    close (audiohandle);
+    if(maphandle != -1)
+        close(maphandle);
+    if(grhandle != -1)
+        close(grhandle);
+    if(audiohandle != -1)
+        close(audiohandle);
 
     for(i=0;i<NUMCHUNKS;i++)
         if(grsegs[i])
             UNCACHEGRCHUNK(i);
-    free(pictable);
+    if(pictable != NULL)
+        free(pictable);
 
     switch (oldsoundmode)
     {

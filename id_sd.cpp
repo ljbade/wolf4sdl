@@ -1983,8 +1983,6 @@ SD_Startup(void)
 
     if(YM3812Init(1,3579545,44100))
     {
-        //MessageBox(NULL,"Unable to create virtual OPL!","InitIMFPlayer()",MB_OK|MB_ICONEXCLAMATION);
-        //return 5;
         printf("Unable to create virtual OPL!!\n");
     }
 
@@ -2015,57 +2013,6 @@ SD_Startup(void)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//      SD_Default() - Sets up the default behaviour for the Sound Mgr whether
-//              the config file was present or not.
-//
-///////////////////////////////////////////////////////////////////////////
-/* void
-SD_Default(boolean gotit,SDMode sd,SMMode sm)
-{
-        boolean gotsd,gotsm;
-
-        gotsd = gotsm = gotit;
-
-        if (gotsd)      // Make sure requested sound hardware is available
-        {
-                switch (sd)
-                {
-                case sdm_AdLib:
-                        gotsd = AdLibPresent;
-                        break;
-                }
-        }
-        if (!gotsd)
-        {
-                if (AdLibPresent)
-                        sd = sdm_AdLib;
-                else
-                        sd = sdm_PC;
-        }
-        if (sd != SoundMode)
-                SD_SetSoundMode(sd);
-
-
-        if (gotsm)      // Make sure requested music hardware is available
-        {
-                switch (sm)
-                {
-                case sdm_AdLib:
-                        gotsm = AdLibPresent;
-                        break;
-                }
-        }
-        if (!gotsm)
-        {
-                if (AdLibPresent)
-                        sm = smm_AdLib;
-        }
-        if (sm != MusicMode)
-                SD_SetMusicMode(sm);
-} */
-
-///////////////////////////////////////////////////////////////////////////
-//
 //      SD_Shutdown() - shuts down the Sound Mgr
 //              Removes sound ISR and turns off whatever sound hardware was active
 //
@@ -2078,24 +2025,6 @@ SD_Shutdown(void)
 
     SD_MusicOff();
     SD_StopSound();
-/*    SDL_ShutDevice();
-    SDL_CleanDevice();
-
-        if (SoundBlasterPresent)
-                SDL_ShutSB();
-
-        if (SoundSourcePresent)
-                SDL_ShutSS();
-
-//      _asm    pushfd
-        _asm    cli
-
-        SDL_SetTimer0(0);
-
-        _dos_setvect(8,t0OldService);
-
-//      _asm    popfd
-        _asm    sti*/
 
     for(int i = 0; i < STARTMUSIC - STARTDIGISOUNDS; i++)
     {
@@ -2103,22 +2032,10 @@ SD_Shutdown(void)
         if(SoundBuffers[i]) free(SoundBuffers[i]);
     }
 
-    free(DigiList);
+    if(DigiList) free(DigiList);
 
     SD_Started = false;
 }
-
-///////////////////////////////////////////////////////////////////////////
-//
-//      SD_SetUserHook() - sets the routine that the Sound Mgr calls every 1/70th
-//              of a second from its timer 0 ISR
-//
-///////////////////////////////////////////////////////////////////////////
-/* void
-SD_SetUserHook(void (* hook)(void))
-{
-        SoundUserHook = hook;
-} */
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -2159,15 +2076,6 @@ SD_PlaySound(soundnames sound)
         return 0;
 
     s = (SoundCommon *) SoundTable[sound];
-
-/*      gamestate.score=1000000;   // was used to test for invalid caching
-        if (!(unsigned)SoundTable[17]) gamestate.score += 100000;
-        if (!(unsigned)SoundTable[18]) gamestate.score += 10000;
-        if (!(unsigned)SoundTable[19]) gamestate.score += 1000;
-        if (!(unsigned)SoundTable[20]) gamestate.score += 100;
-        if (!(unsigned)SoundTable[21]) gamestate.score += 10;
-        if (!(unsigned)SoundTable[22]) gamestate.score += 1;
-        DrawScore(); */
 
     if ((SoundMode != sdm_Off) && !s)
             Quit("SD_PlaySound() - Uncached sound");
