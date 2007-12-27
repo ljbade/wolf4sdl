@@ -1378,6 +1378,8 @@ restartgame:
                 else
                         died = false;
 
+                fizzlein = true;
+
                 DrawLevel ();
 
 #ifdef SPEAR
