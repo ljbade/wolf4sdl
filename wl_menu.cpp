@@ -955,7 +955,7 @@ CP_CheckQuick (ScanCode scancode)
                 Quit (NULL);
             }
 
-            DrawAllPlayBorder ();
+            DrawPlayBorder ();
             WindowH = 200;
             fontnumber = 0;
             return 1;

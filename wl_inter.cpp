@@ -168,7 +168,7 @@ Victory (void)
 
     VWB_Bar (0, 0, 320, 200 - STATUSLINES, VIEWCOLOR);
     if (bordercol != VIEWCOLOR)
-        DrawAllStatusBorder (VIEWCOLOR);
+        DrawStatusBorder (VIEWCOLOR);
 
 #ifdef JAPAN
 #ifndef JAPDEMO

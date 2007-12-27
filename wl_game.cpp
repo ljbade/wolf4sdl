@@ -772,45 +772,19 @@ void DrawPlayBorderSides (void)
     int     xl,yl;
 
     xl = screenWidth/2-viewwidth/2;
-    yl = (screenHeight-STATUSLINES-viewheight)/2;
+    yl = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
 
-    VWB_BarScaledCoord (0,0,xl-1,screenHeight-STATUSLINES,bordercol);
-    VWB_BarScaledCoord (xl+viewwidth+1,0,xl-2,screenHeight-STATUSLINES,bordercol);
+    VWB_BarScaledCoord (0,0,xl-scaleFactor,screenHeight-scaleFactor*STATUSLINES,bordercol);
+    VWB_BarScaledCoord (xl+viewwidth+scaleFactor,0,xl-scaleFactor*2,screenHeight-scaleFactor*STATUSLINES,bordercol);
 
-    VWB_BarScaledCoord (0,0,screenWidth,yl-1,bordercol);
-    VWB_BarScaledCoord (0,yl+viewheight+1,screenWidth,yl-1,bordercol);
+    VWB_BarScaledCoord (0,0,screenWidth,yl-scaleFactor,bordercol);
+    VWB_BarScaledCoord (0,yl+viewheight+scaleFactor,screenWidth,yl-scaleFactor,bordercol);
 
-    VWB_VlinScaledCoord (yl-1,yl+viewheight,xl-1,0);
-    VWB_VlinScaledCoord (yl-1,yl+viewheight,xl+viewwidth,bordercol-2);
-
-    VWB_HlinScaledCoord (xl-1,xl+viewwidth,yl-1,0);
-    VWB_HlinScaledCoord (xl-1,xl+viewwidth,yl+viewheight,bordercol-2);
-    VWB_PlotScaledCoord (xl-1,yl+viewheight,bordercol-3);
-}
-
-
-/*
-===================
-=
-= DrawAllPlayBorderSides
-=
-===================
-*/
-
-void DrawAllPlayBorderSides (void)
-{
-#ifdef NOTYET
-    int i;
-    byte *temp;
-
-    temp = vbuf;
-    for (i=0;i<3;i++)
-    {
-        vbuf = (byte *)(0xa0000+screenloc[i]);
-        DrawPlayBorderSides ();
-    }
-    vbuf = temp;
-#endif
+    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, viewwidth+scaleFactor, scaleFactor, 0);
+    VWB_BarScaledCoord(xl, yl+viewheight, viewwidth+scaleFactor, scaleFactor, bordercol-2);
+    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, scaleFactor, viewheight+scaleFactor, 0);
+    VWB_BarScaledCoord(xl+viewwidth, yl-scaleFactor, scaleFactor, viewheight+2*scaleFactor, bordercol-2);
+    VWB_BarScaledCoord(xl-scaleFactor, yl+viewheight, scaleFactor, scaleFactor, bordercol-3);
 }
 
 
@@ -824,42 +798,25 @@ void DrawAllPlayBorderSides (void)
 
 void DrawStatusBorder (byte color)
 {
-    int statusborderw = (screenWidth-320)/2;
+    int statusborderw = (screenWidth-scaleFactor*320)/2;
 
-    VWB_BarScaledCoord (0,0,screenWidth,screenHeight-scaleFactor*STATUSLINES+3,color);
-    VWB_BarScaledCoord (0,screenHeight-scaleFactor*STATUSLINES+3,statusborderw+8,36,color);
-    VWB_BarScaledCoord (0,screenHeight-2,screenWidth,2,color);
-    VWB_BarScaledCoord (screenWidth-statusborderw-8,screenHeight-scaleFactor*STATUSLINES+3,statusborderw+8,36,color);
+    VWB_BarScaledCoord (0,0,screenWidth,screenHeight-scaleFactor*(STATUSLINES-3),color);
+    VWB_BarScaledCoord (0,screenHeight-scaleFactor*(STATUSLINES-3),
+        statusborderw+scaleFactor*8,scaleFactor*(STATUSLINES-4),color);
+    VWB_BarScaledCoord (0,screenHeight-scaleFactor*2,screenWidth,scaleFactor*2,color);
+    VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*8, screenHeight-scaleFactor*(STATUSLINES-3),
+        statusborderw+scaleFactor*8,scaleFactor*(STATUSLINES-4),color);
 
-    VWB_BarScaledCoord (9,screenHeight-3,97,1,color-1);
-    VWB_BarScaledCoord (106,screenHeight-3,screenHeight-scaleFactor*STATUSLINES+1,1,color-2);
-    VWB_BarScaledCoord (267,screenHeight-3,44,1,color-3);
-    VWB_BarScaledCoord (screenWidth-9,screenHeight-scaleFactor*STATUSLINES+4,1,20,color-2);
-    VWB_BarScaledCoord (screenWidth-9,screenHeight-scaleFactor*STATUSLINES/2+4,1,14,color-3);
-}
-
-
-/*
-===================
-=
-= DrawAllStatusBorder
-=
-===================
-*/
-void DrawAllStatusBorder (byte color)
-{
-#ifdef NOTYET
-        int i;
-        byte *temp;
-
-        temp = vbuf;
-        for (i=0;i<3;i++)
-        {
-                vbuf = (byte *)(0xa0000+screenloc[i]);
-                DrawStatusBorder (color);
-        }
-        vbuf = temp;
-#endif
+    VWB_BarScaledCoord (statusborderw+scaleFactor*9, screenHeight-scaleFactor*3,
+        scaleFactor*97, scaleFactor*1, color-1);
+    VWB_BarScaledCoord (statusborderw+scaleFactor*106, screenHeight-scaleFactor*3,
+        scaleFactor*161, scaleFactor*1, color-2);
+    VWB_BarScaledCoord (statusborderw+scaleFactor*267, screenHeight-scaleFactor*3,
+        scaleFactor*44, scaleFactor*1, color-3);
+    VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*9, screenHeight-scaleFactor*(STATUSLINES-4),
+        scaleFactor*1, scaleFactor*20, color-2);
+    VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*9, screenHeight-scaleFactor*(STATUSLINES/2-4),
+        scaleFactor*1, scaleFactor*14, color-3);
 }
 
 
@@ -880,8 +837,10 @@ void DrawPlayBorder (void)
     else
     {
         int statusborderw = (screenWidth-scaleFactor*320)/2;
-        VWB_BarScaledCoord (0,screenHeight-scaleFactor*STATUSLINES,statusborderw+8,scaleFactor*STATUSLINES,bordercol);
-        VWB_BarScaledCoord (screenWidth-statusborderw-8,screenHeight-scaleFactor*STATUSLINES,statusborderw+9,scaleFactor*STATUSLINES,bordercol);
+        VWB_BarScaledCoord (0, screenHeight-scaleFactor*STATUSLINES,
+            statusborderw+scaleFactor*8, scaleFactor*STATUSLINES, bordercol);
+        VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*8, screenHeight-scaleFactor*STATUSLINES,
+            statusborderw+scaleFactor*8, scaleFactor*STATUSLINES, bordercol);
     }
 
     VWB_BarScaledCoord (0,0,screenWidth,screenHeight-scaleFactor*STATUSLINES,bordercol);
@@ -890,36 +849,11 @@ void DrawPlayBorder (void)
     yl = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
     VWB_BarScaledCoord (xl,yl,viewwidth,viewheight,0);
 
-    VWB_HlinScaledCoord (xl-1,xl+viewwidth,yl-1,0);
-    VWB_HlinScaledCoord (xl-1,xl+viewwidth,yl+viewheight,bordercol-2);
-    VWB_VlinScaledCoord (yl-1,yl+viewheight,xl-1,0);
-    VWB_VlinScaledCoord (yl-1,yl+viewheight,xl+viewwidth,bordercol-2);
-    VWB_PlotScaledCoord (xl-1,yl+viewheight,bordercol-3);
-}
-
-/*
-===================
-=
-= DrawAllPlayBorder
-=
-===================
-*/
-void DrawAllPlayBorder (void)
-{
-#ifdef NOTYET
-        int i;
-        byte *temp;
-
-        temp = vbuf;
-        for (i=0;i<3;i++)
-        {
-                vbuf = (byte *)(0xa0000+screenloc[i]);
-                DrawPlayBorder ();
-        }
-        vbuf = temp;
-#else
-    DrawPlayBorder();
-#endif
+    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, viewwidth+scaleFactor, scaleFactor, 0);
+    VWB_BarScaledCoord(xl, yl+viewheight, viewwidth+scaleFactor, scaleFactor, bordercol-2);
+    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, scaleFactor, viewheight+scaleFactor, 0);
+    VWB_BarScaledCoord(xl+viewwidth, yl-scaleFactor, scaleFactor, viewheight+2*scaleFactor, bordercol-2);
+    VWB_BarScaledCoord(xl-scaleFactor, yl+viewheight, scaleFactor, scaleFactor, bordercol-3);
 }
 
 

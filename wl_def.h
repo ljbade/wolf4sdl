@@ -923,10 +923,8 @@ void    SetupGameLevel (void);
 void    GameLoop (void);
 void    DrawPlayBorder (void);
 void    DrawStatusBorder (byte color);
-void    DrawAllStatusBorder (byte color);
 void    DrawPlayScreen (void);
-void    DrawAllPlayBorder (void);
-void    DrawAllPlayBorderSides (void);
+void    DrawPlayBorderSides (void);
 
 void    PlayDemo (int demonumber);
 void    RecordDemo (void);

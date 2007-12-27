@@ -660,7 +660,7 @@ void CheckKeys (void)
 
         IN_Ack ();
         godmode ^= 1;
-        DrawAllPlayBorderSides ();
+        DrawPlayBorderSides ();
         IN_ClearKeysDown ();
         return;
     }
@@ -687,9 +687,6 @@ void CheckKeys (void)
         ClearMemory ();
         CA_CacheGrChunk (STARTFONT + 1);
         ClearSplitVWB ();
-#ifdef NOTYET
-        VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-#endif
 
         Message (STR_CHEATER1 "\n"
                  STR_CHEATER2 "\n\n" STR_CHEATER3 "\n" STR_CHEATER4 "\n" STR_CHEATER5);
@@ -699,7 +696,7 @@ void CheckKeys (void)
         IN_Ack ();
 
         if (viewsize < 17)
-            DrawAllPlayBorder ();
+            DrawPlayBorder ();
     }
 
     //
@@ -717,16 +714,13 @@ void CheckKeys (void)
         ClearMemory ();
         CA_CacheGrChunk (STARTFONT + 1);
         ClearSplitVWB ();
-#ifdef NOTYET
-        VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-#endif
 
         Message ("Debugging keys are\nnow available!");
         UNCACHEGRCHUNK (STARTFONT + 1);
         IN_ClearKeysDown ();
         IN_Ack ();
 
-        DrawAllPlayBorderSides ();
+        DrawPlayBorderSides ();
         DebugOk = 1;
     }
 #endif
@@ -739,9 +733,6 @@ void CheckKeys (void)
         ClearMemory ();
         CA_CacheGrChunk (STARTFONT + 1);
         ClearSplitVWB ();
-#ifdef NOTYET
-        VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-#endif
 
         Message ("Commander Keen is also\n"
                  "available from Apogee, but\n"
@@ -752,7 +743,7 @@ void CheckKeys (void)
         IN_Ack ();
 
         if (viewsize < 18)
-            DrawAllPlayBorder ();
+            DrawPlayBorder ();
     }
 
 //
@@ -802,7 +793,7 @@ void CheckKeys (void)
             IN_ClearKeysDown ();
             IN_Ack ();
 
-            DrawAllPlayBorder ();
+            DrawPlayBorder ();
         }
 
         if (Keyboard[sc_S])
@@ -822,7 +813,7 @@ void CheckKeys (void)
             UNCACHEGRCHUNK (STARTFONT + 1);
             IN_ClearKeysDown ();
             IN_Ack ();
-            DrawAllPlayBorder ();
+            DrawPlayBorder ();
         }
 
         if (Keyboard[sc_D])
@@ -838,7 +829,7 @@ void CheckKeys (void)
             UNCACHEGRCHUNK (STARTFONT + 1);
             IN_ClearKeysDown ();
             IN_Ack ();
-            DrawAllPlayBorder ();
+            DrawPlayBorder ();
         }
         if (Keyboard[sc_P])
         {
@@ -854,7 +845,7 @@ void CheckKeys (void)
             UNCACHEGRCHUNK (STARTFONT + 1);
             IN_ClearKeysDown ();
             IN_Ack ();
-            DrawAllPlayBorder ();
+            DrawPlayBorder ();
         }
     }
 #endif
@@ -874,12 +865,9 @@ void CheckKeys (void)
         short oldepisode = gamestate.episode;
         ClearMemory ();
         ClearSplitVWB ();
-#ifdef NOTYET
-        VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-#endif
         US_ControlPanel (scan);
 
-        DrawAllPlayBorderSides ();
+        DrawPlayBorderSides ();
 
         SETFONTCOLOR (0, 15);
         IN_ClearKeysDown ();
@@ -898,10 +886,7 @@ void CheckKeys (void)
         IN_ClearKeysDown ();
         DrawPlayScreen ();
         if (!startgame && !loadedgame)
-        {
-//                      VW_FadeIn ();   // bugfix
             ContinueMusic (lastoffs);
-        }
         if (loadedgame)
             playstate = ex_abort;
         lasttimecount = GetTimeCount();
@@ -920,7 +905,7 @@ void CheckKeys (void)
         fontnumber = 0;
         SETFONTCOLOR (0, 15);
         if (DebugKeys () && viewsize < 18)
-            DrawAllPlayBorder ();       // dont let the blue borders flash
+            DrawPlayBorder ();       // dont let the blue borders flash
 
         if (MousePresent && IN_IsInputGrabbed())
             IN_CenterMouse();     // Clear accumulated mouse movement

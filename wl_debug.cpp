@@ -241,7 +241,7 @@ void BasicOverhead (void)
         #ifdef MAPBORDER
                 int temp = viewsize;
                 NewViewSize(16);
-                DrawAllPlayBorder();
+                DrawPlayBorder();
         #endif
 
                 // right side (raw)
@@ -282,7 +282,7 @@ void BasicOverhead (void)
 
         #ifdef MAPBORDER
                 NewViewSize(temp);
-                DrawAllPlayBorder();
+                DrawPlayBorder();
         #endif
 }
 
@@ -537,9 +537,9 @@ int DebugKeys (void)
                                 bordercol=level*4+3;
 
                                 if (bordercol == VIEWCOLOR)
-                                        DrawAllStatusBorder(bordercol);
+                                        DrawStatusBorder(bordercol);
 
-                                DrawAllPlayBorder();
+                                DrawPlayBorder();
 
                                 return 0;
                         }
