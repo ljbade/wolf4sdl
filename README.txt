@@ -23,8 +23,17 @@ files into the same directory as the Wolf4SDL executable. If you want to use
 Wolf4SDL with the shareware version (tested) or with Spear (not tested), you
 can compile Wolf4SDL with other defines set at the beginning of "wl_def.h".
 
+The current version of the source code is available in the svn repository at:
+   svn://tron.homeunix.org:3690/wolf3d/trunk
+
 
 Known bugs:
  - There seem to exist some problems with the palette sometimes. Then some or
    all colors are wrong. This only appears in fullscreen mode, so consider
    using the --windowed option in that case.
+
+Credits:
+ - Special thanks to id Software! Without the source code we would still have
+   to throw with hex editors and disassemblers after Wolfenstein 3D ;D
+ - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
+   FreeBSD compatible, testing and bugfixing!
