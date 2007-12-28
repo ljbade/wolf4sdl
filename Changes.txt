@@ -1,0 +1,14 @@
+Wolf4SDL v1.1 (released 2007-12-28)
+ - Fixed Pause
+ - Fixed IN_Ack()
+ - Added command line parameters for windowed mode and screen resolution
+ - Reimplemented command line parameters (try --help)
+ - Improved scaled "Get Psyched" progress bar graphic
+ - Improved scaled screen borders
+ - Fixed "Fade in black screen" bug
+ - Avoid asserts when shutting down with an error
+ - Use software surfaces to reduce problems with palette on Windows
+ - Windows: Statically links to MSVCR80.DLL now to avoid missing files
+
+Wolf4SDL v1.0 (released 2007-12-26)
+ - Initial release
