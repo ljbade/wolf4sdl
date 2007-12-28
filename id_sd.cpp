@@ -2032,7 +2032,7 @@ SD_Shutdown(void)
         if(SoundBuffers[i]) free(SoundBuffers[i]);
     }
 
-    if(DigiList) free(DigiList);
+    free(DigiList);
 
     SD_Started = false;
 }

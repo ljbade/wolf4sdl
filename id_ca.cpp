@@ -790,8 +790,7 @@ void CA_Shutdown (void)
     for(i=0;i<NUMCHUNKS;i++)
         if(grsegs[i])
             UNCACHEGRCHUNK(i);
-    if(pictable != NULL)
-        free(pictable);
+    free(pictable);
 
     switch (oldsoundmode)
     {
