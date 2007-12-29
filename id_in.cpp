@@ -469,8 +469,6 @@ INL_ShutJoy(word joy)
 
 static void processEvent(SDL_Event *event)
 {
-    SDLMod mod;
-
     switch (event->type)
     {
         // exit if the window is closed
@@ -488,19 +486,32 @@ static void processEvent(SDL_Event *event)
             }
 
             LastScan = event->key.keysym.sym;
-            mod = SDL_GetModState();
-//                if((mod & KMOD_ALT))
+            SDLMod mod = SDL_GetModState();
             if(Keyboard[sc_Alt])
             {
-                if(event->key.keysym.sym==SDLK_F4)
+                if(LastScan==SDLK_F4)
                     Quit(NULL);
-/*                    if(event.key.keysym.sym==SDLK_RETURN)
-                {
-                    ToggleFullscreen(0);
-                    return;
-                }*/
             }
-            int sym = event->key.keysym.sym;
+
+            if(LastScan == SDLK_KP_ENTER) LastScan = SDLK_RETURN;
+            else if(LastScan == SDLK_RSHIFT) LastScan = SDLK_LSHIFT;
+            else if(LastScan == SDLK_RALT) LastScan = SDLK_LALT;
+            else if(LastScan == SDLK_RCTRL) LastScan = SDLK_LCTRL;
+            else
+            {
+                if((mod & KMOD_NUM) == 0)
+                {
+                    switch(LastScan)
+                    {
+                        case SDLK_KP2: LastScan = SDLK_DOWN; break;
+                        case SDLK_KP4: LastScan = SDLK_LEFT; break;
+                        case SDLK_KP6: LastScan = SDLK_RIGHT; break;
+                        case SDLK_KP8: LastScan = SDLK_UP; break;
+                    }
+                }
+            }
+
+            int sym = LastScan;
             if(sym >= 'a' && sym <= 'z')
                 sym -= 32;  // convert to uppercase
 
@@ -522,9 +533,30 @@ static void processEvent(SDL_Event *event)
 		}
 
         case SDL_KEYUP:
-            if(event->key.keysym.sym<SDLK_LAST)
-                Keyboard[event->key.keysym.sym] = 0;
+        {
+            int key = event->key.keysym.sym;
+            if(key == SDLK_KP_ENTER) key = SDLK_RETURN;
+            else if(key == SDLK_RSHIFT) key = SDLK_LSHIFT;
+            else if(key == SDLK_RALT) key = SDLK_LALT;
+            else if(key == SDLK_RCTRL) key = SDLK_LCTRL;
+            else
+            {
+                if((SDL_GetModState() & KMOD_NUM) == 0)
+                {
+                    switch(key)
+                    {
+                        case SDLK_KP2: key = SDLK_DOWN; break;
+                        case SDLK_KP4: key = SDLK_LEFT; break;
+                        case SDLK_KP6: key = SDLK_RIGHT; break;
+                        case SDLK_KP8: key = SDLK_UP; break;
+                    }
+                }
+            }
+
+            if(key<SDLK_LAST)
+                Keyboard[key] = 0;
             break;
+        }
     }
 }
 
@@ -589,6 +621,13 @@ IN_Startup(void)
 #endif
 
     SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+
+    if(fullscreen)
+    {
+        GrabInput = true;
+        SDL_WM_GrabInput(SDL_GRAB_ON);
+    }
+
     MousePresent = true;
     IN_Started = true;
 }

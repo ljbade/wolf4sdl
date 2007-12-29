@@ -121,12 +121,12 @@ void VH_UpdateScreen()
 
 void VWB_DrawTile8 (int x, int y, int tile)
 {
-		LatchDrawChar(x,y,tile);
+	LatchDrawChar(x,y,tile);
 }
 
 void VWB_DrawTile8M (int x, int y, int tile)
 {
-		VL_MemToScreen (((byte *)grsegs[STARTTILE8M])+tile*64,8,8,x,y);
+	VL_MemToScreen (((byte *)grsegs[STARTTILE8M])+tile*64,8,8,x,y);
 }
 
 void VWB_DrawPic (int x, int y, int chunknum)
@@ -139,7 +139,7 @@ void VWB_DrawPic (int x, int y, int chunknum)
 	width = pictable[picnum].width;
 	height = pictable[picnum].height;
 
-		VL_MemToScreen (grsegs[chunknum],width,height,x,y);
+	VL_MemToScreen (grsegs[chunknum],width,height,x,y);
 }
 
 void VWB_DrawPicScaledCoord (int scx, int scy, int chunknum)
@@ -156,7 +156,7 @@ void VWB_DrawPicScaledCoord (int scx, int scy, int chunknum)
 
 void VWB_Bar (int x, int y, int width, int height, int color)
 {
-		VW_Bar (x,y,width,height,color);
+	VW_Bar (x,y,width,height,color);
 }
 
 void VWB_Plot (int x, int y, int color)
