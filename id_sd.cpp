@@ -40,7 +40,6 @@
 #define nil     0
 
 //#define BUFFERDMA
-#define NOSEGMENTATION
 //#define SHOWSDDEBUG
 #define SAMPLERATE 44100
 #define ORIGSAMPLERATE 7042
@@ -1400,11 +1399,7 @@ int SD_PlayDigitized(word which,int leftpos,int rightpos)
     DigiLastStart = DigiPage;
     DigiLastEnd = DigiPage + ((DigiLeft + (PMPageSize - 1)) / PMPageSize);
 
-#ifdef NOSEGMENTATION
     len = DigiLeft;
-#else
-    len = (DigiLeft >= PMPageSize)? PMPageSize : (DigiLeft % PMPageSize);
-#endif
     addr = SDL_LoadDigiSegment(DigiPage++);
 
 /*#ifdef BUFFERDMA
