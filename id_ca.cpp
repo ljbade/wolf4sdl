@@ -233,8 +233,7 @@ boolean CA_LoadFile (const char *filename, memptr *ptr)
 ============================================================================
 */
 
-void CAL_HuffExpand(byte *source, byte *dest, int32_t length,
-        huffnode *hufftable, boolean screenhack)
+static void CAL_HuffExpand(byte *source, byte *dest, int32_t length, huffnode *hufftable)
 {
     byte *end;//,*srcend;
     huffnode *headptr, *huffptr;
@@ -249,15 +248,6 @@ void CAL_HuffExpand(byte *source, byte *dest, int32_t length,
     headptr = hufftable+254;        // head node is allways node 254
 
     int written = 0;
-
-#ifdef NOTYET
-    if(screenhack)
-    {
-        mapmask=1;
-        VGAMAPMASK(1);
-        length>>=2;
-    }
-#endif
 
     end=dest+length;
 
@@ -290,78 +280,6 @@ void CAL_HuffExpand(byte *source, byte *dest, int32_t length,
             huffptr = hufftable + (nodeval - 256);
         }
     }
-
-#if 0
-        //
-        // ds:si source
-        // es:di dest
-        // ss:bx node pointer
-        //
-
-        _asm
-        {
-                xor     edx,edx
-                mov     ebx,dword ptr [headptr]
-                mov     esi,dword ptr [source]
-                mov     edi,dword ptr [dest]
-                mov     eax,dword ptr [end]
-                mov     ch,[esi]                                // load first byte
-                inc     esi
-                mov     cl,1
-
-expandshort:
-                test    ch,cl                   // bit set?
-                jnz     bit1short
-
-                mov     dx,[ebx]                        // take bit0 path from node
-                shl     cl,1                            // advance to next bit position
-                jc      newbyteshort
-                jnc     sourceupshort
-
-bit1short:
-                mov     dx,[ebx+2]              // take bit1 path
-                shl     cl,1                            // advance to next bit position
-                jnc     sourceupshort
-
-newbyteshort:
-                mov     ch,[esi]                                // load next byte
-                inc esi
-
-                mov     cl,1                            // back to first bit
-
-sourceupshort:
-                or      dh,dh                           // if dx<256 its a byte, else move node
-                jz      storebyteshort
-
-                mov     ebx,dword ptr [hufftable]                       // next node = hufftable+code-256
-                lea     ebx,dword ptr [ebx+edx*4-1024]
-                jmp     expandshort
-
-storebyteshort:
-                mov     [edi],dl
-                inc     edi                                     // write a decompressed byte out
-                mov     ebx,dword ptr [headptr]         // back to the head node for next bit
-
-                cmp     edi,eax                         // done?
-
-                jb expandshort
-done:
-                test    [screenhack],1
-                jz              notscreen
-                shl     [mapmask],1
-                mov     ah,[mapmask]
-                cmp     ah,16
-                je              notscreen
-                mov     dx,SC_INDEX
-                mov     al,SC_MAPMASK
-                out     dx,ax
-                mov     edi,[dest]
-                mov     eax,[end]
-                jmp     expandshort
-
-notscreen:
-        }
-#endif
 }
 
 /*
@@ -617,7 +535,7 @@ void CAL_SetupGrFile (void)
     CAL_GetGrChunkLength(STRUCTPIC);                // position file pointer
     compseg=(byte *) malloc(chunkcomplen);
     read (grhandle,compseg,chunkcomplen);
-    CAL_HuffExpand (compseg, (byte *)pictable,NUMPICS*sizeof(pictabletype),grhuffman,false);
+    CAL_HuffExpand(compseg, (byte*)pictable, NUMPICS * sizeof(pictabletype), grhuffman);
     free(compseg);
 }
 
@@ -949,7 +867,7 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
     grsegs[chunk]=(byte *) malloc(expanded);
     if (!grsegs[chunk])
         return;
-    CAL_HuffExpand (source,grsegs[chunk],expanded,grhuffman,false);
+    CAL_HuffExpand(source, grsegs[chunk], expanded, grhuffman);
 }
 
 
@@ -1051,7 +969,7 @@ void CA_CacheScreen (int chunk)
 // Sprites need to have shifts made and various other junk
 //
     byte *pic = (byte *) malloc(64000);
-    CAL_HuffExpand (source,pic,expanded,grhuffman,true);
+    CAL_HuffExpand(source, pic, expanded, grhuffman);
 
     byte *vbuf = LOCK();
     for(int y = 0, scy = 0; y < 200; y++, scy += scaleFactor)
