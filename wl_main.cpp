@@ -70,7 +70,6 @@ void    Quit (const char *error,...);
 
 boolean startgame;
 boolean loadedgame;
-static boolean virtualreality;
 int     mouseadjustment;
 
 char    configname[13]="config.";
@@ -785,17 +784,8 @@ void SignonScreen (void)                        // VGA version
     VL_SetVGAPlaneMode ();
     VL_SetPalette (gamepal);
 
-    if (!virtualreality)
-    {
-#ifdef NOTYET
-        VW_SetScreen(0x8000,0);
-#endif
-        VL_MungePic (signon,320,200);
-        VL_MemToScreen (signon,320,200,0,0);
-#ifdef NOTYET
-        VW_SetScreen(0,0);
-#endif
-    }
+    VL_MungePic (signon,320,200);
+    VL_MemToScreen (signon,320,200,0,0);
 
     // TODO: The signon memory does NOT become recycled anymore!!!
 
