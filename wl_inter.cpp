@@ -437,9 +437,6 @@ LevelCompleted (void)
     } times;
 
     int x, i, min, sec, ratio, kr, sr, tr;
-#ifdef NOTYET
-    byte *temp = vbuf;
-#endif
     char tempstr[10];
     int32_t bonus, timeleft = 0;
     times parTimes[] = {
@@ -818,9 +815,7 @@ LevelCompleted (void)
         //
         // JUMP STRAIGHT HERE IF KEY PRESSED
         //
-      done:
-
-        itoa (kr, tempstr, 10);
+done:   itoa (kr, tempstr, 10);
         x = RATIOXX - strlen (tempstr) * 2;
         Write (x, 14, tempstr);
 
@@ -930,15 +925,7 @@ LevelCompleted (void)
 #endif
 
     VW_FadeOut ();
-#ifdef NOTYET
-    temp = vbuf;
-    for (i = 0; i < 3; i++)
-    {
-        vbuf = (byte *) (0xa0000 + screenloc[i]);
-        DrawPlayBorder ();
-    }
-    vbuf = temp;
-#endif
+    DrawPlayBorder();
 
     UnCacheLump (LEVELEND_LUMP_START, LEVELEND_LUMP_END);
 }

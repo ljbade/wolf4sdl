@@ -867,33 +867,10 @@ void DrawPlayBorder (void)
 
 void DrawPlayScreen (void)
 {
-#ifdef NOTYET
-        int     i;
-        byte *temp;
-
-        VW_FadeOut ();              // ATTENTION: Here is a fade out!!
-
-        temp = vbuf;
-
         CA_CacheGrChunk (STATUSBARPIC);
-
-        for (i=0;i<3;i++)
-        {
-                vbuf = (byte *)(0xa0000+screenloc[i]);
-                VWB_DrawPic (0,200-STATUSLINES,STATUSBARPIC);
-                DrawPlayBorder ();
-        }
-
-        vbuf = temp;
-
-        UNCACHEGRCHUNK (STATUSBARPIC);
-#else
-        CA_CacheGrChunk (STATUSBARPIC);
-//        VWB_DrawPic (0,200-STATUSLINES,STATUSBARPIC);
         VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
         DrawPlayBorder ();
         UNCACHEGRCHUNK (STATUSBARPIC);
-#endif
 
         DrawFace ();
         DrawHealth ();

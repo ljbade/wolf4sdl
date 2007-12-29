@@ -779,29 +779,11 @@ void SetupWalls (void)
 
 void SignonScreen (void)                        // VGA version
 {
-//      unsigned        segstart,seglength;
-
     VL_SetVGAPlaneMode ();
     VL_SetPalette (gamepal);
 
     VL_MungePic (signon,320,200);
     VL_MemToScreen (signon,320,200,0,0);
-
-    // TODO: The signon memory does NOT become recycled anymore!!!
-
-#ifdef NOTYET
-    //
-    // reclaim the memory from the linked in signon screen
-    //
-    segstart = FP_SEG(&introscn);
-    seglength = 64000/16;
-    if (FP_OFF(&introscn))
-    {
-        segstart++;
-        seglength--;
-    }
-    MML_UseSpace (segstart,seglength);
-#endif
 }
 
 

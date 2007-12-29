@@ -3852,14 +3852,6 @@ void    A_StartDeathCam (objtype *ob)
 // go back to the game
 //
 
-        /*temp = vbuf;          TODO
-        for (int i=0;i<3;i++)
-        {
-                vbuf = (byte *)(0xa0000+screenloc[i]);
-                DrawPlayBorder ();
-        }
-        vbuf = temp;*/
-
         DrawPlayBorder ();
 
         fizzlein = true;

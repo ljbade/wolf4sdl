@@ -1057,41 +1057,6 @@ extern  fixed   viewsin,viewcos;
 
 void    ThreeDRefresh (void);
 void    CalcTics (void);
-void    FixOfs (void);
-
-
-/*extern        fixed   tileglobal;
-extern  fixed   focallength;
-extern  fixed   mindist;
-
-
-//
-// derived constants
-//
-extern  fixed   scale;
-extern  long    heightnumerator,mindist;
-
-//
-// refresh variables
-//
-extern  int             viewangle;
-
-extern  long            postsource;
-extern  unsigned        postx;
-extern  unsigned        postwidth;
-
-
-
-extern  unsigned        pwallpos;
-
-
-fixed   FixedByFrac (fixed a, fixed b);
-void    TransformActor (objtype *ob);
-void    BuildTables (void);
-void    ClearScreen (void);
-int             CalcRotate (objtype *ob);
-void    DrawScaleds (void);
-void  FarScalePost (void);*/
 
 typedef struct
 {

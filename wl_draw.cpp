@@ -3,12 +3,10 @@
 #include "wl_def.h"
 #pragma hdrstop
 
-//#define DEBUGWALLS
-
 /*
 =============================================================================
 
-                                                 LOCAL CONSTANTS
+                               LOCAL CONSTANTS
 
 =============================================================================
 */
@@ -21,7 +19,7 @@
 /*
 =============================================================================
 
-                                                 GLOBAL VARIABLES
+                              GLOBAL VARIABLES
 
 =============================================================================
 */
@@ -58,7 +56,6 @@ void    ClearScreen (void);
 int     CalcRotate (objtype *ob);
 void    DrawScaleds (void);
 void    CalcTics (void);
-void    FixOfs (void);
 void    ThreeDRefresh (void);
 
 
@@ -161,7 +158,7 @@ void TransformActor (objtype *ob)
         return;
     }
 
-    ob->viewx = (word)(centerx + ny*scale/nx);      // DEBUG: use assembly divide
+    ob->viewx = (word)(centerx + ny*scale/nx);
 
 //
 // calculate height (heightnumerator/(nx>>8))
@@ -224,7 +221,7 @@ boolean TransformTile (int tx, int ty, short *dispx, short *dispheight)
         *dispheight = 0;
     else
     {
-        *dispx = (short)(centerx + ny*scale/nx);        // DEBUG: use assembly divide
+        *dispx = (short)(centerx + ny*scale/nx);
         *dispheight = (short)(heightnumerator/(nx>>8));
     }
 
@@ -256,32 +253,6 @@ int CalcHeight()
     if(z < mindist) z = mindist;
     return (heightnumerator / (z >> 8));
 }
-
-#if 0
-int CalcHeight();
-#pragma aux CalcHeight = \
-        "mov    eax,dword ptr xintercept" \
-        "sub    eax,dword ptr viewx" \
-        "imul   dword ptr viewcos" \
-        "shrd   eax,edx,16" \
-        "mov    edi,eax" \
-        "mov    eax,dword ptr yintercept" \
-        "sub    eax,dword ptr viewy" \
-        "imul   dword ptr viewsin" \
-        "shrd   eax,edx,16" \
-        "sub    edi,eax" \
-        "cmp    edi,1024" \
-        "jge    dontclip" \
-        "mov    edi,1024" \
-        "dontclip:" \
-        "xor    edx,edx" \
-        "sar    edi,9" \
-        "mov    eax,dword ptr heightnumerator" \
-        "sar    eax,1" \
-        "div    edi" \
-        value [eax] \
-        modify exact [eax edx edi]
-#endif
 
 //==========================================================================
 
@@ -1192,7 +1163,6 @@ void CalcTics (void)
 
     if (tics>MAXTICS)
     {
-//        TimeCount -= (tics-MAXTICS);
         tics = MAXTICS;
     }
 }
@@ -1200,47 +1170,10 @@ void CalcTics (void)
 
 //==========================================================================
 
-
-/*
-========================
-=
-= FixOfs
-=
-========================
-*/
-
-void    FixOfs (void)
-{
-#ifdef NOTYET
-    VW_ScreenToScreen (vdisp,vbuf,viewwidth/8,viewheight);
-#endif
-}
-
-
-//==========================================================================
-
-//#define DEBUGRAYTRACER
-
-#ifdef DEBUGRAYTRACER
-#define LOGF if(dolog) fprintf
-#define MARKPIX(y,col) VGAMAPMASK(1<<(pixx&3)); \
-	vbuf[(pixx>>2)+(y)*80]=(col);
-#else
-//#define LOGF 0 &&
-#define LOGF(...)
-#define MARKPIX(y,col)
-#endif
-
 void AsmRefresh()
 {
     int32_t xstep,ystep;
     longword xpartial,ypartial;
-
-#ifdef DEBUGRAYTRACER
-	static int logpressed=0;
-	int dolog=0;
-    FILE *log=NULL;
-#endif
 
     for(pixx=0;pixx<viewwidth;pixx++)
     {
@@ -1285,46 +1218,23 @@ void AsmRefresh()
         }
         yintercept=FixedMul(ystep,xpartial)+viewy;
         xtile=focaltx+xtilestep;
-        xspot=(xtile<<mapshift)+*((word *)&yintercept+1);
+        xspot=(xtile<<mapshift)+((uint32_t)yintercept>>16);
         xintercept=FixedMul(xstep,ypartial)+viewx;
         ytile=focalty+ytilestep;
-        yspot=(*((word *)&xintercept+1)<<mapshift)+ytile;
-		  texdelta=0;
+        yspot=(((uint32_t)xintercept>>16)<<mapshift)+ytile;
+        texdelta=0;
 
         if(xintercept<0) xintercept=0;
         if(xintercept>mapwidth*65536-1) xintercept=mapwidth*65536-1;
         if(yintercept<0) yintercept=0;
         if(yintercept>mapheight*65536-1) yintercept=mapheight*65536-1;
 
-#ifdef DEBUGRAYTRACER
-		  if(pixx==93)
-		  {
-			  VGAMAPMASK(1<<(pixx&3));
-			  vbuf[(pixx>>2)+80]=14;
-			  if(logpressed)
-			  {
-				  if(!Keyboard[sc_L]) logpressed=0;
-			  }
-			  else
-			  {
-				  if(Keyboard[sc_L])
-				  {
-					  logpressed=1;
-					  dolog=1;
-					  log=fopen("draw93.txt","wt");
-					  if(!log) return;
-					  fprintf(log,"player->x=%.8X  player->y=%.8X  player->angle=%i  pixx=%i\nxintercept=%.8X  xtile=%.4X  xtilestep=%i  xstep=%.8X\nyintercept=%.8X  ytile=%.4X  ytilestep=%i  ystep=%.8X\n",player->x,player->y,player->angle,pixx,xintercept,xtile,xtilestep,xstep,yintercept,ytile,ytilestep,ystep);
-				  }
-			  }
-		  }
-#endif
-
         do
         {
-            if(ytilestep==-1 && *((short *)&yintercept+1)<=ytile) goto horizentry;
-            if(ytilestep==1 && *((short *)&yintercept+1)>=ytile) goto horizentry;
+            if(ytilestep==-1 && (yintercept>>16)<=ytile) goto horizentry;
+            if(ytilestep==1 && (yintercept>>16)>=ytile) goto horizentry;
 vertentry:
-            if((longword)yintercept>mapheight*65536-1 || (word)xtile>=mapwidth)
+            if((uint32_t)yintercept>mapheight*65536-1 || (word)xtile>=mapwidth)
             {
                 if(xtile<0) xintercept=0;
                 if(xtile>=mapwidth) xintercept=mapwidth<<TILESHIFT;
@@ -1341,7 +1251,7 @@ vertentry:
                 if(tilehit&0x80)
                 {
                     int32_t yintbuf=yintercept+(ystep>>1);
-                    if(*((word *)&yintbuf+1)!=*((word *)&yintercept+1))
+                    if((yintbuf>>16)!=(yintercept>>16))
                         goto passvert;
                     if((word)yintbuf<doorposition[tilehit&0x7f])
                         goto passvert;
@@ -1368,33 +1278,27 @@ vertentry:
                                 pwallposnorm = pwallpos;
                                 pwallposinv = 63-pwallpos;
                             }
-                            if(pwalldir == di_east && xtile==pwallx && *((word *)&yintercept+1)==pwally
-                                || pwalldir == di_west && !(xtile==pwallx && *((word *)&yintercept+1)==pwally))
+                            if(pwalldir == di_east && xtile==pwallx && ((uint32_t)yintercept>>16)==pwally
+                                || pwalldir == di_west && !(xtile==pwallx && ((uint32_t)yintercept>>16)==pwally))
                             {
                                 yintbuf=yintercept+((ystep*pwallposnorm)>>6);
-                                if(*((word *)&yintbuf+1)!=*((word *)&yintercept+1))
+                                if((yintbuf>>16)!=(yintercept>>16))
                                     goto passvert;
-
-                                MARKPIX(4,2);
 
                                 xintercept=(xtile<<TILESHIFT)+TILEGLOBAL-(pwallposinv<<10);
                                 yintercept=yintbuf;
                                 tilehit=pwalltile;
-                                LOGF(log,"Pushwall hit 1: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                 HitVertWall();
                             }
                             else
                             {
                                 yintbuf=yintercept+((ystep*pwallposinv)>>6);
-                                if(*((word *)&yintbuf+1)!=*((word *)&yintercept+1))
+                                if((yintbuf>>16)!=(yintercept>>16))
                                     goto passvert;
-
-                                MARKPIX(4,1);
 
                                 xintercept=(xtile<<TILESHIFT)-(pwallposinv<<10);
                                 yintercept=yintbuf;
                                 tilehit=pwalltile;
-                                LOGF(log,"Pushwall hit 2: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                 HitVertWall();
                             }
                         }
@@ -1405,45 +1309,35 @@ vertentry:
                             if(pwalldir==di_south && (word)yintercept<(pwallposi<<10)
                                 || pwalldir==di_north && (word)yintercept>(pwallposi<<10))
                             {
-                                if(*((word *)&yintercept+1)==pwally && xtile==pwallx)
+                                if(((uint32_t)yintercept>>16)==pwally && xtile==pwallx)
                                 {
                                     if(pwalldir==di_south && (int32_t)((word)yintercept)+ystep<(pwallposi<<10)
                                             || pwalldir==di_north && (int32_t)((word)yintercept)+ystep>(pwallposi<<10))
                                         goto passvert;
 
-                                    MARKPIX(5,15);
-
-                                    LOGF(log,"Pushwall hit 3: HitHorizWall old values:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X",xintercept,xtile,yintercept,ytile,pwallpos);
                                     if(pwalldir==di_south)
                                        yintercept=(yintercept&0xffff0000)+(pwallposi<<10);
                                     else
                                        yintercept=(yintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
                                     xintercept=xintercept-((xstep*(63-pwallpos))>>6);
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 3: HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitHorizWall();
                                 }
                                 else
                                 {
-                                    MARKPIX(3,11);
-
                                     texdelta = -(pwallposi<<10);
                                     xintercept=xtile<<TILESHIFT;
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 4: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitVertWall();
                                 }
                             }
                             else
                             {
-                                if(*((word *)&yintercept+1)==pwally && xtile==pwallx)
+                                if(((uint32_t)yintercept>>16)==pwally && xtile==pwallx)
                                 {
-                                    MARKPIX(3,12);
-
                                     texdelta = -(pwallposi<<10);
                                     xintercept=xtile<<TILESHIFT;
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 5: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitVertWall();
                                 }
                                 else
@@ -1452,15 +1346,12 @@ vertentry:
                                             || pwalldir==di_north && (int32_t)((word)yintercept)+ystep<(pwallposi<<10))
                                         goto passvert;
 
-                                    MARKPIX(3,3);
-
                                     if(pwalldir==di_south)
                                         yintercept=(yintercept&0xffff0000)-((63-pwallpos)<<10);
                                     else
                                         yintercept=(yintercept&0xffff0000)+((63-pwallpos)<<10);
                                     xintercept=xintercept-((xstep*pwallpos)>>6);
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 6: HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitHorizWall();
                                 }
                             }
@@ -1469,7 +1360,6 @@ vertentry:
                     else
                     {
                         xintercept=xtile<<TILESHIFT;
-							   LOGF(log,"HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
                         HitVertWall();
                     }
                 }
@@ -1479,25 +1369,17 @@ passvert:
             *((byte *)spotvis+xspot)=1;
             xtile+=xtilestep;
             yintercept+=ystep;
-            xspot=(xtile<<mapshift)+*((word *)&yintercept+1);
-            LOGF(log,"passvert:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
+            xspot=(xtile<<mapshift)+((uint32_t)yintercept>>16);
         }
         while(1);
-#ifdef DEBUGRAYTRACER
-		  if(dolog)
-		  {
-			  fclose(log);
-			  dolog=0;
-			  log=NULL;
-		  }
-#endif
         continue;
+
         do
         {
-            if(xtilestep==-1 && *((short *)&xintercept+1)<=xtile) goto vertentry;
-            if(xtilestep==1 && *((short *)&xintercept+1)>=xtile) goto vertentry;
+            if(xtilestep==-1 && (xintercept>>16)<=xtile) goto vertentry;
+            if(xtilestep==1 && (xintercept>>16)>=xtile) goto vertentry;
 horizentry:
-            if((longword)xintercept>mapwidth*65536-1 || (word)ytile>=mapheight)
+            if((uint32_t)xintercept>mapwidth*65536-1 || (word)ytile>=mapheight)
             {
                 if(ytile<0) yintercept=0;
                 if(ytile>=mapheight) yintercept=mapheight<<TILESHIFT;
@@ -1514,7 +1396,7 @@ horizentry:
                 if(tilehit&0x80)
                 {
                     int32_t xintbuf=xintercept+(xstep>>1);
-                    if(*((word *)&xintbuf+1)!=*((word *)&xintercept+1))
+                    if((xintbuf>>16)!=(xintercept>>16))
                         goto passhoriz;
                     if((word)xintbuf<doorposition[tilehit&0x7f])
                         goto passhoriz;
@@ -1541,33 +1423,27 @@ horizentry:
                                 pwallposnorm = pwallpos;
                                 pwallposinv = 63-pwallpos;
                             }
-                            if(pwalldir == di_south && ytile==pwally && *((word *)&xintercept+1)==pwallx
-                                || pwalldir == di_north && !(ytile==pwally && *((word *)&xintercept+1)==pwallx))
+                            if(pwalldir == di_south && ytile==pwally && ((uint32_t)xintercept>>16)==pwallx
+                                || pwalldir == di_north && !(ytile==pwally && ((uint32_t)xintercept>>16)==pwallx))
                             {
                                 xintbuf=xintercept+((xstep*pwallposnorm)>>6);
-                                if(*((word *)&xintbuf+1)!=*((word *)&xintercept+1))
+                                if((xintbuf>>16)!=(xintercept>>16))
                                     goto passhoriz;
-
-                                MARKPIX(4,2);
 
                                 yintercept=(ytile<<TILESHIFT)+TILEGLOBAL-(pwallposinv<<10);
                                 xintercept=xintbuf;
                                 tilehit=pwalltile;
-                                LOGF(log,"Pushwall hit 7: HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                 HitHorizWall();
                             }
                             else
                             {
                                 xintbuf=xintercept+((xstep*pwallposinv)>>6);
-                                if(*((word *)&xintbuf+1)!=*((word *)&xintercept+1))
+                                if((xintbuf>>16)!=(xintercept>>16))
                                     goto passhoriz;
-
-                                MARKPIX(4,1);
 
                                 yintercept=(ytile<<TILESHIFT)-(pwallposinv<<10);
                                 xintercept=xintbuf;
                                 tilehit=pwalltile;
-                                LOGF(log,"Pushwall hit 8: HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%i\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                 HitHorizWall();
                             }
                         }
@@ -1578,15 +1454,11 @@ horizentry:
                             if(pwalldir==di_east && (word)xintercept<(pwallposi<<10)
                                     || pwalldir==di_west && (word)xintercept>(pwallposi<<10))
                             {
-                                if(*((word *)&xintercept+1)==pwallx && ytile==pwally)
+                                if(((uint32_t)xintercept>>16)==pwallx && ytile==pwally)
                                 {
                                     if(pwalldir==di_east && (int32_t)((word)xintercept)+xstep<(pwallposi<<10)
                                             || pwalldir==di_west && (int32_t)((word)xintercept)+xstep>(pwallposi<<10))
                                         goto passhoriz;
-
-                                    MARKPIX(3,15);
-
-                                    LOGF(log,"Pushwall hit 9: HitVertWall old values:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X",xintercept,xtile,yintercept,ytile,pwallpos);
 
                                     if(pwalldir==di_east)
                                         xintercept=(xintercept&0xffff0000)+(pwallposi<<10);
@@ -1594,30 +1466,23 @@ horizentry:
                                         xintercept=(xintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
                                     yintercept=yintercept-((ystep*(63-pwallpos))>>6);
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 9: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitVertWall();
                                 }
                                 else
                                 {
-                                   MARKPIX(3,11);
-
                                     texdelta = -(pwallposi<<10);
                                     yintercept=ytile<<TILESHIFT;
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 10: HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitHorizWall();
                                 }
                             }
                             else
                             {
-                                if(*((word *)&xintercept+1)==pwallx && ytile==pwally)
+                                if(((uint32_t)xintercept>>16)==pwallx && ytile==pwally)
                                 {
-                                   MARKPIX(3,12);
-
                                     texdelta = -(pwallposi<<10);
                                     yintercept=ytile<<TILESHIFT;
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 11: HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitHorizWall();
                                 }
                                 else
@@ -1626,15 +1491,12 @@ horizentry:
                                             || pwalldir==di_west && (int32_t)((word)xintercept)+xstep<(pwallposi<<10))
                                         goto passhoriz;
 
-                                    MARKPIX(3,3);
-
                                     if(pwalldir==di_east)
                                         xintercept=(xintercept&0xffff0000)-((63-pwallpos)<<10);
                                     else
                                         xintercept=(xintercept&0xffff0000)+((63-pwallpos)<<10);
                                     yintercept=yintercept-((ystep*pwallpos)>>6);
                                     tilehit=pwalltile;
-                                    LOGF(log,"Pushwall hit 12: HitVertWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n  pwallpos=%.4X\n",xintercept,xtile,yintercept,ytile,pwallpos);
                                     HitVertWall();
                                 }
                             }
@@ -1643,7 +1505,6 @@ horizentry:
                     else
                     {
                         yintercept=ytile<<TILESHIFT;
-							   LOGF(log,"HitHorizWall:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
                         HitHorizWall();
                     }
                 }
@@ -1653,18 +1514,9 @@ passhoriz:
             *((byte *)spotvis+yspot)=1;
             ytile+=ytilestep;
             xintercept+=xstep;
-            yspot=(*((word *)&xintercept+1)<<mapshift)+ytile;
-            LOGF(log,"passhoriz:\n  xintercept=%.8X  xtile=%.4X\n  yintercept=%.8X  ytile=%.4X\n",xintercept,xtile,yintercept,ytile);
+            yspot=(((uint32_t)xintercept>>16)<<mapshift)+ytile;
         }
         while(1);
-#ifdef DEBUGRAYTRACER
-		  if(dolog)
-		  {
-			  fclose(log);
-			  dolog=0;
-			  log=NULL;
-		  }
-#endif
     }
 }
 
@@ -1781,6 +1633,3 @@ void    ThreeDRefresh (void)
     }
 #endif
 }
-
-
-//===========================================================================
