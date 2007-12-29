@@ -39,12 +39,6 @@ extern	int             fontnumber;
 extern	int             px,py;
 
 //
-// Double buffer management routines
-//
-
-int	 VW_MarkUpdateBlock (int x1, int y1, int x2, int y2);
-
-//
 // mode independant routines
 // coordinates in pixels, rounded to best screen res
 // regions marked in double buffer

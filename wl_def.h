@@ -88,25 +88,6 @@ typedef struct
 #define outportb outp
 #define inportb(x) ((byte)inp(x))
 
-//
-// replacing refresh manager with custom routines
-//
-
-#define PORTTILESWIDE           20      // all drawing takes place inside a
-#define PORTTILESHIGH           13      // non displayed port of this size
-
-#define UPDATEWIDE              PORTTILESWIDE
-#define UPDATEHIGH              PORTTILESHIGH
-
-/*
-=============================================================================
-
-                                MACROS
-
-=============================================================================
-*/
-
-
 /*#define COLORBORDER(color)            asm{mov dx,STATUS_REGISTER_1;in al,dx;\
         mov dx,ATR_INDEX;mov al,ATR_OVERSCAN;out dx,al;mov al,color;out dx,al;\
         mov     al,32;out dx,al};*/
@@ -1015,8 +996,6 @@ void    StartMusic(void);
 void    ContinueMusic(int offs);
 void    StartDamageFlash (int damage);
 void    StartBonusFlash (void);
-
-extern  byte        update[UPDATEHIGH][UPDATEWIDE];
 
 #ifdef SPEAR
 extern  int32_t     funnyticount;           // FOR FUNNY BJ FACE

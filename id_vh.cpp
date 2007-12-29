@@ -1,16 +1,5 @@
-// ID_VH.C
-
 #include "wl_def.h"
 
-//#define	SCREENWIDTH		80
-#define TILEWIDTH		4
-
-// TODO: Check this for higher resolutions
-#define PIXTOBLOCK		4		// 16 pixels to an update block
-
-byte	update[UPDATEHIGH][UPDATEWIDE];
-
-//==========================================================================
 
 pictabletype	*pictable;
 SDL_Surface     *latchpics[NUMLATCHPICS];
@@ -125,100 +114,18 @@ void VW_MeasurePropString (const char *string, word *width, word *height)
 
 void VH_UpdateScreen()
 {
-#ifdef NOTYET
-	VGAMAPMASK(15);
-	VGAWRITEMODE(1);
-	byte *updateptr=(byte *) update;
-	for(int y=0;y<UPDATEHIGH;y++)
-	{
-		for(int x=0;x<UPDATEWIDE;x++,updateptr++)
-		{
-			if(*updateptr)
-			{
-				*updateptr=0;
-				int offs=y*16*SCREENWIDTH+x*TILEWIDTH;
-				for(int i=0;i<16;i++,offs+=linewidth)
-				{
-					*(vdisp+offs)=*(vbuf+offs);
-					*(vdisp+offs+1)=*(vbuf+offs+1);
-					*(vdisp+offs+2)=*(vbuf+offs+2);
-					*(vdisp+offs+3)=*(vbuf+offs+3);
-				}
-			}
-		}
-	}
-	VGAWRITEMODE(0);
-#else
-    SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
-    SDL_UpdateRect(screen, 0, 0, 0, 0);
-#endif
+	SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
+	SDL_UpdateRect(screen, 0, 0, 0, 0);
 }
 
-/*
-=======================
-=
-= VW_MarkUpdateBlock
-=
-= Takes a pixel bounded block and marks the tiles in bufferblocks
-= Returns 0 if the entire block is off the buffer screen
-=
-=======================
-*/
-
-int VW_MarkUpdateBlock (int x1, int y1, int x2, int y2)
-{
-	int	x,y,xt1,yt1,xt2,yt2,nextline;
-	byte *mark;
-
-	xt1 = x1>>PIXTOBLOCK;
-	yt1 = y1>>PIXTOBLOCK;
-
-	xt2 = x2>>PIXTOBLOCK;
-	yt2 = y2>>PIXTOBLOCK;
-
-	if (xt1<0)
-		xt1=0;
-	else if (xt1>=UPDATEWIDE)
-		return 0;
-
-	if (yt1<0)
-		yt1=0;
-	else if (yt1>UPDATEHIGH)
-		return 0;
-
-	if (xt2<0)
-		return 0;
-	else if (xt2>=UPDATEWIDE)
-		xt2 = UPDATEWIDE-1;
-
-	if (yt2<0)
-		return 0;
-	else if (yt2>=UPDATEHIGH)
-		yt2 = UPDATEHIGH-1;
-
-	mark = (byte *) update + yt1*UPDATEWIDE + xt1;
-	nextline = UPDATEWIDE - (xt2-xt1) - 1;
-
-	for (y=yt1;y<=yt2;y++)
-	{
-		for (x=xt1;x<=xt2;x++)
-			*mark++ = 1;			// this tile will need to be updated
-
-		mark += nextline;
-	}
-
-	return 1;
-}
 
 void VWB_DrawTile8 (int x, int y, int tile)
 {
-//	if (VW_MarkUpdateBlock (x,y,x+7,y+7))
 		LatchDrawChar(x,y,tile);
 }
 
 void VWB_DrawTile8M (int x, int y, int tile)
 {
-//	if (VW_MarkUpdateBlock (x,y,x+7,y+7))
 		VL_MemToScreen (((byte *)grsegs[STARTTILE8M])+tile*64,8,8,x,y);
 }
 
@@ -232,7 +139,6 @@ void VWB_DrawPic (int x, int y, int chunknum)
 	width = pictable[picnum].width;
 	height = pictable[picnum].height;
 
-//	if (VW_MarkUpdateBlock (x,y,x+width-1,y+height-1))
 		VL_MemToScreen (grsegs[chunknum],width,height,x,y);
 }
 
@@ -250,7 +156,6 @@ void VWB_DrawPicScaledCoord (int scx, int scy, int chunknum)
 
 void VWB_Bar (int x, int y, int width, int height, int color)
 {
-//	if (VW_MarkUpdateBlock (x,y,x+width,y+height-1) )
 		VW_Bar (x,y,width,height,color);
 }
 

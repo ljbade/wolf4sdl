@@ -21,7 +21,6 @@ void Write (int x, int y, const char *string);
 void
 ClearSplitVWB (void)
 {
-    memset (update, 0, sizeof (update));
     WindowX = 0;
     WindowY = 0;
     WindowW = 320;

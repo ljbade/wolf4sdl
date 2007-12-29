@@ -984,7 +984,6 @@ void CA_CacheScreen (int chunk)
     }
     UNLOCK();
     free(pic);
-    VW_MarkUpdateBlock (0,0,319,199);
     free(bigbufferseg);
 }
 
