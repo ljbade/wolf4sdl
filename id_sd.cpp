@@ -1930,11 +1930,6 @@ SD_Startup(void)
     if (SD_Started)
         return;
 
-    for(int i = 0; i < NUMSNDCHUNKS; i++)
-        SoundChunks[i] = NULL;
-    for(int i = 0; i < MIX_CHANNELS; i++)
-        channelSoundPos[i].valid = 0;
-
     if(Mix_OpenAudio(SAMPLERATE, AUDIO_S16, 2, 2048))
     {
         printf("Unable to open audio: %s\n", Mix_GetError());
