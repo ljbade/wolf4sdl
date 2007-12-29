@@ -85,13 +85,6 @@ typedef struct
 #include "f_spear.h"
 #endif
 
-#define outportb outp
-#define inportb(x) ((byte)inp(x))
-
-/*#define COLORBORDER(color)            asm{mov dx,STATUS_REGISTER_1;in al,dx;\
-        mov dx,ATR_INDEX;mov al,ATR_OVERSCAN;out dx,al;mov al,color;out dx,al;\
-        mov     al,32;out dx,al};*/
-
 #define MAPSPOT(x,y,plane) (*(mapsegs[plane]+((y)<<mapshift)+(x)))
 
 #define SIGN(x)         ((x)>0?1:-1)

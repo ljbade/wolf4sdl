@@ -137,113 +137,6 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
 
 static const char* const ParmStrings[] = { "nojoys", "nomouse", 0 };
 
-boolean NumLockPanic=false;
-
-byte scanbuffer[16];
-int curscanoffs=0;
-
-//	Internal routines
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_KeyService() - Handles a keyboard interrupt (key up/down)
-//
-///////////////////////////////////////////////////////////////////////////
-#if 0
-static void __interrupt
-INL_KeyService(void)
-{
-	static	boolean	special;
-	static int pausecount=5;
-	byte	k,c;
-	byte temp;
-
-	k = inp(0x60);	// Get the scan code
-
-	curscanoffs=(curscanoffs+1)&15;
-	scanbuffer[curscanoffs]=k;
-
-	// Tell the XT keyboard controller to clear the key
-	outp(0x61,(temp = inp(0x61)) | 0x80);
-	outp(0x61,temp);
-
-	if(pausecount<5)		// filter 0x1d 0x45 0xe1 0x9d 0xc5 after pause key's 0xe1
-		pausecount++;
-	else if (k == 0xe0)		// Special key prefix
-		special = true;
-	else if (k == 0xe1)	// Handle Pause key
-	{
-		Paused = true;
-		pausecount=0;
-		// set fake pause code (really is scrolllock) for IN_Ack to notice a key press
-		LastScan = 0x46;
-	}
-	else
-	{
-		if (k & 0x80)	// Break code
-		{
-			k &= 0x7f;
-
-// DEBUG - handle special keys: ctl-alt-delete, print scrn
-
-			if(!special || k!=sc_LShift)
-				Keyboard[k] = false;
-		}
-		else			// Make code
-		{
-			if(special && k==sc_LShift)
-				NumLockPanic = true;
-			else
-			{
-				LastCode = CurCode;
-				CurCode = LastScan = k;
-				Keyboard[k] = true;
-
-				if (special)
-					c = SpecialNames[k];
-				else
-				{
-					if (k == sc_CapsLock)
-					{
-						CapsLock ^= true;
-						// DEBUG - make caps lock light work
-					}
-
-					if (Keyboard[sc_LShift] || Keyboard[sc_RShift])	// If shifted
-					{
-						c = ShiftNames[k];
-						if ((c >= 'A') && (c <= 'Z') && CapsLock)
-							c += 'a' - 'A';
-					}
-					else
-					{
-						c = ASCIINames[k];
-						if ((c >= 'a') && (c <= 'z') && CapsLock)
-							c -= 'a' - 'A';
-					}
-				}
-				if (c)
-					LastASCII = c;
-			}
-		}
-		special = false;
-	}
-
-	outp(0x20,0x20);
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_GetMouseDelta() - Gets the amount that the mouse has moved from the
-//		mouse driver
-//
-///////////////////////////////////////////////////////////////////////////
-static void
-INL_GetMouseDelta(int *x,int *y)
-{
-    SDL_GetRelativeMouseState(x, y);
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -448,33 +341,6 @@ IN_GetJoyButtonsDB(word joy)
 		result2 = INL_GetJoyButtons(joy);
 	} while (result1 != result2);
 	return(result1);
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_StartKbd() - Sets up my keyboard stuff for use
-//
-///////////////////////////////////////////////////////////////////////////
-static void
-INL_StartKbd(void)
-{
-	IN_ClearKeysDown();
-
-	OldKeyVect = _dos_getvect(KeyInt);
-	_dos_setvect(KeyInt,INL_KeyService);
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_ShutKbd() - Restores keyboard control to the BIOS
-//
-///////////////////////////////////////////////////////////////////////////
-static void
-INL_ShutKbd(void)
-{
-	*(word *)0x0417=(*(word *)0x0417) & 0xfaf0;	// Clear ctrl/alt/shift flags
-
-	_dos_setvect(KeyInt,OldKeyVect);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -716,7 +582,6 @@ IN_Startup(void)
 		}
 	}
 
-	INL_StartKbd();
 	MousePresent = checkmouse? INL_StartMouse() : false;
 
 	for (i = 0;i < MaxJoys;i++)
@@ -764,7 +629,6 @@ IN_Shutdown(void)
 	INL_ShutMouse();
 	for (i = 0;i < MaxJoys;i++)
 		INL_ShutJoy(i);
-	INL_ShutKbd();
 #endif
 
 	IN_Started = false;

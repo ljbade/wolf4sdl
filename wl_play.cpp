@@ -3,13 +3,6 @@
 #include "wl_def.h"
 #pragma hdrstop
 
-extern byte scanbuffer[16];
-extern int curscanoffs;
-
-extern boolean NumLockPanic;
-
-extern boolean PushwallSteps;
-
 /*
 =============================================================================
 
@@ -756,90 +749,6 @@ void CheckKeys (void)
         lasttimecount = GetTimeCount();
         return;
     }
-
-#ifdef NOTYET
-#ifdef DEBUGKEYS
-    if (Keyboard[sc_Home])      // old Ripper debugcodes (press Home+key to activate) :D
-    {
-        if (Keyboard[sc_B])
-        {
-            char str[80];
-            CA_CacheGrChunk (STARTFONT + 1);
-            ClearSplitVWB ();
-            VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-            for (int i = 0; i < 4; i++)
-            {
-                sprintf (str + i * 12, "%.2X %.2X %.2X %.2X\n",
-                         scanbuffer[(curscanoffs + i * 4 + 1) & 15],
-                         scanbuffer[(curscanoffs + i * 4 + 2) & 15],
-                         scanbuffer[(curscanoffs + i * 4 + 3) & 15],
-                         scanbuffer[(curscanoffs + i * 4 + 4) & 15]);
-            }
-
-            Message (str);
-
-            UNCACHEGRCHUNK (STARTFONT + 1);
-            IN_ClearKeysDown ();
-            IN_Ack ();
-
-            DrawPlayBorder ();
-        }
-
-        if (Keyboard[sc_S])
-        {
-            extern int lastsoundstarted;
-            extern int lastdigiwhich;
-            extern int lastdigistart;
-            extern int lastdigisegstart;
-
-            char str[80];
-            CA_CacheGrChunk (STARTFONT + 1);
-            ClearSplitVWB ();
-            VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-            sprintf (str, "lastsnd=%i\nlastwhich=%i\nlaststart=%i\nlastseg=%.8X", lastsoundstarted,
-                     lastdigiwhich, lastdigistart, lastdigisegstart);
-            Message (str);
-            UNCACHEGRCHUNK (STARTFONT + 1);
-            IN_ClearKeysDown ();
-            IN_Ack ();
-            DrawPlayBorder ();
-        }
-
-        if (Keyboard[sc_D])
-        {
-            extern byte *DMABuffer;
-
-            char str[80];
-            CA_CacheGrChunk (STARTFONT + 1);
-            ClearSplitVWB ();
-            VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-            sprintf (str, "DMABuffer=%.8X", (int) DMABuffer);
-            Message (str);
-            UNCACHEGRCHUNK (STARTFONT + 1);
-            IN_ClearKeysDown ();
-            IN_Ack ();
-            DrawPlayBorder ();
-        }
-        if (Keyboard[sc_P])
-        {
-            PushwallSteps = !PushwallSteps;
-            CA_CacheGrChunk (STARTFONT + 1);
-            ClearSplitVWB ();
-#ifdef NOTYET
-            VW_ScreenToScreen (vdisp, vbuf, 80, 160);
-#endif
-            Message (PushwallSteps ? "Pushwall stepping enabled (p)" :
-                     "Pushwall stepping disabled");
-
-            UNCACHEGRCHUNK (STARTFONT + 1);
-            IN_ClearKeysDown ();
-            IN_Ack ();
-            DrawPlayBorder ();
-        }
-    }
-#endif
-#endif
-
 
 //
 // F1-F7/ESC to enter control panel
