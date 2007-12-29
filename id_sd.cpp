@@ -190,10 +190,6 @@ volatile boolean pcindicate;
 boolean isSBSamplePlaying() { return sbSamplePlaying; }
 byte *getSBNextSegPtr() { return (byte *) sbNextSegPtr; }
 
-int lastsoundstarted=-1;
-int lastdigiwhich=-1;
-int lastdigistart=-1;
-int lastdigisegstart=-1;
 
 #ifdef NOTYET
 
@@ -1211,7 +1207,6 @@ SDL_ShutPC(void)
 void
 SDL_PlayDigiSegment(memptr addr,word len,boolean inIRQ)
 {
-        lastdigisegstart=(int)addr;
         switch (DigiMode)
         {
         case sds_PC:
@@ -1399,12 +1394,8 @@ int SD_PlayDigitized(word which,int leftpos,int rightpos)
     int channel = SD_GetChannelForDigi(which);
     SD_SetPosition(channel, leftpos,rightpos);
 
-    lastdigiwhich=which;
-
     DigiPage = DigiList[(which * 2) + 0];
     DigiLeft = DigiList[(which * 2) + 1];
-
-    lastdigistart=DigiPage;
 
     DigiLastStart = DigiPage;
     DigiLastEnd = DigiPage + ((DigiLeft + (PMPageSize - 1)) / PMPageSize);
@@ -2104,8 +2095,6 @@ SD_PlaySound(soundnames sound)
             if (s->priority < DigiPriority)
                 return(false);
 #endif
-
-            lastsoundstarted=sound;
 
             int channel = SD_PlayDigitized(DigiMap[sound], lp, rp);
             SoundPositioned = ispos;
