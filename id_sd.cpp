@@ -60,12 +60,10 @@ typedef struct
 	longword chunklength;
 } wavechunk;
 
-Mix_Chunk *SoundChunks[STARTMUSIC - STARTDIGISOUNDS];
-byte *SoundBuffers[STARTMUSIC - STARTDIGISOUNDS];
+static Mix_Chunk *SoundChunks[ STARTMUSIC - STARTDIGISOUNDS];
+static byte      *SoundBuffers[STARTMUSIC - STARTDIGISOUNDS];
 
 globalsoundpos channelSoundPos[MIX_CHANNELS];
-
-#define SDL_SoundFinished()     {SoundNumber = (soundnames) 0; SoundPriority = 0;}
 
 //      Global variables
         boolean         SoundSourcePresent,
@@ -77,39 +75,32 @@ globalsoundpos channelSoundPos[MIX_CHANNELS];
         SMMode          MusicMode;
         SDSMode         DigiMode;
 //volatile longword       TimeCount;
-        byte            **SoundTable;
-        boolean         ssIsTandy;
-        word            ssPort = 2;
+static  byte          **SoundTable;
+static  boolean         ssIsTandy;
+static  word            ssPort = 2;
         int             DigiMap[LASTSOUND];
         int             DigiChannel[STARTMUSIC - STARTDIGISOUNDS];
 
 //      Internal variables
 static  boolean         SD_Started;
-        boolean         nextsoundpos;
-        longword        TimerDivisor,TimerCount;
-static  const char* const ParmStrings[] =
-                        {
-                            "noal",
-                            "nosb",
-                            "nopro",
-                            "noss",
-                            "sst",
-                            "ss1",
-                            "ss2",
-                            "ss3",
-                            NULL
-                        };
-//static  void                    (*SoundUserHook)(void);
-        soundnames              SoundNumber,DigiNumber;
-        word                    SoundPriority,DigiPriority;
-        int                     LeftPosition,RightPosition;
-        long                    LocalTime;
-        word                    TimerRate;
+static  boolean         nextsoundpos;
+static  longword        TimerDivisor;
+static  longword        TimerCount;
+static  soundnames              SoundNumber;
+static  soundnames              DigiNumber;
+static  word                    SoundPriority;
+static  word                    DigiPriority;
+static  int                     LeftPosition;
+static  int                     RightPosition;
+static  word                    TimerRate;
 
-        word                    NumDigi,DigiLeft,DigiPage;
+        word                    NumDigi;
+static  word                    DigiLeft;
+static  word                    DigiPage;
         word                    *DigiList;
-        word                    DigiLastStart,DigiLastEnd;
-        boolean                 DigiPlaying;
+static  word                    DigiLastStart;
+static  word                    DigiLastEnd;
+static  boolean                 DigiPlaying;
 static  boolean                 DigiMissed,DigiLastSegment;
 static  memptr                  DigiNextAddr;
 static  word                    DigiNextLen;
@@ -131,56 +122,57 @@ static  volatile longword       sbNextSegLen;
 static  byte                    sbpOldFMMix,sbpOldVOCMix;
 
 //      SoundSource variables
-        boolean                 ssNoCheck;
-        boolean                 ssActive;
-        word                    ssControl,ssStatus,ssData;
-        byte                    ssOn,ssOff;
-        volatile byte           *ssSample;
-        volatile longword       ssLengthLeft;
+static  word                    ssControl;
+static  word                    ssStatus;
+static  word                    ssData;
+static  byte                    ssOn;
+static  byte                    ssOff;
+static  volatile byte          *ssSample;
+static  volatile longword       ssLengthLeft;
 
 //      PC Sound variables
-        volatile byte   pcLastSample;
-        volatile byte *pcSound;
-        longword                pcLengthLeft;
+static  volatile byte   pcLastSample;
+static  volatile byte *pcSound;
+static  longword                pcLengthLeft;
 
 //      AdLib variables
-        boolean                 alNoCheck;
-        byte                    *alSound;
-        byte                    alBlock;
-        longword                alLengthLeft;
-        longword                alTimeCount;
-        Instrument              alZeroInst;
-        boolean                 alNoIRQ;
+static  byte                   *alSound;
+static  byte                    alBlock;
+static  longword                alLengthLeft;
+static  longword                alTimeCount;
+static  Instrument              alZeroInst;
+static  boolean                 alNoIRQ;
 
 // This table maps channel numbers to carrier and modulator op cells
-static  byte                    carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
-                                modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18};
+static  byte                    carriers[9]  = { 3, 4, 5,11,12,13,19,20,21};
+static  byte                    modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18};
 
 //      Sequencer variables
-        boolean                 sqActive;
+static  boolean                 sqActive;
 static  byte                    alFXReg;
-        word                    *sqHack,*sqHackPtr;
-        word                    sqHackLen,sqHackSeqLen;
-        long                    sqHackTime;
-
-//      Internal routines
-        void                    SDL_DigitizedDoneInIRQ();
+static  word                   *sqHack;
+static  word                   *sqHackPtr;
+static  word                    sqHackLen;
+static  word                    sqHackSeqLen;
+static  long                    sqHackTime;
 
 #define DMABUFFERSIZE 4096
 
-int DMABufferDescriptor=0;
-int DMABufferIndex=0;
-byte *DMABuffer;
+static int   DMABufferDescriptor = 0;
+static int   DMABufferIndex      = 0;
+static byte *DMABuffer;
 
-int count_time=0;
-int count_fx=0;
-int extreme=0;
+static int count_time = 0;
+static int count_fx   = 0;
+static int extreme    = 0;
 volatile boolean pcindicate;
 
-//volatile boolean deactivateSoundHandler=false;
 
-boolean isSBSamplePlaying() { return sbSamplePlaying; }
-byte *getSBNextSegPtr() { return (byte *) sbNextSegPtr; }
+static void SDL_SoundFinished(void)
+{
+	SoundNumber   = (soundnames)0;
+	SoundPriority = 0;
+}
 
 
 #ifdef NOTYET
@@ -284,6 +276,8 @@ void inline SDL_DoFX()
                 }
         }
 }
+
+static void SDL_DigitizedDoneInIRQ(void);
 
 void inline SDL_DoFast()
 {
@@ -1438,8 +1432,7 @@ void SD_ChannelFinished(int channel)
 
 #ifdef NOTYET
 
-void
-SDL_DigitizedDoneInIRQ(void)
+static void SDL_DigitizedDoneInIRQ(void)
 {
         if (DigiNextAddr)
         {
@@ -1972,9 +1965,9 @@ SD_Startup(void)
     SoundBlasterPresent = true;
 
 #ifdef NOTYET
-    LocalTime = TimeCount = alTimeCount = 0;
+    TimeCount = alTimeCount = 0;
 #else
-    LocalTime = alTimeCount = 0;
+    alTimeCount = 0;
 #endif
 
     SD_SetSoundMode(sdm_Off);

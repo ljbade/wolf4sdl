@@ -1307,7 +1307,6 @@ startplayloop:
                                 int32_t lasttimecount = TimeCount;
 
                                 while(TimeCount < lasttimecount+150)
-                                //while(DigiPlaying!=false)
                                         SD_Poll();
                         }
                         else

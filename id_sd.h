@@ -209,7 +209,6 @@ extern  boolean         AdLibPresent,
 extern  SDMode          SoundMode;
 extern  SDSMode         DigiMode;
 extern  SMMode          MusicMode;
-extern  boolean         DigiPlaying;
 extern  int             DigiMap[];
 extern  int             DigiChannel[];
 //extern  volatile longword TimeCount;                                    // Global time in ticks
