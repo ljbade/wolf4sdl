@@ -224,6 +224,7 @@ static void ScanInfoPlane(void)
 
     start = mapsegs[1];
     for (y=0;y<mapheight;y++)
+    {
         for (x=0;x<mapwidth;x++)
         {
             tile = *start++;
@@ -607,8 +608,8 @@ static void ScanInfoPlane(void)
                     break;
 #endif
             }
-
         }
+    }
 }
 
 //==========================================================================
@@ -658,6 +659,7 @@ void SetupGameLevel (void)
     memset (actorat,0,sizeof(actorat));
     map = mapsegs[0];
     for (y=0;y<mapheight;y++)
+    {
         for (x=0;x<mapwidth;x++)
         {
             tile = *map++;
@@ -674,6 +676,7 @@ void SetupGameLevel (void)
                 actorat[x][y] = 0;
             }
         }
+    }
 
 //
 // spawn doors
@@ -684,6 +687,7 @@ void SetupGameLevel (void)
 
     map = mapsegs[0];
     for (y=0;y<mapheight;y++)
+    {
         for (x=0;x<mapwidth;x++)
         {
             tile = *map++;
@@ -711,6 +715,7 @@ void SetupGameLevel (void)
                 }
             }
         }
+    }
 
 //
 // spawn actors
@@ -723,6 +728,7 @@ void SetupGameLevel (void)
 //
     map = mapsegs[0];
     for (y=0;y<mapheight;y++)
+    {
         for (x=0;x<mapwidth;x++)
         {
             tile = *map++;
@@ -744,6 +750,7 @@ void SetupGameLevel (void)
                 *(map-1) = tile;
             }
         }
+    }
 
 
 //
@@ -871,19 +878,19 @@ void DrawPlayBorder (void)
 
 void DrawPlayScreen (void)
 {
-        CA_CacheGrChunk (STATUSBARPIC);
-        VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
-        DrawPlayBorder ();
-        UNCACHEGRCHUNK (STATUSBARPIC);
+    CA_CacheGrChunk (STATUSBARPIC);
+    VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
+    DrawPlayBorder ();
+    UNCACHEGRCHUNK (STATUSBARPIC);
 
-        DrawFace ();
-        DrawHealth ();
-        DrawLives ();
-        DrawLevel ();
-        DrawAmmo ();
-        DrawKeys ();
-        DrawWeapon ();
-        DrawScore ();
+    DrawFace ();
+    DrawHealth ();
+    DrawLives ();
+    DrawLevel ();
+    DrawAmmo ();
+    DrawKeys ();
+    DrawWeapon ();
+    DrawScore ();
 }
 
 
@@ -905,13 +912,13 @@ char    demoname[13] = "DEMO?.";
 
 void StartDemoRecord (int levelnumber)
 {
-        demobuffer=malloc(MAXDEMOSIZE);
-        demoptr = (char *) demobuffer;
-        lastdemoptr = demoptr+MAXDEMOSIZE;
+    demobuffer=malloc(MAXDEMOSIZE);
+    demoptr = (char *) demobuffer;
+    lastdemoptr = demoptr+MAXDEMOSIZE;
 
-        *demoptr = levelnumber;
-        demoptr += 4;                           // leave space for length
-        demorecord = true;
+    *demoptr = levelnumber;
+    demoptr += 4;                           // leave space for length
+    demorecord = true;
 }
 
 
@@ -925,34 +932,34 @@ void StartDemoRecord (int levelnumber)
 
 void FinishDemoRecord (void)
 {
-        int32_t    length,level;
+    int32_t    length,level;
 
-        demorecord = false;
+    demorecord = false;
 
-        length = (int32_t) (demoptr - (char *)demobuffer);
+    length = (int32_t) (demoptr - (char *)demobuffer);
 
-        demoptr = ((char *)demobuffer)+1;
-        *(word *)demoptr = (word) length;
+    demoptr = ((char *)demobuffer)+1;
+    *(word *)demoptr = (word) length;
 
-        VW_FadeIn();
-        CenterWindow(24,3);
-        PrintY+=6;
-        fontnumber=0;
-        SETFONTCOLOR(0,15);
-        US_Print(" Demo number (0-9): ");
-        VW_UpdateScreen();
+    VW_FadeIn();
+    CenterWindow(24,3);
+    PrintY+=6;
+    fontnumber=0;
+    SETFONTCOLOR(0,15);
+    US_Print(" Demo number (0-9): ");
+    VW_UpdateScreen();
 
-        if (US_LineInput (px,py,str,NULL,true,1,0))
+    if (US_LineInput (px,py,str,NULL,true,1,0))
+    {
+        level = atoi (str);
+        if (level>=0 && level<=9)
         {
-                level = atoi (str);
-                if (level>=0 && level<=9)
-                {
-                        demoname[4] = (char)('0'+level);
-                        CA_WriteFile (demoname,demobuffer,length);
-                }
+            demoname[4] = (char)('0'+level);
+            CA_WriteFile (demoname,demobuffer,length);
         }
+    }
 
-        free(demobuffer);
+    free(demobuffer);
 }
 
 //==========================================================================
@@ -969,66 +976,66 @@ void FinishDemoRecord (void)
 
 void RecordDemo (void)
 {
-        int level,esc,maps;
+    int level,esc,maps;
 
-        CenterWindow(26,3);
-        PrintY+=6;
-        CA_CacheGrChunk(STARTFONT);
-        fontnumber=0;
-        SETFONTCOLOR(0,15);
+    CenterWindow(26,3);
+    PrintY+=6;
+    CA_CacheGrChunk(STARTFONT);
+    fontnumber=0;
+    SETFONTCOLOR(0,15);
 #ifndef SPEAR
 #ifdef UPLOAD
-        US_Print("  Demo which level(1-10): "); maps = 10;
+    US_Print("  Demo which level(1-10): "); maps = 10;
 #else
-        US_Print("  Demo which level(1-60): "); maps = 60;
+    US_Print("  Demo which level(1-60): "); maps = 60;
 #endif
 #else
-        US_Print("  Demo which level(1-21): "); maps = 21;
+    US_Print("  Demo which level(1-21): "); maps = 21;
 #endif
-        VW_UpdateScreen();
-        VW_FadeIn ();
-        esc = !US_LineInput (px,py,str,NULL,true,2,0);
-        if (esc)
-                return;
+    VW_UpdateScreen();
+    VW_FadeIn ();
+    esc = !US_LineInput (px,py,str,NULL,true,2,0);
+    if (esc)
+        return;
 
-        level = atoi (str);
-        level--;
+    level = atoi (str);
+    level--;
 
-        if (level >= maps || level < 0)
-                return;
+    if (level >= maps || level < 0)
+        return;
 
-        VW_FadeOut ();
+    VW_FadeOut ();
 
 #ifndef SPEAR
-        NewGame (gd_hard,level/10);
-        gamestate.mapon = level%10;
+    NewGame (gd_hard,level/10);
+    gamestate.mapon = level%10;
 #else
-        NewGame (gd_hard,0);
-        gamestate.mapon = level;
+    NewGame (gd_hard,0);
+    gamestate.mapon = level;
 #endif
 
-        StartDemoRecord (level);
+    StartDemoRecord (level);
 
-        DrawPlayScreen ();
-        VW_FadeIn ();
+    DrawPlayScreen ();
+    VW_FadeIn ();
 
-        startgame = false;
-        demorecord = true;
+    startgame = false;
+    demorecord = true;
 
-        SetupGameLevel ();
-        StartMusic ();
+    SetupGameLevel ();
+    StartMusic ();
 
-        fizzlein = true;
+    fizzlein = true;
 
-        PlayLoop ();
+    PlayLoop ();
 
-        demoplayback = false;
+    demoplayback = false;
 
-        StopMusic ();
-        VW_FadeOut ();
-        ClearMemory ();
+    StopMusic ();
+    VW_FadeOut ();
+    ClearMemory ();
 
-        FinishDemoRecord ();
+    FinishDemoRecord ();
 }
 #else
 void FinishDemoRecord (void) {return;}
@@ -1051,60 +1058,60 @@ void RecordDemo (void) {return;}
 
 void PlayDemo (int demonumber)
 {
-        int length;
+    int length;
 
 #ifdef DEMOSEXTERN
 // debug: load chunk
 #ifndef SPEARDEMO
-        int dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
+    int dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
 #else
-        int dems[1]={T_DEMO0};
+    int dems[1]={T_DEMO0};
 #endif
 
-        CA_CacheGrChunk(dems[demonumber]);
-        demoptr = (char *) grsegs[dems[demonumber]];
+    CA_CacheGrChunk(dems[demonumber]);
+    demoptr = (char *) grsegs[dems[demonumber]];
 #else
-        demoname[4] = '0'+demonumber;
-        CA_LoadFile (demoname,&demobuffer);
-        MM_SetLock (&demobuffer,true);
-        demoptr = (char far *)demobuffer;
+    demoname[4] = '0'+demonumber;
+    CA_LoadFile (demoname,&demobuffer);
+    MM_SetLock (&demobuffer,true);
+    demoptr = (char far *)demobuffer;
 #endif
 
-        NewGame (1,0);
-        gamestate.mapon = *demoptr++;
-        gamestate.difficulty = gd_hard;
-        length = *((word *)demoptr);
-        demoptr+=2;
-        demoptr++;
-        lastdemoptr = demoptr-4+length;
+    NewGame (1,0);
+    gamestate.mapon = *demoptr++;
+    gamestate.difficulty = gd_hard;
+    length = *((word *)demoptr);
+    demoptr+=2;
+    demoptr++;
+    lastdemoptr = demoptr-4+length;
 
-        VW_FadeOut ();
+    VW_FadeOut ();
 
-        SETFONTCOLOR(0,15);
-        DrawPlayScreen ();
-        VW_FadeIn ();
+    SETFONTCOLOR(0,15);
+    DrawPlayScreen ();
+    VW_FadeIn ();
 
-        startgame = false;
-        demoplayback = true;
+    startgame = false;
+    demoplayback = true;
 
-        SetupGameLevel ();
-        StartMusic ();
+    SetupGameLevel ();
+    StartMusic ();
 
-        fizzlein = true;
+    fizzlein = true;
 
-        PlayLoop ();
+    PlayLoop ();
 
 #ifdef DEMOSEXTERN
-        UNCACHEGRCHUNK(dems[demonumber]);
+    UNCACHEGRCHUNK(dems[demonumber]);
 #else
-        MM_FreePtr (&demobuffer);
+    MM_FreePtr (&demobuffer);
 #endif
 
-        demoplayback = false;
+    demoplayback = false;
 
-        StopMusic ();
-        VW_FadeOut ();
-        ClearMemory ();
+    StopMusic ();
+    VW_FadeOut ();
+    ClearMemory ();
 }
 
 //==========================================================================
@@ -1121,121 +1128,121 @@ void PlayDemo (int demonumber)
 
 void Died (void)
 {
-        float fangle;
-        int32_t    dx,dy;
-        int             iangle,curangle,clockwise,counter,change;
+    float   fangle;
+    int32_t dx,dy;
+    int     iangle,curangle,clockwise,counter,change;
 
-        if (screenfaded)
-                VW_FadeIn ();
+    if (screenfaded)
+        VW_FadeIn ();
 
-        gamestate.weapon = (weapontype) -1;                     // take away weapon
-        SD_PlaySound (PLAYERDEATHSND);
+    gamestate.weapon = (weapontype) -1;                     // take away weapon
+    SD_PlaySound (PLAYERDEATHSND);
 
-//
-// swing around to face attacker
-//
-        dx = killerobj->x - player->x;
-        dy = player->y - killerobj->y;
+    //
+    // swing around to face attacker
+    //
+    dx = killerobj->x - player->x;
+    dy = player->y - killerobj->y;
 
-        fangle = atan2((float) dy, (float) dx);                  // returns -pi to pi
-        if (fangle<0)
-                fangle = (float) (M_PI*2+fangle);
+    fangle = atan2((float) dy, (float) dx);                  // returns -pi to pi
+    if (fangle<0)
+        fangle = (float) (M_PI*2+fangle);
 
-        iangle = (int) (fangle/(M_PI*2)*ANGLES);
+    iangle = (int) (fangle/(M_PI*2)*ANGLES);
 
-        if (player->angle > iangle)
-        {
-                counter = player->angle - iangle;
-                clockwise = ANGLES-player->angle + iangle;
-        }
-        else
-        {
-                clockwise = iangle - player->angle;
-                counter = player->angle + ANGLES-iangle;
-        }
+    if (player->angle > iangle)
+    {
+        counter = player->angle - iangle;
+        clockwise = ANGLES-player->angle + iangle;
+    }
+    else
+    {
+        clockwise = iangle - player->angle;
+        counter = player->angle + ANGLES-iangle;
+    }
 
-        curangle = player->angle;
+    curangle = player->angle;
 
-        if (clockwise<counter)
-        {
+    if (clockwise<counter)
+    {
         //
         // rotate clockwise
         //
-                if (curangle>iangle)
-                        curangle -= ANGLES;
-                do
-                {
-                        change = tics*DEATHROTATE;
-                        if (curangle + change > iangle)
-                                change = iangle-curangle;
-
-                        curangle += change;
-                        player->angle += change;
-                        if (player->angle >= ANGLES)
-                                player->angle -= ANGLES;
-
-                        ThreeDRefresh ();
-                        CalcTics ();
-                } while (curangle != iangle);
-        }
-        else
+        if (curangle>iangle)
+            curangle -= ANGLES;
+        do
         {
+            change = tics*DEATHROTATE;
+            if (curangle + change > iangle)
+                change = iangle-curangle;
+
+            curangle += change;
+            player->angle += change;
+            if (player->angle >= ANGLES)
+                player->angle -= ANGLES;
+
+            ThreeDRefresh ();
+            CalcTics ();
+        } while (curangle != iangle);
+    }
+    else
+    {
         //
         // rotate counterclockwise
         //
-                if (curangle<iangle)
-                        curangle += ANGLES;
-                do
-                {
-                        change = -(int)tics*DEATHROTATE;
-                        if (curangle + change < iangle)
-                                change = iangle-curangle;
-
-                        curangle += change;
-                        player->angle += change;
-                        if (player->angle < 0)
-                                player->angle += ANGLES;
-
-                        ThreeDRefresh ();
-                        CalcTics ();
-                } while (curangle != iangle);
-        }
-
-//
-// fade to red
-//
-        FinishPaletteShifts ();
-
-        VL_BarScaledCoord (viewscreenx,viewscreeny,viewwidth,viewheight,4);
-
-        IN_ClearKeysDown ();
-
-        FizzleFade(screenBuffer,screen,viewscreenx,viewscreeny,viewwidth,viewheight,70,false);
-
-        IN_UserInput(100);
-        SD_WaitSoundDone ();
-        ClearMemory();                  // Tricob's "Out of Memory" fix
-
-        gamestate.lives--;
-
-        if (gamestate.lives > -1)
+        if (curangle<iangle)
+            curangle += ANGLES;
+        do
         {
-                gamestate.health = 100;
-                gamestate.weapon = gamestate.bestweapon
-                        = gamestate.chosenweapon = wp_pistol;
-                gamestate.ammo = STARTAMMO;
-                gamestate.keys = 0;
-                pwallstate = pwallpos = 0;
-                gamestate.attackframe = gamestate.attackcount =
-                gamestate.weaponframe = 0;
+            change = -(int)tics*DEATHROTATE;
+            if (curangle + change < iangle)
+                change = iangle-curangle;
 
-                DrawKeys ();
-                DrawWeapon ();
-                DrawAmmo ();
-                DrawHealth ();
-                DrawFace ();
-                DrawLives ();
-        }
+            curangle += change;
+            player->angle += change;
+            if (player->angle < 0)
+                player->angle += ANGLES;
+
+            ThreeDRefresh ();
+            CalcTics ();
+        } while (curangle != iangle);
+    }
+
+    //
+    // fade to red
+    //
+    FinishPaletteShifts ();
+
+    VL_BarScaledCoord (viewscreenx,viewscreeny,viewwidth,viewheight,4);
+
+    IN_ClearKeysDown ();
+
+    FizzleFade(screenBuffer,screen,viewscreenx,viewscreeny,viewwidth,viewheight,70,false);
+
+    IN_UserInput(100);
+    SD_WaitSoundDone ();
+    ClearMemory();
+
+    gamestate.lives--;
+
+    if (gamestate.lives > -1)
+    {
+        gamestate.health = 100;
+        gamestate.weapon = gamestate.bestweapon
+            = gamestate.chosenweapon = wp_pistol;
+        gamestate.ammo = STARTAMMO;
+        gamestate.keys = 0;
+        pwallstate = pwallpos = 0;
+        gamestate.attackframe = gamestate.attackcount =
+            gamestate.weaponframe = 0;
+
+        DrawKeys ();
+        DrawWeapon ();
+        DrawAmmo ();
+        DrawHealth ();
+        DrawFace ();
+        DrawLives ();
+    }
 
 }
 
@@ -1251,246 +1258,229 @@ void Died (void)
 
 void GameLoop (void)
 {
-        boolean died;
+    boolean died;
 #ifdef MYPROFILE
-        clock_t start,end;
+    clock_t start,end;
 #endif
 
 restartgame:
-        ClearMemory ();
-        SETFONTCOLOR(0,15);
-        DrawPlayScreen ();
-        died = false;
-        do
-        {
-                if (!loadedgame)
-                  gamestate.score = gamestate.oldscore;
-                DrawScore();
+    ClearMemory ();
+    SETFONTCOLOR(0,15);
+    DrawPlayScreen ();
+    died = false;
+    do
+    {
+        if (!loadedgame)
+            gamestate.score = gamestate.oldscore;
+        DrawScore();
 
-                startgame = false;
-                if (!loadedgame)
-                        SetupGameLevel ();
+        startgame = false;
+        if (!loadedgame)
+            SetupGameLevel ();
 
 #ifdef SPEAR
-                if (gamestate.mapon == 20)      // give them the key allways
-                {
-                        gamestate.keys |= 1;
-                        DrawKeys ();
-                }
+        if (gamestate.mapon == 20)      // give them the key allways
+        {
+            gamestate.keys |= 1;
+            DrawKeys ();
+        }
 #endif
 
-                ingame = true;
-                if(loadedgame)
-                {
-                        ContinueMusic(lastgamemusicoffset);
-                        loadedgame = false;
-                }
-                else StartMusic ();
+        ingame = true;
+        if(loadedgame)
+        {
+            ContinueMusic(lastgamemusicoffset);
+            loadedgame = false;
+        }
+        else StartMusic ();
 
-                if (!died)
-                        PreloadGraphics ();             // TODO: Let this do something useful!
-                else
-                        died = false;
+        if (!died)
+            PreloadGraphics ();             // TODO: Let this do something useful!
+        else
+            died = false;
 
-                fizzlein = true;
+        fizzlein = true;
 
-                DrawLevel ();
+        DrawLevel ();
 
 #ifdef SPEAR
 startplayloop:
 #endif
-                PlayLoop ();
+        PlayLoop ();
 
 #ifdef SPEAR
-                if (spearflag)
+        if (spearflag)
+        {
+            SD_StopSound();
+            SD_PlaySound(GETSPEARSND);
+            if (DigiMode != sds_Off)
+            {
+                int32_t lasttimecount = TimeCount;
+
+                while(TimeCount < lasttimecount+150)
+                    SD_Poll();
+            }
+            else
+                SD_WaitSoundDone();
+
+            ClearMemory ();
+            gamestate.oldscore = gamestate.score;
+            gamestate.mapon = 20;
+            SetupGameLevel ();
+            StartMusic ();
+            player->x = spearx;
+            player->y = speary;
+            player->angle = (short)spearangle;
+            spearflag = false;
+            Thrust (0,0);
+            goto startplayloop;
+        }
+#endif
+
+        StopMusic ();
+        ingame = false;
+
+        if (demorecord && playstate != ex_warped)
+            FinishDemoRecord ();
+
+        if (startgame || loadedgame)
+            goto restartgame;
+
+        switch (playstate)
+        {
+            case ex_completed:
+            case ex_secretlevel:
+                gamestate.keys = 0;
+                DrawKeys ();
+                VW_FadeOut ();
+
+                ClearMemory ();
+
+                LevelCompleted ();              // do the intermission
+
+#ifdef SPEARDEMO
+                if (gamestate.mapon == 1)
                 {
-                        SD_StopSound();
-                        SD_PlaySound(GETSPEARSND);
-                        if (DigiMode != sds_Off)
-                        {
-                                int32_t lasttimecount = TimeCount;
+                    died = true;                    // don't "get psyched!"
 
-                                while(TimeCount < lasttimecount+150)
-                                        SD_Poll();
-                        }
-                        else
-                                SD_WaitSoundDone();
+                    VW_FadeOut ();
 
-                        ClearMemory ();
-                        gamestate.oldscore = gamestate.score;
-                        gamestate.mapon = 20;
-                        SetupGameLevel ();
-                        StartMusic ();
-//                      PM_CheckMainMem ();
-                        player->x = spearx;
-                        player->y = speary;
-                        player->angle = (short)spearangle;
-                        spearflag = false;
-                        Thrust (0,0);
-                        goto startplayloop;
+                    ClearMemory ();
+
+                    CheckHighScore (gamestate.score,gamestate.mapon+1);
+#ifndef JAPAN
+                    strcpy(MainMenu[viewscores].string,STR_VS);
+#endif
+                    MainMenu[viewscores].routine = CP_ViewScores;
+                    return;
                 }
 #endif
 
-                StopMusic ();
-                ingame = false;
-
-                if (demorecord && playstate != ex_warped)
-                        FinishDemoRecord ();
-
-                if (startgame || loadedgame)
-                        goto restartgame;
-
-                switch (playstate)
-                {
-                case ex_completed:
-                case ex_secretlevel:
-                        gamestate.keys = 0;
-                        DrawKeys ();
-                        VW_FadeOut ();
-
-                        ClearMemory ();
-
-                        LevelCompleted ();              // do the intermission
-
-#ifdef SPEARDEMO
-                        if (gamestate.mapon == 1)
-                        {
-                                died = true;                    // don't "get psyched!"
-
-                                VW_FadeOut ();
-
-                                ClearMemory ();
-
-                                CheckHighScore (gamestate.score,gamestate.mapon+1);
-
-                                #pragma warn -sus
-                                #ifndef JAPAN
-                                _fstrcpy(MainMenu[viewscores].string,STR_VS);
-                                #endif
-                                MainMenu[viewscores].routine = CP_ViewScores;
-                                #pragma warn +sus
-
-                                return;
-                        }
-#endif
-
 #ifdef JAPDEMO
-                        if (gamestate.mapon == 3)
-                        {
-                                died = true;                    // don't "get psyched!"
+                if (gamestate.mapon == 3)
+                {
+                    died = true;                    // don't "get psyched!"
 
-                                VW_FadeOut ();
+                    VW_FadeOut ();
 
-                                ClearMemory ();
+                    ClearMemory ();
 
-                                CheckHighScore (gamestate.score,gamestate.mapon+1);
-
-                                #pragma warn -sus
-                                #ifndef JAPAN
-                                _fstrcpy(MainMenu[viewscores].string,STR_VS);
-                                #endif
-                                MainMenu[viewscores].routine = CP_ViewScores;
-                                #pragma warn +sus
-
-                                return;
-                        }
+                    CheckHighScore (gamestate.score,gamestate.mapon+1);
+#ifndef JAPAN
+                    strcpy(MainMenu[viewscores].string,STR_VS);
+#endif
+                    MainMenu[viewscores].routine = CP_ViewScores;
+                    return;
+                }
 #endif
 
-                        gamestate.oldscore = gamestate.score;
+                gamestate.oldscore = gamestate.score;
 
 #ifndef SPEAR
-                        //
-                        // COMING BACK FROM SECRET LEVEL
-                        //
-                        if (gamestate.mapon == 9)
-                                gamestate.mapon = ElevatorBackTo[gamestate.episode];    // back from secret
-                        else
-                        //
-                        // GOING TO SECRET LEVEL
-                        //
-                        if (playstate == ex_secretlevel)
-                                gamestate.mapon = 9;
+                //
+                // COMING BACK FROM SECRET LEVEL
+                //
+                if (gamestate.mapon == 9)
+                    gamestate.mapon = ElevatorBackTo[gamestate.episode];    // back from secret
+                else
+                    //
+                    // GOING TO SECRET LEVEL
+                    //
+                    if (playstate == ex_secretlevel)
+                        gamestate.mapon = 9;
 #else
 
 #define FROMSECRET1             3
 #define FROMSECRET2             11
 
-                        //
-                        // GOING TO SECRET LEVEL
-                        //
-                        if (playstate == ex_secretlevel)
-                                switch(gamestate.mapon)
-                                {
-                                 case FROMSECRET1: gamestate.mapon = 18; break;
-                                 case FROMSECRET2: gamestate.mapon = 19; break;
-                                }
-                        else
-                        //
-                        // COMING BACK FROM SECRET LEVEL
-                        //
-                        if (gamestate.mapon == 18 || gamestate.mapon == 19)
-                                switch(gamestate.mapon)
-                                {
-                                 case 18: gamestate.mapon = FROMSECRET1+1; break;
-                                 case 19: gamestate.mapon = FROMSECRET2+1; break;
-                                }
+                //
+                // GOING TO SECRET LEVEL
+                //
+                if (playstate == ex_secretlevel)
+                    switch(gamestate.mapon)
+                {
+                    case FROMSECRET1: gamestate.mapon = 18; break;
+                    case FROMSECRET2: gamestate.mapon = 19; break;
+                }
+                else
+                    //
+                    // COMING BACK FROM SECRET LEVEL
+                    //
+                    if (gamestate.mapon == 18 || gamestate.mapon == 19)
+                        switch(gamestate.mapon)
+                    {
+                        case 18: gamestate.mapon = FROMSECRET1+1; break;
+                        case 19: gamestate.mapon = FROMSECRET2+1; break;
+                    }
 #endif
-                        else
+                    else
                         //
                         // GOING TO NEXT LEVEL
                         //
-                                gamestate.mapon++;
+                        gamestate.mapon++;
+                break;
 
+            case ex_died:
+                Died ();
+                died = true;                    // don't "get psyched!"
 
-                        break;
+                if (gamestate.lives > -1)
+                    break;                          // more lives left
 
-                case ex_died:
-                        Died ();
-                        died = true;                    // don't "get psyched!"
+                VW_FadeOut ();
 
-                        if (gamestate.lives > -1)
-                                break;                          // more lives left
+                ClearMemory ();
 
-                        VW_FadeOut ();
+                CheckHighScore (gamestate.score,gamestate.mapon+1);
+#ifndef JAPAN
+                strcpy(MainMenu[viewscores].string,STR_VS);
+#endif
+                MainMenu[viewscores].routine = CP_ViewScores;
+                return;
 
-                        ClearMemory ();
-
-                        CheckHighScore (gamestate.score,gamestate.mapon+1);
-
-                        #ifndef JAPAN
-                        strcpy(MainMenu[viewscores].string,STR_VS);
-                        #endif
-                        MainMenu[viewscores].routine = CP_ViewScores;
-
-                        return;
-
-                case ex_victorious:
+            case ex_victorious:
 
 #ifndef SPEAR
-                        VW_FadeOut ();
+                VW_FadeOut ();
 #else
-                        VL_FadeOut (0,255,0,17,17,300);
+                VL_FadeOut (0,255,0,17,17,300);
 #endif
-                        ClearMemory ();
+                ClearMemory ();
 
-                        Victory ();
+                Victory ();
 
-                        ClearMemory ();
+                ClearMemory ();
 
-                        CheckHighScore (gamestate.score,gamestate.mapon+1);
+                CheckHighScore (gamestate.score,gamestate.mapon+1);
+#ifndef JAPAN
+                strcpy(MainMenu[viewscores].string,STR_VS);
+#endif
+                MainMenu[viewscores].routine = CP_ViewScores;
+                return;
 
-                        #ifndef JAPAN
-                        strcpy(MainMenu[viewscores].string,STR_VS);
-                        #endif
-                        MainMenu[viewscores].routine = CP_ViewScores;
-
-                        return;
-
-                default:
-                        ClearMemory ();
-                        break;
-                }
-
-        } while (1);
-
+            default:
+                ClearMemory ();
+                break;
+        }
+    } while (1);
 }
