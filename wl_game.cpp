@@ -766,25 +766,29 @@ void SetupGameLevel (void)
 =
 ===================
 */
-
-void DrawPlayBorderSides (void)
+void DrawPlayBorderSides(void)
 {
-    int     xl,yl;
+	const int sw = screenWidth;
+	const int sh = screenHeight;
+	const int vw = viewwidth;
+	const int vh = viewheight;
+	const int px = scaleFactor; // size of one "pixel"
 
-    xl = screenWidth/2-viewwidth/2;
-    yl = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
+	const int h  = sh - px * STATUSLINES;
+	const int xl = sw / 2 - vw / 2;
+	const int yl = (h - vh) / 2;
 
-    VWB_BarScaledCoord (0,0,xl-scaleFactor,screenHeight-scaleFactor*STATUSLINES,bordercol);
-    VWB_BarScaledCoord (xl+viewwidth+scaleFactor,0,xl-scaleFactor*2,screenHeight-scaleFactor*STATUSLINES,bordercol);
+	VWB_BarScaledCoord(0,            0, xl - px,     h, bordercol);
+	VWB_BarScaledCoord(xl + vw + px, 0, xl - px * 2, h, bordercol);
 
-    VWB_BarScaledCoord (0,0,screenWidth,yl-scaleFactor,bordercol);
-    VWB_BarScaledCoord (0,yl+viewheight+scaleFactor,screenWidth,yl-scaleFactor,bordercol);
+	VWB_BarScaledCoord(0, 0,            sw, yl - px, bordercol);
+	VWB_BarScaledCoord(0, yl + vh + px, sw, yl - px, bordercol);
 
-    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, viewwidth+scaleFactor, scaleFactor, 0);
-    VWB_BarScaledCoord(xl, yl+viewheight, viewwidth+scaleFactor, scaleFactor, bordercol-2);
-    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, scaleFactor, viewheight+scaleFactor, 0);
-    VWB_BarScaledCoord(xl+viewwidth, yl-scaleFactor, scaleFactor, viewheight+2*scaleFactor, bordercol-2);
-    VWB_BarScaledCoord(xl-scaleFactor, yl+viewheight, scaleFactor, scaleFactor, bordercol-3);
+	VWB_BarScaledCoord(xl - px, yl - px, vw + px, px,          0);
+	VWB_BarScaledCoord(xl,      yl + vh, vw + px, px,          bordercol - 2);
+	VWB_BarScaledCoord(xl - px, yl - px, px,      vh + px,     0);
+	VWB_BarScaledCoord(xl + vw, yl - px, px,      vh + px * 2, bordercol - 2);
+	VWB_BarScaledCoord(xl - px, yl + vh, px,      px,          bordercol - 3);
 }
 
 
