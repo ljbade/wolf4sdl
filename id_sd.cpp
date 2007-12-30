@@ -69,7 +69,6 @@ globalsoundpos channelSoundPos[MIX_CHANNELS];
         boolean         SoundSourcePresent,
                         AdLibPresent,
                         SoundBlasterPresent,SBProPresent,
-                        NeedsDigitized,NeedsMusic,
                         SoundPositioned;
         SDMode          SoundMode;
         SMMode          MusicMode;
@@ -1748,19 +1747,16 @@ SD_SetSoundMode(SDMode mode)
     switch (mode)
     {
         case sdm_Off:
-            NeedsDigitized = false;
             result = true;
             break;
         case sdm_PC:
             tableoffset = STARTPCSOUNDS;
-            NeedsDigitized = false;
             result = true;
             break;
         case sdm_AdLib:
             if (AdLibPresent)
             {
                 tableoffset = STARTADLIBSOUNDS;
-                NeedsDigitized = false;
                 result = true;
             }
             break;
@@ -1801,15 +1797,11 @@ SD_SetMusicMode(SMMode mode)
     switch (mode)
     {
         case smm_Off:
-            NeedsMusic = false;
             result = true;
             break;
         case smm_AdLib:
             if (AdLibPresent)
-            {
-                NeedsMusic = true;
                 result = true;
-            }
             break;
     }
 

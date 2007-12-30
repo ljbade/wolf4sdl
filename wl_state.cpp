@@ -153,7 +153,7 @@ void NewState (objtype *ob, statetype *state)
 
 #define CHECKDIAG(x,y)                              \
 {                                                   \
-    temp=(unsigned)(uintptr_t)actorat[x][y];        \
+    temp=(uintptr_t)actorat[x][y];                  \
     if (temp)                                       \
     {                                               \
         if (temp<256)                               \
@@ -165,14 +165,14 @@ void NewState (objtype *ob, statetype *state)
 
 #define CHECKSIDE(x,y)                                  \
 {                                                       \
-    temp=(unsigned)(uintptr_t)actorat[x][y];            \
+    temp=(uintptr_t)actorat[x][y];                      \
     if (temp)                                           \
     {                                                   \
         if (temp<128)                                   \
             return false;                               \
         if (temp<256)                                   \
         {                                               \
-            doornum = temp&127;                         \
+            doornum = (int)temp&127;                    \
             OpenDoor (doornum);                         \
             ob->distance = -doornum-1;                  \
             return true;                                \
@@ -186,7 +186,7 @@ void NewState (objtype *ob, statetype *state)
 boolean TryWalk (objtype *ob)
 {
         int                     doornum;
-        unsigned temp;
+        uintptr_t temp;
 
         if (ob->obclass == inertobj)
         {

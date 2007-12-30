@@ -1280,7 +1280,7 @@ extern  void    EndText(void);
 
 static inline fixed FixedMul(fixed a, fixed b)
 {
-	return (int64_t)a * b + 0x8000 >> 16;
+	return (fixed)(((int64_t)a * b + 0x8000) >> 16);
 }
 
 
