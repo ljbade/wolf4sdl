@@ -72,30 +72,23 @@ extern SDL_Color gamepal[256];
 
 void VH_SetDefaultColors (void);
 
-#define VW_Startup		VL_Startup
-#define VW_Shutdown		VL_Shutdown
-#define VW_SetCRTC		VL_SetCRTC
-#define VW_Bar			VL_Bar
-#define VW_Plot			VL_Plot
+#define VW_Startup		    VL_Startup
+#define VW_Shutdown		    VL_Shutdown
+#define VW_SetCRTC		    VL_SetCRTC
+#define VW_Bar			    VL_Bar
+#define VW_Plot			    VL_Plot
 #define VW_Hlin(x,z,y,c)	VL_Hlin(x,y,(z)-(x)+1,c)
 #define VW_Vlin(y,z,x,c)	VL_Vlin(x,y,(z)-(y)+1,c)
-#define VW_DrawPic		VH_DrawPic
+#define VW_DrawPic		    VH_DrawPic
 #define VW_SetSplitScreen	VL_SetSplitScreen
 #define VW_SetLineWidth		VL_SetLineWidth
-#define VW_ColorBorder	VL_ColorBorder
-#define VW_WaitVBL		VL_WaitVBL
-#define VW_FadeIn()		VL_FadeIn(0,255,gamepal,30);
-#define VW_FadeOut()	VL_FadeOut(0,255,0,0,0,30);
+#define VW_ColorBorder	    VL_ColorBorder
+#define VW_WaitVBL		    VL_WaitVBL
+#define VW_FadeIn()		    VL_FadeIn(0,255,gamepal,30);
+#define VW_FadeOut()	    VL_FadeOut(0,255,0,0,0,30);
 #define VW_ScreenToScreen	VL_ScreenToScreen
 #define VW_SetDefaultColors	VH_SetDefaultColors
 void	VW_MeasurePropString (const char *string, word *width, word *height);
-#define EGAMAPMASK(x)	VGAMAPMASK(x)
-#define EGAWRITEMODE(x)	VGAWRITEMODE(x)
-
-//#define VW_MemToScreen	VL_MemToLatch
-
-#define MS_Quit			Quit
-
 
 #define LatchDrawChar(x,y,p) VL_LatchToScreen(latchpics[0],((p)&7)*8,((p)>>3)*8*64,8,8,x,y)
 #define LatchDrawTile(x,y,p) VL_LatchToScreen(latchpics[1],(p)*64,0,16,16,x,y)
@@ -105,7 +98,6 @@ void    LatchDrawPicScaledCoord (unsigned scx, unsigned scy, unsigned picnum);
 void    LoadLatchMem (void);
 boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest, int x1, int y1,
     unsigned width, unsigned height, unsigned frames, boolean abortable);
-
 
 #define NUMLATCHPICS	100
 extern	SDL_Surface *latchpics[NUMLATCHPICS];

@@ -1,13 +1,13 @@
-#define QUITSUR	"Are you sure you want\n"\
-		"to quit this great game?"
+#define QUITSUR	    "Are you sure you want\n"\
+		            "to quit this great game?"
 
-#define CURGAME	"You are currently in\n"\
-		"a game. Continuing will\n"\
-		"erase old game. Ok?"
+#define CURGAME	    "You are currently in\n"\
+		            "a game. Continuing will\n"\
+		            "erase old game. Ok?"
 
-#define GAMESVD	"There's already a game\n"\
-		"saved at this position.\n"\
-		"      Overwrite?"
+#define GAMESVD	    "There's already a game\n"\
+		            "saved at this position.\n"\
+		            "      Overwrite?"
 
 #define ENDGAMESTR	"Are you sure you want\n"\
 					"to end the game you\n"\
@@ -56,8 +56,8 @@
 #define	STR_DEATH	"I am Death incarnate!"
 
 #define	STR_MOUSEADJ	"Adjust Mouse Sensitivity"
-#define STR_SLOW	"Slow"
-#define STR_FAST	"Fast"
+#define STR_SLOW	    "Slow"
+#define STR_FAST	    "Fast"
 
 #define	STR_CRUN	"Run"
 #define STR_COPEN	"Open"

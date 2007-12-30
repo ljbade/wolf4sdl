@@ -51,42 +51,6 @@ typedef struct
     byte            data[1];
 } PCSound;
 
-// Registers for the Sound Blaster card - needs to be offset by n0 (0x10,0x20,0x30,0x40,0x50,0x60)
-#define sbReset         0x206   // W
-#define sbFMStatus      0x208   // R
-#define sbFMAddr        0x208   // W
-#define sbFMData        0x209   // W
-#define sbReadData      0x20a   // R
-#define sbWriteCmd      0x20c   // W
-#define sbWriteData     0x20c   // W
-#define sbWriteStat     0x20c   // R
-#define sbDataAvail     0x20e   // R
-
-//      Registers for the Sound Blaster Pro card - needs to be offset by n0 (0x20 or 0x40)
-#define sbpLFMStatus    0x200   // R
-#define sbpLFMAddr      0x200   // W
-#define sbpLFMData      0x201   // W
-#define sbpRFMStatus    0x202   // R
-#define sbpRFMAddr      0x202   // W
-#define sbpRFMData      0x203   // W
-#define sbpMixerAddr    0x204   // W
-#define sbpMixerData    0x205   // RW
-#define sbpCDData       0x210   // R
-#define sbpCDCommand    0x210   // W
-#define sbpCDStatus     0x211   // R
-#define sbpCDReset      0x212   // W
-
-//      SBPro Mixer addresses
-#define sbpmReset       0x00
-#define sbpmVoiceVol    0x04
-#define sbpmMicMix      0x0a
-#define sbpmFilterADC   0x0c
-#define sbpmControl     0x0e
-#define sbpmMasterVol   0x22
-#define sbpmFMVol       0x26
-#define sbpmCDVol       0x28
-#define sbpmLineVol     0x2e
-
 typedef struct
 {
     SoundCommon     common;
@@ -95,11 +59,6 @@ typedef struct
                     reference;
     byte            data[1];
 } SampledSound;
-
-//      Registers for the AdLib card
-#define alFMStatus      0x388   // R
-#define alFMAddr        0x388   // W
-#define alFMData        0x389   // W
 
 //      Register addresses
 // Operator stuff
@@ -205,20 +164,17 @@ extern  boolean         AdLibPresent,
                         SoundSourcePresent,
                         SoundBlasterPresent,
                         SoundPositioned;
-//extern        boolean         NeedsMusic;                                     // For Caching Mgr
 extern  SDMode          SoundMode;
 extern  SDSMode         DigiMode;
 extern  SMMode          MusicMode;
 extern  int             DigiMap[];
 extern  int             DigiChannel[];
-//extern  volatile longword TimeCount;                                    // Global time in ticks
 #define GetTimeCount()  ((SDL_GetTicks()*7)/100)
 #define Delay(wolfticks) SDL_Delay(wolfticks * 100 / 7)
 
 // Function prototypes
 extern  void    SD_Startup(void),
                 SD_Shutdown(void);
-//extern  void SD_Default(boolean gotit,SDMode sd,SMMode sm);
 
 extern  int     SD_GetChannelForDigi(int which);
 extern  void    SD_PositionSound(int leftvol,int rightvol);
@@ -233,7 +189,6 @@ extern  void    SD_MusicOn(void),
                 SD_FadeOutMusic(void);
 extern  int     SD_MusicOff(void);
 
-//extern  void SD_SetUserHook(void (*hook)(void));
 extern  boolean SD_MusicPlaying(void);
 extern  boolean SD_SetSoundMode(SDMode mode);
 extern  boolean SD_SetMusicMode(SMMode mode);

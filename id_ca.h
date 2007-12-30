@@ -11,26 +11,24 @@
 
 typedef struct
 {
-        int32_t            planestart[3];
-        word planelength[3];
-        word width,height;
-        char            name[16];
+    int32_t planestart[3];
+    word    planelength[3];
+    word    width,height;
+    char    name[16];
 } maptype;
 
 //===========================================================================
 
-extern  int                     mapon;
+extern  int   mapon;
 
 extern  word *mapsegs[MAPPLANES];
 extern  byte *audiosegs[NUMSNDCHUNKS];
 extern  byte *grsegs[NUMCHUNKS];
 
-extern  char            extension[5];
+extern  char  extension[5];
 
 //===========================================================================
 
-//#define CA_FarRead(handle,dest,length) (read(handle,dest,length)==length)
-//#define CA_FarWrite(handle,source,length) (write(handle,source,length)==length)
 boolean CA_LoadFile (const char *filename, memptr *ptr);
 boolean CA_WriteFile (const char *filename, void *ptr, int32_t length);
 

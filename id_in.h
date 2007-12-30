@@ -91,37 +91,15 @@ typedef	int		ScanCode;
 #define	sc_Z			SDLK_z
 
 #define	key_None		0
-/*#define	key_Return		0x0d
-#define	key_Enter		key_Return
-#define	key_Escape		0x1b
-#define	key_Space		0x20
-#define	key_BackSpace	0x08
-#define	key_Tab			0x09
-#define	key_Delete		0x7f*/
-
-// 	Stuff for the mouse
-#define	MReset		0
-#define	MButtons	3
-#define	MDelta		11
-
-#define	MouseInt	0x33
-//#define	Mouse(x)	_AX = x,geninterrupt(MouseInt)
-
-#define _AX regs.w.ax
-#define _BX regs.w.bx
-#define _CX regs.w.cx
-#define _DX regs.w.dx
-
-#define Mouse(x) _AX = x, int386(MouseInt,&regs,&regs);
 
 typedef	enum		{
 						demo_Off,demo_Record,demo_Playback,demo_PlayDone
 					} Demo;
 typedef	enum		{
 						ctrl_Keyboard,
-							ctrl_Keyboard1 = ctrl_Keyboard,ctrl_Keyboard2,
+						ctrl_Keyboard1 = ctrl_Keyboard,ctrl_Keyboard2,
 						ctrl_Joystick,
-							ctrl_Joystick1 = ctrl_Joystick,ctrl_Joystick2,
+						ctrl_Joystick1 = ctrl_Joystick,ctrl_Joystick2,
 						ctrl_Mouse
 					} ControlType;
 typedef	enum		{
@@ -138,7 +116,7 @@ typedef	enum		{
 					} Direction;
 typedef	struct		{
 						boolean		button0,button1,button2,button3;
-						short			x,y;
+						short		x,y;
 						Motion		xaxis,yaxis;
 						Direction	dir;
 					} CursorInfo;
@@ -158,9 +136,9 @@ typedef	struct		{
 									joyMultXH,joyMultYH;
 					} JoystickDef;
 // Global variables
-extern	volatile boolean		Keyboard[];
-extern  boolean     JoysPresent[];
-extern	boolean		MousePresent;
+extern	volatile boolean	Keyboard[];
+extern           boolean    JoysPresent[];
+extern	         boolean	MousePresent;
 extern	volatile boolean	Paused;
 extern	volatile char		LastASCII;
 extern	volatile ScanCode	LastScan;
@@ -190,17 +168,16 @@ extern	ScanCode	IN_WaitForKey(void);
 extern	word		IN_GetJoyButtonsDB(word joy);
 extern	const char *IN_GetScanName(ScanCode);
 
-void IN_WaitAndProcessEvents();
-void IN_ProcessEvents();
-
+void    IN_WaitAndProcessEvents();
+void    IN_ProcessEvents();
 
 int     IN_MouseButtons (void);
 byte	IN_JoyButtons (void);
 
-void INL_GetJoyDelta(word joy,int *dx,int *dy);
-void IN_StartAck(void);
+void    INL_GetJoyDelta(word joy,int *dx,int *dy);
+void    IN_StartAck(void);
 boolean IN_CheckAck (void);
-bool IN_IsInputGrabbed();
-void IN_CenterMouse();
+bool    IN_IsInputGrabbed();
+void    IN_CenterMouse();
 
 #endif
