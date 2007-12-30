@@ -25,9 +25,6 @@ loaded into the data segment
 #include "wl_def.h"
 #pragma hdrstop
 
-#pragma warn -pro
-#pragma warn -use
-
 #define THREEBYTEGRSTARTS
 
 /*
@@ -48,7 +45,6 @@ typedef struct
 {
     word RLEWtag;
     int32_t headeroffsets[100];
-    byte tileinfo[];
 } mapfiletype;
 
 
@@ -237,7 +233,6 @@ static void CAL_HuffExpand(byte *source, byte *dest, int32_t length, huffnode *h
 {
     byte *end;//,*srcend;
     huffnode *headptr, *huffptr;
-    byte mapmask;
 
     if(!length || !dest)
     {
@@ -368,7 +363,6 @@ void CAL_CarmackExpand (word *source, word *dest, int length)
 
 int32_t CA_RLEWCompress (word *source, int32_t length, word *dest, word rlewtag)
 {
-    int32_t complength;
     word value,count;
     unsigned i;
     word *start,*end;
@@ -409,8 +403,7 @@ int32_t CA_RLEWCompress (word *source, int32_t length, word *dest, word rlewtag)
 
     } while (source<end);
 
-    complength = 2*(dest-start);
-    return complength;
+    return (int32_t)(2*(dest-start));
 }
 
 
@@ -977,8 +970,8 @@ void CA_CacheScreen (int chunk)
         for(int x = 0, scx = 0; x < 320; x++, scx += scaleFactor)
         {
             byte col = pic[(y * 80 + (x >> 2)) + (x & 3) * 80 * 200];
-            for(int i = 0; i < scaleFactor; i++)
-                for(int j = 0; j < scaleFactor; j++)
+            for(unsigned i = 0; i < scaleFactor; i++)
+                for(unsigned j = 0; j < scaleFactor; j++)
                     vbuf[(scy + i) * curPitch + scx + j] = col;
         }
     }

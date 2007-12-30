@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 LRstruct LevelRatios[LRpack];
-int lastBreathTime = 0;
+int32_t lastBreathTime = 0;
 
 void Write (int x, int y, const char *string);
 
@@ -236,15 +236,15 @@ Victory (void)
     VW_UpdateScreen ();
 
     itoa (kr, tempstr, 10);
-    x = RATIOX + 24 - strlen (tempstr) * 2;
+    x = RATIOX + 24 - (int) strlen(tempstr) * 2;
     Write (x, RATIOY, tempstr);
 
     itoa (sr, tempstr, 10);
-    x = RATIOX + 24 - strlen (tempstr) * 2;
+    x = RATIOX + 24 - (int) strlen(tempstr) * 2;
     Write (x, RATIOY + 2, tempstr);
 
     itoa (tr, tempstr, 10);
-    x = RATIOX + 24 - strlen (tempstr) * 2;
+    x = RATIOX + 24 - (int) strlen(tempstr) * 2;
     Write (x, RATIOY + 4, tempstr);
 
 #ifndef SPANISH
@@ -338,13 +338,13 @@ Write (int x, int y, const char *string)
         L_UPIC, L_VPIC, L_WPIC, L_XPIC, L_YPIC, L_ZPIC
     };
 
-    int i, ox, nx, ny;
+    int i, ox, nx, ny, len = (int) strlen(string);
     char ch;
-
 
     ox = nx = x * 8;
     ny = y * 8;
-    for (i = 0; i < strlen (string); i++)
+    for (i = 0; i < len; i++)
+    {
         if (string[i] == '\n')
         {
             nx = ox;
@@ -371,8 +371,8 @@ Write (int x, int y, const char *string)
 
                 case ' ':
                     break;
-                case 0x3a:     // ':'
 
+                case 0x3a:     // ':'
                     VWB_DrawPic (nx, ny, L_COLONPIC);
                     nx += 8;
                     continue;
@@ -386,6 +386,7 @@ Write (int x, int y, const char *string)
             }
             nx += 16;
         }
+    }
 }
 
 
@@ -399,7 +400,7 @@ BJ_Breathe (void)
     int pics[2] = { L_GUYPIC, L_GUY2PIC };
 
 
-    if (GetTimeCount () - lastBreathTime > max)
+    if ((int32_t) GetTimeCount () - lastBreathTime > max)
     {
         which ^= 1;
         VWB_DrawPic (0, 16, pics[which]);
@@ -618,7 +619,7 @@ LevelCompleted (void)
             sec = 99 * 60;
 
         if (gamestate.TimeCount < parTimes[gamestate.episode * 10 + mapon].time * 4200)
-            timeleft = (parTimes[gamestate.episode * 10 + mapon].time * 4200) / 70 - sec;
+            timeleft = (int32_t) ((parTimes[gamestate.episode * 10 + mapon].time * 4200) / 70 - sec);
 
         min = sec / 60;
         sec %= 60;
@@ -663,7 +664,7 @@ LevelCompleted (void)
             for (i = 0; i <= timeleft; i++)
             {
                 ltoa ((int32_t) i * PAR_AMOUNT, tempstr, 10);
-                x = 36 - strlen (tempstr) * 2;
+                x = 36 - (int) strlen(tempstr) * 2;
                 Write (x, 7, tempstr);
                 if (!(i % (PAR_AMOUNT / 10)))
                     SD_PlaySound (ENDBONUS1SND);
@@ -694,7 +695,7 @@ LevelCompleted (void)
         for (i = 0; i <= ratio; i++)
         {
             itoa (i, tempstr, 10);
-            x = RATIOXX - strlen (tempstr) * 2;
+            x = RATIOXX - (int) strlen(tempstr) * 2;
             Write (x, 14, tempstr);
             if (!(i % 10))
                 SD_PlaySound (ENDBONUS1SND);
@@ -711,7 +712,7 @@ LevelCompleted (void)
             SD_StopSound ();
             bonus += PERCENT100AMT;
             ltoa (bonus, tempstr, 10);
-            x = (RATIOXX - 1) - strlen (tempstr) * 2;
+            x = (RATIOXX - 1) - (int) strlen(tempstr) * 2;
             Write (x, 7, tempstr);
             VW_UpdateScreen ();
             SD_PlaySound (PERCENT100SND);
@@ -736,7 +737,7 @@ LevelCompleted (void)
         for (i = 0; i <= ratio; i++)
         {
             itoa (i, tempstr, 10);
-            x = RATIOXX - strlen (tempstr) * 2;
+            x = RATIOXX - (int) strlen(tempstr) * 2;
             Write (x, 16, tempstr);
             if (!(i % 10))
                 SD_PlaySound (ENDBONUS1SND);
@@ -754,7 +755,7 @@ LevelCompleted (void)
             SD_StopSound ();
             bonus += PERCENT100AMT;
             ltoa (bonus, tempstr, 10);
-            x = (RATIOXX - 1) - strlen (tempstr) * 2;
+            x = (RATIOXX - 1) - (int) strlen(tempstr) * 2;
             Write (x, 7, tempstr);
             VW_UpdateScreen ();
             SD_PlaySound (PERCENT100SND);
@@ -778,7 +779,7 @@ LevelCompleted (void)
         for (i = 0; i <= ratio; i++)
         {
             itoa (i, tempstr, 10);
-            x = RATIOXX - strlen (tempstr) * 2;
+            x = RATIOXX - (int) strlen(tempstr) * 2;
             Write (x, 18, tempstr);
             if (!(i % 10))
                 SD_PlaySound (ENDBONUS1SND);
@@ -794,7 +795,7 @@ LevelCompleted (void)
             SD_StopSound ();
             bonus += PERCENT100AMT;
             ltoa (bonus, tempstr, 10);
-            x = (RATIOXX - 1) - strlen (tempstr) * 2;
+            x = (RATIOXX - 1) - (int) strlen(tempstr) * 2;
             Write (x, 7, tempstr);
             VW_UpdateScreen ();
             SD_PlaySound (PERCENT100SND);
@@ -816,15 +817,15 @@ LevelCompleted (void)
         // JUMP STRAIGHT HERE IF KEY PRESSED
         //
 done:   itoa (kr, tempstr, 10);
-        x = RATIOXX - strlen (tempstr) * 2;
+        x = RATIOXX - (int) strlen(tempstr) * 2;
         Write (x, 14, tempstr);
 
         itoa (sr, tempstr, 10);
-        x = RATIOXX - strlen (tempstr) * 2;
+        x = RATIOXX - (int) strlen(tempstr) * 2;
         Write (x, 16, tempstr);
 
         itoa (tr, tempstr, 10);
-        x = RATIOXX - strlen (tempstr) * 2;
+        x = RATIOXX - (int) strlen(tempstr) * 2;
         Write (x, 18, tempstr);
 
         bonus = (int32_t) timeleft *PAR_AMOUNT +
@@ -833,7 +834,7 @@ done:   itoa (kr, tempstr, 10);
 
         GivePoints (bonus);
         ltoa (bonus, tempstr, 10);
-        x = 36 - strlen (tempstr) * 2;
+        x = 36 - (int) strlen(tempstr) * 2;
         Write (x, 7, tempstr);
 
         //

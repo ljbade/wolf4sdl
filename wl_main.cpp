@@ -503,7 +503,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
             if(actnum&0x8000)
                 actorat[i][j]=objlist+(actnum&0x7fff);
             else
-                actorat[i][j]=(objtype *) actnum;
+                actorat[i][j]=(objtype *)(uintptr_t) actnum;
         }
     }
 
@@ -655,7 +655,7 @@ void ShutdownId (void)
 ==================
 */
 
-const float radtoint = (float)FINEANGLES/2/PI;
+const float radtoint = (float)(FINEANGLES/2/PI);
 
 void BuildTables (void)
 {
@@ -716,7 +716,7 @@ void CalcProjection (int32_t focal)
     // calculate scale value for vertical height calculations
     // and sprite x calculations
     //
-    scale = halfview*facedist/(VIEWGLOBAL/2);
+    scale = (fixed) (halfview*facedist/(VIEWGLOBAL/2));
 
     //
     // divide heightnumerator by a posts distance to get the posts height for
@@ -732,8 +732,8 @@ void CalcProjection (int32_t focal)
     {
         // start 1/2 pixel over, so viewangle bisects two middle pixels
         tang = (int32_t)i*VIEWGLOBAL/viewwidth/facedist;
-        angle = atan(tang);
-        intang = angle*radtoint;
+        angle = (float) atan(tang);
+        intang = (int) (angle*radtoint);
         pixelangle[halfview-1-i] = intang;
         pixelangle[halfview+i] = -intang;
     }
@@ -1298,7 +1298,7 @@ void ShowViewSize (int width)
     oldheight = viewheight;
 
     viewwidth = width*16*screenWidth/320;
-    viewheight = width*16*HEIGHTRATIO*screenHeight/200;
+    viewheight = (int) (width*16*HEIGHTRATIO*screenHeight/200);
     DrawPlayBorder ();
 
     viewheight = oldheight;
@@ -1309,7 +1309,7 @@ void ShowViewSize (int width)
 void NewViewSize (int width)
 {
     viewsize = width;
-    SetViewSize (width*16*screenWidth/320,width*16*HEIGHTRATIO*screenHeight/200);
+    SetViewSize (width*16*screenWidth/320, (unsigned) (width*16*HEIGHTRATIO*screenHeight/200));
 }
 
 
@@ -1412,8 +1412,7 @@ void Quit (const char *errorStr, ...)
 
 static void DemoLoop()
 {
-    static int LastDemo;
-    int i,level;
+    int LastDemo = 0;
 
 //
 // check for launch from ted

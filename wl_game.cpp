@@ -929,7 +929,7 @@ void FinishDemoRecord (void)
 
         demorecord = false;
 
-        length = demoptr - (char *)demobuffer;
+        length = (int32_t) (demoptr - (char *)demobuffer);
 
         demoptr = ((char *)demobuffer)+1;
         *(word *)demoptr = (word) length;
@@ -1139,9 +1139,9 @@ void Died (void)
 
         fangle = atan2((float) dy, (float) dx);                  // returns -pi to pi
         if (fangle<0)
-                fangle = M_PI*2+fangle;
+                fangle = (float) (M_PI*2+fangle);
 
-        iangle = fangle/(M_PI*2)*ANGLES;
+        iangle = (int) (fangle/(M_PI*2)*ANGLES);
 
         if (player->angle > iangle)
         {
@@ -1187,7 +1187,7 @@ void Died (void)
                         curangle += ANGLES;
                 do
                 {
-                        change = -tics*DEATHROTATE;
+                        change = -(int)tics*DEATHROTATE;
                         if (curangle + change < iangle)
                                 change = iangle-curangle;
 
@@ -1457,12 +1457,10 @@ startplayloop:
 
                         CheckHighScore (gamestate.score,gamestate.mapon+1);
 
-                        #pragma warn -sus
                         #ifndef JAPAN
                         strcpy(MainMenu[viewscores].string,STR_VS);
                         #endif
                         MainMenu[viewscores].routine = CP_ViewScores;
-                        #pragma warn +sus
 
                         return;
 
@@ -1481,12 +1479,10 @@ startplayloop:
 
                         CheckHighScore (gamestate.score,gamestate.mapon+1);
 
-                        #pragma warn -sus
                         #ifndef JAPAN
                         strcpy(MainMenu[viewscores].string,STR_VS);
                         #endif
                         MainMenu[viewscores].routine = CP_ViewScores;
-                        #pragma warn +sus
 
                         return;
 

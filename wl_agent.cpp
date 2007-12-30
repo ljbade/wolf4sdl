@@ -315,14 +315,14 @@ void    UpdateFace (void)
 ===============
 */
 
-void    LatchNumber (int x, int y, int width, int32_t number)
+static void LatchNumber (int x, int y, unsigned width, int32_t number)
 {
         unsigned length,c;
         char    str[20];
 
         ltoa (number,str,10);
 
-        length = strlen (str);
+        length = (unsigned) strlen (str);
 
         while (length<width)
         {

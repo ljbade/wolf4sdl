@@ -33,8 +33,8 @@ void VWB_DrawPropString(const char* string)
 			{
 				if(source[i*step])
                 {
-                    for(int sy=0; sy<scaleFactor; sy++)
-                        for(int sx=0; sx<scaleFactor; sx++)
+                    for(unsigned sy=0; sy<scaleFactor; sy++)
+                        for(unsigned sx=0; sx<scaleFactor; sx++)
         					dest[(scaleFactor*i+sy)*curPitch+sx]=fontcolor;
                 }
 			}
@@ -299,8 +299,7 @@ const unsigned int rndmask = 9 << (xb + yb - 4);
 boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
     unsigned width, unsigned height, unsigned frames, boolean abortable)
 {
-	int		 pixperframe;
-	unsigned x,y,p,frame;
+	unsigned x,y,p,frame,pixperframe;
 	int32_t  rndval;
 
 	rndval = 0;

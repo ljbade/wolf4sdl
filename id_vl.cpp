@@ -486,9 +486,9 @@ void VL_MemToScreenScaledCoord (byte *source, int width, int height, int scx, in
     {
         for(int i=0,sci=0; i<width; i++, sci+=scaleFactor)
         {
-            for(int m=0; m<scaleFactor; m++)
+            for(unsigned m=0; m<scaleFactor; m++)
             {
-                for(int n=0; n<scaleFactor; n++)
+                for(unsigned n=0; n<scaleFactor; n++)
                 {
                     vbuf[(scj+m+scy)*curPitch+sci+n+scx] = source[(j*(width>>2)+(i>>2))+(i&3)*(width>>2)*height];
                 }
@@ -529,9 +529,9 @@ void VL_LatchToScreenScaledCoord(SDL_Surface *source, int xsrc, int ysrc,
         {
             for(int i=0,sci=0; i<width; i++, sci+=scaleFactor)
             {
-                for(int m=0; m<scaleFactor; m++)
+                for(unsigned m=0; m<scaleFactor; m++)
                 {
-                    for(int n=0; n<scaleFactor; n++)
+                    for(unsigned n=0; n<scaleFactor; n++)
                     {
                         vbuf[(scydest+scj+m)*curPitch+scxdest+sci+n] = src[(ysrc + j)*srcPitch + xsrc + i];
                     }

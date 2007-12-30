@@ -81,7 +81,6 @@ NE_X, NE_Y, 11, 0, 88}, NewItems =
 {
 NM_X, NM_Y, 4, 2, 24};
 
-#pragma warn -sus
 CP_itemtype MainMenu[] = {
 #ifdef JAPAN
     {1, "", CP_NewGame},
@@ -168,8 +167,6 @@ CP_itemtype CtlMenu[] = {
     {1, STR_CUSTOM, CustomControls}
 #endif
 };
-
-#pragma warn +sus
 
 #ifndef SPEAR
 CP_itemtype NewEmenu[] = {
@@ -602,12 +599,10 @@ US_ControlPanel (ScanCode scancode)
     //
     if (startgame || loadedgame)
     {
-#pragma warn -sus
         MainMenu[viewscores].routine = NULL;
 #ifndef JAPAN
         strcpy (MainMenu[viewscores].string, STR_EG);
 #endif
-#pragma warn +sus
     }
 
     // RETURN/START GAME EXECUTION
@@ -983,13 +978,11 @@ CP_EndGame (int)
     pickquick = gamestate.lives = 0;
     playstate = ex_died;
 
-#pragma warn -sus
     MainMenu[savegame].active = 0;
     MainMenu[viewscores].routine = CP_ViewScores;
 #ifndef JAPAN
     strcpy (MainMenu[viewscores].string, STR_VS);
 #endif
-#pragma warn +sus
 
     return 1;
 }
@@ -3323,8 +3316,8 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
 {
     char key;
     static int redrawitem = 1, lastitem = -1;
-    int i, x, y, basey, exit, which, shape, timer;
-    int lastBlinkTime;
+    int i, x, y, basey, exit, which, shape;
+    int32_t lastBlinkTime, timer;
     ControlInfo ci;
 
 
@@ -3360,7 +3353,7 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
         //
         // CHANGE GUN SHAPE
         //
-        if (GetTimeCount () - lastBlinkTime > timer)
+        if ((int32_t)GetTimeCount () - lastBlinkTime > timer)
         {
             lastBlinkTime = GetTimeCount ();
             if (shape == C_CURSOR1PIC)
@@ -3617,12 +3610,12 @@ TicDelay (int count)
 {
     ControlInfo ci;
 
-    int startTime = GetTimeCount ();
+    int32_t startTime = GetTimeCount ();
     do
     {
         ReadAnyControl (&ci);
     }
-    while (GetTimeCount () - startTime < count && ci.dir != dir_None);
+    while ((int32_t) GetTimeCount () - startTime < count && ci.dir != dir_None);
 }
 
 
@@ -3932,7 +3925,7 @@ GetYorN (int x, int y, int pic)
 void
 Message (const char *string)
 {
-    int h = 0, w = 0, mw = 0, i;
+    int h = 0, w = 0, mw = 0, i, len = (int) strlen(string);
     fontstruct *font;
 
 
@@ -3940,7 +3933,8 @@ Message (const char *string)
     fontnumber = 1;
     font = (fontstruct *) grsegs[STARTFONT + fontnumber];
     h = font->height;
-    for (i = 0; i < strlen (string); i++)
+    for (i = 0; i < len; i++)
+    {
         if (string[i] == '\n')
         {
             if (w > mw)
@@ -3950,6 +3944,7 @@ Message (const char *string)
         }
         else
             w += font->width[string[i]];
+    }
 
     if (w + 10 > mw)
         mw = w + 10;

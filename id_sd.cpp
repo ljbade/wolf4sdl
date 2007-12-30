@@ -153,7 +153,7 @@ static  word                   *sqHack;
 static  word                   *sqHackPtr;
 static  word                    sqHackLen;
 static  word                    sqHackSeqLen;
-static  long                    sqHackTime;
+static  longword                sqHackTime;
 
 #define DMABUFFERSIZE 4096
 
@@ -2191,7 +2191,7 @@ SD_MusicOff(void)
             break;
     }
 
-    return sqHackPtr-sqHack;
+    return (int) (sqHackPtr-sqHack);
 }
 
 ///////////////////////////////////////////////////////////////////////////

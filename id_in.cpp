@@ -590,18 +590,15 @@ void IN_ProcessEvents()
 void
 IN_Startup(void)
 {
-	boolean	checkjoys,checkmouse;
-	word	i;
-
 	if (IN_Started)
 		return;
 
     IN_ClearKeysDown();
 
 #ifdef NOTYET
-	checkjoys = true;
-	checkmouse = true;
-	for (i = 1;i < __argc;i++)
+	boolean checkjoys = true;
+	boolean checkmouse = true;
+	for (word i = 1;i < __argc;i++)
 	{
 		switch (US_CheckParm(__argv[i],ParmStrings))
 		{
@@ -659,14 +656,11 @@ IN_Default(boolean gotit,ControlType in)
 void
 IN_Shutdown(void)
 {
-	word	i;
-
 	if (!IN_Started)
 		return;
 
 #ifdef NOTYET
-	INL_ShutMouse();
-	for (i = 0;i < MaxJoys;i++)
+	for (word i = 0;i < MaxJoys;i++)
 		INL_ShutJoy(i);
 #endif
 

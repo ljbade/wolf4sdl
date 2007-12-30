@@ -363,7 +363,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
         lastdoorobj->lock = lock;
         lastdoorobj->action = dr_closed;
 
-        actorat[tilex][tiley] = (objtype *) (doornum | 0x80);   // consider it a solid wall
+        actorat[tilex][tiley] = (objtype *)(uintptr_t)(doornum | 0x80);   // consider it a solid wall
 
 //
 // make the door tile a special tile, and mark the adjacent tiles
@@ -480,7 +480,7 @@ void CloseDoor (int door)
 //
 // make the door space solid
 //
-        actorat[tilex][tiley] = (objtype *) (door | 0x80);
+        actorat[tilex][tiley] = (objtype *)(uintptr_t)(door | 0x80);
 }
 
 

@@ -24,9 +24,6 @@
 
 #pragma	hdrstop
 
-#pragma	warn	-pia
-
-
 //	Global variables
 		word		PrintX,PrintY;
 		word		WindowX,WindowY,WindowW,WindowH;
@@ -446,7 +443,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 	else
 		*s = '\0';
 	*olds = '\0';
-	cursor = strlen(s);
+	cursor = (int) strlen(s);
 	cursormoved = redraw = true;
 
 	cursorvis = done = false;
@@ -486,7 +483,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
                 cursormoved = true;
                 break;
             case sc_End:
-                cursor = strlen(s);
+                cursor = (int) strlen(s);
                 c = key_None;
                 cursormoved = true;
                 break;
@@ -538,7 +535,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 
 		if (c)
 		{
-			len = strlen(s);
+			len = (int) strlen(s);
 			USL_MeasureString(s,&w,&h);
 
 			if	(isprint(c)	&&	(len < MaxString - 1) &&	((!maxchars) || (len < maxchars))

@@ -138,7 +138,6 @@ static void cleanup_output(void)
 #if 1
 #ifndef NO_STDIO_REDIRECT
 	FILE *file;
-	int empty;
 #endif
 #endif
 
@@ -153,7 +152,7 @@ static void cleanup_output(void)
 		file = fopen(stdoutPath, TEXT("r"));
 		if ( file ) {
             char buf[16384];
-            int readbytes = fread(buf, 1, 16383, file);
+            size_t readbytes = fread(buf, 1, 16383, file);
             fclose(file);
 
             if(readbytes != 0)
@@ -169,7 +168,7 @@ static void cleanup_output(void)
 		file = fopen(stderrPath, TEXT("rb"));
 		if ( file ) {
             char buf[16384];
-            int readbytes = fread(buf, 1, 16383, file);
+            size_t readbytes = fread(buf, 1, 16383, file);
             fclose(file);
 
             if(readbytes != 0)

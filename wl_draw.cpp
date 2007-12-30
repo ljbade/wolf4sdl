@@ -246,7 +246,7 @@ boolean TransformTile (int tx, int ty, short *dispx, short *dispheight)
 ====================
 */
 
-int CalcHeight()
+int32_t CalcHeight()
 {
     fixed z = FixedMul(xintercept - viewx, viewcos)
         - FixedMul(yintercept - viewy, viewsin);
@@ -789,7 +789,8 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
     byte *vmem;
     int actx,i,upperedge;
     short newstart;
-    int scrstarty,screndy,j,lpix,rpix,pixcnt,ycnt;
+    int scrstarty,screndy,lpix,rpix,pixcnt,ycnt;
+    unsigned j;
     byte col;
 #ifdef SHADE_COUNT
     byte shade;
@@ -839,7 +840,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
             cline=(word *)((byte *)shape + *cmdptr);
             while(lpix<rpix)
             {
-                if(wallheight[lpix]<=height)
+                if(wallheight[lpix]<=(int)height)
                 {
                     line=cline;
                     while(*line)
@@ -894,7 +895,8 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
     word *line;
     int actx,i,upperedge;
     short newstart;
-    int scrstarty,screndy,j,lpix,rpix,pixcnt,ycnt;
+    int scrstarty,screndy,lpix,rpix,pixcnt,ycnt;
+    unsigned j;
     byte col;
     byte *vmem;
 
@@ -1067,7 +1069,7 @@ void DrawScaleds (void)
 //
 // draw from back to front
 //
-    numvisable = visptr-&vislist[0];
+    numvisable = (int) (visptr-&vislist[0]);
 
     if (!numvisable)
         return;                                                                 // no visable objects
@@ -1150,7 +1152,7 @@ void CalcTics (void)
 //
 // calculate tics since last refresh for adaptive timing
 //
-    if (lasttimecount > GetTimeCount())
+    if (lasttimecount > (int32_t) GetTimeCount())
         lasttimecount = GetTimeCount();    // if the game was paused a LONG time
 
     do

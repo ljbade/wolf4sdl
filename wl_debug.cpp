@@ -106,11 +106,11 @@ void CountObjects (void)
         active = inactive = count = doors = 0;
 
         US_Print ("Total statics :");
-        total = laststatobj-&statobjlist[0];
+        total = (int)(laststatobj-&statobjlist[0]);
         US_PrintUnsigned (total);
 
         char str[60];
-        sprintf(str,"\nlaststatobj=%.8X",laststatobj);
+        sprintf(str,"\nlaststatobj=%.8X",(int32_t)(uintptr_t)laststatobj);
         US_Print(str);
 
         US_Print ("\nIn use statics:");
@@ -252,13 +252,14 @@ void BasicOverhead (void)
 
                 // left side (filtered)
 
-                int tile, color;
+                uintptr_t tile;
+                int color;
                 offx -= 128;
 
                 for(x=0;x<MAPSIZE;x++)
                         for(y=0;y<MAPSIZE;y++)
                         {
-                                tile = (unsigned)(uintptr_t)actorat[x][y];
+                                tile = (uintptr_t)actorat[x][y];
                                 if (tile > 255 && ((objtype *)tile)->flags&FL_SHOOTABLE) color = 72;  // enemy
                                 else if (!tile || tile > 255)
                                 {
