@@ -1530,6 +1530,7 @@ static void DemoLoop()
 
             if (playstate == ex_abort)
                 break;
+            VW_FadeOut();
             StartCPMusic(INTROSONG);
         }
 

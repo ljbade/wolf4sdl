@@ -1100,6 +1100,7 @@ void InitRedShifts (void)
 void ClearPaletteShifts (void)
 {
     bonuscount = damagecount = 0;
+    palshifted = false;
 }
 
 

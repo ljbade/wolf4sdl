@@ -1051,7 +1051,7 @@ void RecordDemo (void) {return;}
 =
 = PlayDemo
 =
-= Fades the screen out, then starts a demo.  Exits with the screen faded
+= Fades the screen out, then starts a demo.  Exits with the screen unfaded
 =
 ==================
 */
@@ -1089,15 +1089,12 @@ void PlayDemo (int demonumber)
 
     SETFONTCOLOR(0,15);
     DrawPlayScreen ();
-    VW_FadeIn ();
 
     startgame = false;
     demoplayback = true;
 
     SetupGameLevel ();
     StartMusic ();
-
-    fizzlein = true;
 
     PlayLoop ();
 
@@ -1110,7 +1107,6 @@ void PlayDemo (int demonumber)
     demoplayback = false;
 
     StopMusic ();
-    VW_FadeOut ();
     ClearMemory ();
 }
 
