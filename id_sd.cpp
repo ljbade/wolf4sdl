@@ -60,8 +60,6 @@ typedef struct
 	longword chunklength;
 } wavechunk;
 
-static byte *wavebuffer = NULL;
-
 Mix_Chunk *SoundChunks[STARTMUSIC - STARTDIGISOUNDS];
 byte *SoundBuffers[STARTMUSIC - STARTDIGISOUNDS];
 
