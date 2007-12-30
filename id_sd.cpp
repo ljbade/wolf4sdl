@@ -1623,10 +1623,10 @@ SDL_ALPlaySound(AdLibSound *sound)
 static void
 SDL_ShutAL(void)
 {
+    alSound = 0;
     alOut(alEffects,0);
     alOut(alFreqH + 0,0);
     SDL_AlSetFXInst(&alZeroInst);
-    alSound = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1747,6 +1747,7 @@ SD_SetSoundMode(SDMode mode)
     switch (mode)
     {
         case sdm_Off:
+            tableoffset = STARTADLIBSOUNDS;
             result = true;
             break;
         case sdm_PC:
@@ -1754,13 +1755,12 @@ SD_SetSoundMode(SDMode mode)
             result = true;
             break;
         case sdm_AdLib:
+            tableoffset = STARTADLIBSOUNDS;
             if (AdLibPresent)
-            {
-                tableoffset = STARTADLIBSOUNDS;
                 result = true;
-            }
             break;
     }
+    SoundTable = &audiosegs[tableoffset];
 #else
     result = true;
 #endif
@@ -1769,13 +1769,8 @@ SD_SetSoundMode(SDMode mode)
     {
         SDL_ShutDevice();
         SoundMode = mode;
-#ifndef _MUSE_
-        SoundTable = &audiosegs[tableoffset];
-#endif
         SDL_StartDevice();
     }
-
-//    SDL_SetTimerSpeed();
 
     return(result);
 }
