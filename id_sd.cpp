@@ -34,11 +34,6 @@
 
 #pragma hdrstop
 
-#ifdef  nil
-#undef  nil
-#endif
-#define nil     0
-
 //#define BUFFERDMA
 //#define SHOWSDDEBUG
 #define SAMPLERATE 44100
@@ -104,7 +99,7 @@ static  const char* const ParmStrings[] =
                             "ss1",
                             "ss2",
                             "ss3",
-                            nil
+                            NULL
                         };
 //static  void                    (*SoundUserHook)(void);
         soundnames              SoundNumber,DigiNumber;
@@ -616,7 +611,7 @@ SDL_SBService(void)
         {
                 used = SDL_SBPlaySegInIRQ(sbNextSegPtr,sbNextSegLen);
                 if (sbNextSegLen <= used)
-                        sbNextSegPtr = nil;
+                        sbNextSegPtr = NULL;
                 else
                 {
                         sbNextSegPtr += used;
@@ -657,7 +652,7 @@ SDL_SBPlaySample(byte *data,longword len,boolean inIRQ)
 
         used = SDL_SBPlaySegInIRQ(data,len);    // interrupt flag already disabled
         if (len <= used)
-                sbNextSegPtr = nil;
+                sbNextSegPtr = NULL;
         else
         {
                 sbNextSegPtr = data + used;
@@ -1226,7 +1221,7 @@ void
 SD_StopDigitized(void)
 {
     DigiLeft = 0;
-    DigiNextAddr = nil;
+    DigiNextAddr = NULL;
     DigiNextLen = 0;
     DigiMissed = false;
     DigiPlaying = false;
@@ -1283,7 +1278,7 @@ SD_Poll(void)
 #endif
 
                 SDL_PlayDigiSegment(DigiNextAddr,DigiNextLen,false);
-                DigiNextAddr = nil;
+                DigiNextAddr = NULL;
                 DigiMissed = false;
                 if (DigiLastSegment)
                 {
@@ -1451,7 +1446,7 @@ SDL_DigitizedDoneInIRQ(void)
         if (DigiNextAddr)
         {
                 SDL_PlayDigiSegment(DigiNextAddr,DigiNextLen,true);
-                DigiNextAddr = nil;
+                DigiNextAddr = NULL;
                 DigiMissed = false;
         }
         else
