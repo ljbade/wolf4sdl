@@ -5,8 +5,8 @@ Original Wolfenstein 3D by id Software (http://www.idsoftware.com)
 Wolf4SDL is an open-source port of Wolfenstein 3D to the cross-plattform
 multimedia library "Simple DirectMedia Layer (SDL)" (http://www.libsdl.org).
 
-Supported operating systems should be at least:
- - Windows 2000, Windows XP, Windows Vista
+Supported operating systems are at least:
+ - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
  - Linux
  - BSD variants
 
@@ -20,8 +20,8 @@ set using the --res parameter (start Wolf4SDL with --help to see usage).
 
 To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original WL6
 files into the same directory as the Wolf4SDL executable. If you want to use
-Wolf4SDL with the shareware version (tested) or with Spear (not tested), you
-can compile Wolf4SDL with other defines set at the beginning of "wl_def.h".
+Wolf4SDL with the shareware version (tested) or with Spear (currently broken),
+you can compile Wolf4SDL with other defines at the beginning of "wl_def.h".
 
 The current version of the source code is available in the svn repository at:
    svn://tron.homeunix.org:3690/wolf3d/trunk
@@ -36,4 +36,5 @@ Credits:
  - Special thanks to id Software! Without the source code we would still have
    to throw with hex editors and disassemblers after Wolfenstein 3D ;D
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
-   FreeBSD compatible, testing and bugfixing!
+   FreeBSD compatible, testing, bugfixing and cleaning up the code!
+ - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
