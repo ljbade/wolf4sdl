@@ -667,7 +667,7 @@ void SetupGameLevel (void)
             {
                 // solid wall
                 tilemap[x][y] = (byte) tile;
-                actorat[x][y] = (objtype *) tile;
+                actorat[x][y] = (objtype *)(uintptr_t) tile;
             }
             else
             {
