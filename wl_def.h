@@ -28,11 +28,9 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#if defined _WIN32
-#else
+#ifndef _WIN32
 	#include <stdint.h>
 #endif
-//#include <mem.h>
 #include <SDL.h>
 
 #pragma pack(1)
@@ -902,6 +900,7 @@ void    DrawPlayBorder (void);
 void    DrawStatusBorder (byte color);
 void    DrawPlayScreen (void);
 void    DrawPlayBorderSides (void);
+void    ShowActStatus();
 
 void    PlayDemo (int demonumber);
 void    RecordDemo (void);
@@ -927,7 +926,7 @@ void UpdateSoundLoc(void);
 /*
 =============================================================================
 
-                                                 WL_PLAY DEFINITIONS
+                            WL_PLAY DEFINITIONS
 
 =============================================================================
 */
@@ -1298,15 +1297,18 @@ void PM_Shutdown();
 #define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
 
 
+#ifndef _WIN32
+
 static inline char* itoa(int value, char* string, int radix)
 {
 	sprintf(string, "%d", value);
 	return string;
 }
 
-
 static inline char* ltoa(long value, char* string, int radix)
 {
 	sprintf(string, "%ld", value);
 	return string;
 }
+
+#endif
