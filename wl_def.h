@@ -175,16 +175,15 @@ typedef struct
 #define VANG360         (VANG90*4)
 
 #define MINDIST         (0x5800l)
-#define mindist MINDIST
+#define mindist         MINDIST
 
 #define MAPSIZE         64              // maps are 64*64
 #define mapshift        6               // 2^mapshift = MAPSIZE
 #define maparea         4096            // MAPSIZE<<mapshift or MAPSIZE*MAPSIZE
 #define mapspotend      8191            // 64<<mapshift-1 or 64*MAPSIZE-1
-#define MAPPLANES       2
 
-#define mapheight MAPSIZE
-#define mapwidth MAPSIZE
+#define mapheight       MAPSIZE
+#define mapwidth        MAPSIZE
 
 #define NORTH   0
 #define EAST    1
