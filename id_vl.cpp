@@ -551,11 +551,12 @@ void VL_LatchToScreenScaledCoord(SDL_Surface *source, int xsrc, int ysrc,
         {
             for(int i=0,sci=0; i<width; i++, sci+=scaleFactor)
             {
+                byte col = src[(ysrc + j)*srcPitch + xsrc + i];
                 for(unsigned m=0; m<scaleFactor; m++)
                 {
                     for(unsigned n=0; n<scaleFactor; n++)
                     {
-                        vbuf[(scydest+scj+m)*curPitch+scxdest+sci+n] = src[(ysrc + j)*srcPitch + xsrc + i];
+                        vbuf[(scydest+scj+m)*curPitch+scxdest+sci+n] = col;
                     }
                 }
             }
