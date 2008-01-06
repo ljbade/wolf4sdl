@@ -1566,8 +1566,11 @@ static void DemoLoop()
         if (startgame || loadedgame)
         {
             GameLoop ();
-            VW_FadeOut();
-            StartCPMusic(INTROSONG);
+            if(!param_nowait)
+            {
+                VW_FadeOut();
+                StartCPMusic(INTROSONG);
+            }
         }
     }
 }
@@ -1591,24 +1594,23 @@ void CheckParameters(int argc, char *argv[])
     for(int i = 1; i < argc; i++)
     {
         char *arg = argv[i];
-        while(!isalpha(*arg)) arg++;
 #ifndef SPEAR
-        IFARG("goobers")
+        IFARG("--goobers")
 #else
-        IFARG("debugmode")
+        IFARG("--debugmode")
 #endif
             param_debugmode = true;
-        else IFARG("baby")
+        else IFARG("--baby")
             param_difficulty = 0;
-        else IFARG("easy")
+        else IFARG("--easy")
             param_difficulty = 1;
-        else IFARG("normal")
+        else IFARG("--normal")
             param_difficulty = 2;
-        else IFARG("hard")
+        else IFARG("--hard")
             param_difficulty = 3;
-        else IFARG("nowait")
+        else IFARG("--nowait")
             param_nowait = true;
-        else IFARG("tedlevel")
+        else IFARG("--tedlevel")
         {
             if(++i >= argc)
             {
@@ -1617,9 +1619,9 @@ void CheckParameters(int argc, char *argv[])
             }
             else param_tedlevel = atoi(argv[i]);
         }
-        else IFARG("windowed")
+        else IFARG("--windowed")
             fullscreen = false;
-        else IFARG("res")
+        else IFARG("--res")
         {
             if(i + 2 >= argc)
             {
@@ -1633,14 +1635,14 @@ void CheckParameters(int argc, char *argv[])
                 if(screenWidth % 320)
                     printf("Screen width must be a multiple of 320!\n"), hasError = true;
                 if(screenHeight % 200)
-                    printf("Screen height mus be a multiple of 200!\n"), hasError = true;
+                    printf("Screen height must be a multiple of 200!\n"), hasError = true;
             }
         }
         else hasError = true;
     }
     if(hasError)
     {
-        printf("Wolf4SDL v1.1 by Chaos-Software\n"
+        printf("Wolf4SDL v1.1 ($Revision$) by Chaos-Software\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"
