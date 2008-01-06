@@ -10,6 +10,8 @@ Supported operating systems are at least:
  - Linux
  - BSD variants
 
+Only little endian platforms like x86 are supported, yet.
+
 This port includes the OPL2 emulator from MAME, so you can not only hear the
 Adlib sounds but also music without any Adlib-compatible soundcards!
 Digitized sounds are played on 8 channels! So in a fire fight you will always
@@ -38,3 +40,7 @@ Credits:
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
+
+Licenses:
+ - The original source code of Wolfenstein 3D: license-id.txt
+ - The OPL2 emulator (fmopl.cpp): license-mame.txt
