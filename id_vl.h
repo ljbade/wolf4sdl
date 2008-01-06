@@ -63,6 +63,8 @@ void VL_MemToLatch              (byte *source, int width, int height,
                                     SDL_Surface *destSurface, int x, int y);
 void VL_ScreenToScreen          (SDL_Surface *source, SDL_Surface *dest);
 void VL_MemToScreenScaledCoord  (byte *source, int width, int height, int scx, int scy);
+void VL_MemToScreenScaledCoord  (byte *source, int origwidth, int origheight, int srcx, int srcy,
+                                    int destx, int desty, int width, int height);
 
 void inline VL_MemToScreen (byte *source, int width, int height, int x, int y)
 {

@@ -880,7 +880,6 @@ void DrawPlayBorder (void)
 
 void DrawPlayScreen (void)
 {
-    CA_CacheGrChunk (STATUSBARPIC);
     DrawPlayBorder ();
     VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
 
@@ -923,31 +922,14 @@ void LatchNumberHERE (int x, int y, unsigned width, int32_t number)
 
 void ShowActStatus()
 {
+    // Draw status bar without borders
     byte *source = grsegs[STATUSBARPIC];
     int	picnum = STATUSBARPIC - STARTPICS;
     int width = pictable[picnum].width;
     int height = pictable[picnum].height;
-    int xoffs = 9;
-    int yoffs = 4;
-    int scx = (screenWidth-scaleFactor*320)/2;
-    int scy = (200 - height) * scaleFactor;
-
-    VL_LockSurface(curSurface);
-    byte *vbuf = (byte *) curSurface->pixels;
-    for(int j=yoffs,scj=yoffs*scaleFactor; j<height-yoffs+1; j++, scj+=scaleFactor)
-    {
-        for(int i=xoffs,sci=xoffs*scaleFactor; i<width-xoffs; i++, sci+=scaleFactor)
-        {
-            for(unsigned m=0; m<scaleFactor; m++)
-            {
-                for(unsigned n=0; n<scaleFactor; n++)
-                {
-                    vbuf[(scj+m+scy)*curPitch+sci+n+scx] = source[(j*(width>>2)+(i>>2))+(i&3)*(width>>2)*height];
-                }
-            }
-        }
-    }
-    VL_UnlockSurface(curSurface);
+    int destx = (screenWidth-scaleFactor*320)/2 + 9 * scaleFactor;
+    int desty = (200 - height + 4) * scaleFactor;
+    VL_MemToScreenScaledCoord(source, width, height, 9, 4, destx, desty, width - 18, height - 7);
 
     ingame = false;
     DrawFace ();

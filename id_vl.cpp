@@ -331,8 +331,6 @@ void VL_UnlockSurface(SDL_Surface *surface)
 =
 = VL_Plot
 =
-= curScreen must be locked!!!
-=
 =================
 */
 
@@ -347,8 +345,6 @@ void VL_Plot (int x, int y, int color)
 =================
 =
 = VL_GetPixel
-=
-= curScreen must be locked!!!
 =
 =================
 */
@@ -367,8 +363,6 @@ byte VL_GetPixel (int x, int y)
 =
 = VL_Hlin
 =
-= curScreen must be locked!!!
-=
 =================
 */
 
@@ -385,8 +379,6 @@ void VL_Hlin (unsigned x, unsigned y, unsigned width, int color)
 =================
 =
 = VL_Vlin
-=
-= curSurface must be locked!!!
 =
 =================
 */
@@ -409,8 +401,6 @@ void VL_Vlin (int x, int y, int height, int color)
 =================
 =
 = VL_Bar
-=
-= curSurface must be locked!!!
 =
 =================
 */
@@ -441,8 +431,6 @@ void VL_BarScaledCoord (int scx, int scy, int scwidth, int scheight, int color)
 =
 = VL_MemToLatch
 =
-= destSurface must be locked!
-=
 =================
 */
 
@@ -469,16 +457,14 @@ void VL_MemToLatch(byte *source, int width, int height,
 /*
 =================
 =
-= VL_MemToScreen
+= VL_MemToScreenScaledCoord
 =
-= Draws a block of data to the screen.
-=
-= curSurface must be locked!!!
+= Draws a block of data to the screen with scaling according to scaleFactor.
 =
 =================
 */
 
-void VL_MemToScreenScaledCoord (byte *source, int width, int height, int scx, int scy)
+void VL_MemToScreenScaledCoord (byte *source, int width, int height, int destx, int desty)
 {
     VL_LockSurface(curSurface);
     byte *vbuf = (byte *) curSurface->pixels;
@@ -486,11 +472,47 @@ void VL_MemToScreenScaledCoord (byte *source, int width, int height, int scx, in
     {
         for(int i=0,sci=0; i<width; i++, sci+=scaleFactor)
         {
+            byte col = source[(j*(width>>2)+(i>>2))+(i&3)*(width>>2)*height];
             for(unsigned m=0; m<scaleFactor; m++)
             {
                 for(unsigned n=0; n<scaleFactor; n++)
                 {
-                    vbuf[(scj+m+scy)*curPitch+sci+n+scx] = source[(j*(width>>2)+(i>>2))+(i&3)*(width>>2)*height];
+                    vbuf[(scj+m+desty)*curPitch+sci+n+destx] = col;
+                }
+            }
+        }
+    }
+    VL_UnlockSurface(curSurface);
+}
+
+/*
+=================
+=
+= VL_MemToScreenScaledCoord
+=
+= Draws a part of a block of data to the screen.
+= The block has the size origwidth*origheight.
+= The part at (srcx, srcy) has the size width*height
+= and will be painted to (destx, desty) with scaling according to scaleFactor.
+=
+=================
+*/
+
+void VL_MemToScreenScaledCoord (byte *source, int origwidth, int origheight, int srcx, int srcy,
+                                int destx, int desty, int width, int height)
+{
+    VL_LockSurface(curSurface);
+    byte *vbuf = (byte *) curSurface->pixels;
+    for(int j=0,scj=0; j<height; j++, scj+=scaleFactor)
+    {
+        for(int i=0,sci=0; i<width; i++, sci+=scaleFactor)
+        {
+            byte col = source[((j+srcy)*(origwidth>>2)+((i+srcx)>>2))+((i+srcx)&3)*(origwidth>>2)*origheight];
+            for(unsigned m=0; m<scaleFactor; m++)
+            {
+                for(unsigned n=0; n<scaleFactor; n++)
+                {
+                    vbuf[(scj+m+desty)*curPitch+sci+n+destx] = col;
                 }
             }
         }
