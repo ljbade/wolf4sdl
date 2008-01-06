@@ -181,10 +181,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Gamepal3d.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\id_ca.cpp"
 				>
 			</File>
@@ -218,6 +214,10 @@
 			</File>
 			<File
 				RelativePath=".\signon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\sodpal.inc"
 				>
 			</File>
 			<File
@@ -266,6 +266,10 @@
 			</File>
 			<File
 				RelativePath=".\wl_text.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\wolfpal.inc"
 				>
 			</File>
 		</Filter>

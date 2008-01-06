@@ -96,14 +96,6 @@ huffnode *grhuffman;
 huffnode grhuffman[255];
 #endif
 
-/*
-#ifdef AUDIOHEADERLINKED                // not used in wolf3d
-huffnode        *audiohuffman;
-#else
-huffnode        audiohuffman[255];
-#endif
-*/
-
 int    grhandle = -1;               // handle to EGAGRAPH
 int    maphandle = -1;              // handle to MAPTEMP / GAMEMAPS
 int    audiohandle = -1;            // handle to AUDIOT / AUDIO
@@ -231,7 +223,7 @@ boolean CA_LoadFile (const char *filename, memptr *ptr)
 
 static void CAL_HuffExpand(byte *source, byte *dest, int32_t length, huffnode *hufftable)
 {
-    byte *end;//,*srcend;
+    byte *end;
     huffnode *headptr, *huffptr;
 
     if(!length || !dest)
@@ -633,7 +625,7 @@ void CAL_SetupAudioFile (void)
 
     void* ptr;
     if (!CA_LoadFile(fname, &ptr))
-    		CA_CannotOpen(fname);
+        CA_CannotOpen(fname);
     audiostarts = (int32_t*)ptr;
 
 //
@@ -698,12 +690,11 @@ void CA_Shutdown (void)
     if(audiohandle != -1)
         close(audiohandle);
 
-    for(i=0;i<NUMCHUNKS;i++)
-        if(grsegs[i])
-            UNCACHEGRCHUNK(i);
+    for(i=0; i<NUMCHUNKS; i++)
+        UNCACHEGRCHUNK(i);
     free(pictable);
 
-    switch (oldsoundmode)
+    switch(oldsoundmode)
     {
         case sdm_Off:
             return;
@@ -715,7 +706,7 @@ void CA_Shutdown (void)
             break;
     }
 
-    for (i=0;i<NUMSOUNDS;i++,start++)
+    for(i=0; i<NUMSOUNDS; i++,start++)
         UNCACHEAUDIOCHUNK(start);
 }
 
@@ -792,7 +783,6 @@ cachein:
         case sdm_Off:
             start = STARTADLIBSOUNDS;   // needed for priorities...
             break;
-//            return;
         case sdm_PC:
             start = STARTPCSOUNDS;
             break;

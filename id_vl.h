@@ -20,6 +20,8 @@ extern  unsigned scaleFactor;
 extern	boolean  screenfaded;
 extern	unsigned bordercolor;
 
+extern SDL_Color gamepal[256];
+
 //===========================================================================
 
 //

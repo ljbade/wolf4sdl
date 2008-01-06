@@ -68,7 +68,6 @@ void VH_UpdateScreen();
 //
 // wolfenstein EGA compatability stuff
 //
-extern SDL_Color gamepal[256];
 
 void VH_SetDefaultColors (void);
 

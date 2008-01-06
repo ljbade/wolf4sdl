@@ -1022,15 +1022,15 @@ void ContinueMusic (int offs)
 */
 
 #define NUMREDSHIFTS    6
-#define REDSTEPS                8
+#define REDSTEPS        8
 
 #define NUMWHITESHIFTS  3
-#define WHITESTEPS              20
-#define WHITETICS               6
+#define WHITESTEPS      20
+#define WHITETICS       6
 
 
 SDL_Color redshifts[NUMREDSHIFTS][256];
-SDL_Color whiteshifts[NUMREDSHIFTS][256];
+SDL_Color whiteshifts[NUMWHITESHIFTS][256];
 
 int damagecount, bonuscount;
 boolean palshifted;

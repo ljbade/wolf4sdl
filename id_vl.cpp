@@ -25,6 +25,21 @@ unsigned bordercolor;
 SDL_Color palette1[256], palette2[256];
 SDL_Color curpal[256];
 
+
+#define CASSERT(x) extern int ASSERT_COMPILE[((x) != 0) * 2 - 1];
+#define lengthof(a) (sizeof(a) / sizeof(a[0]))
+#define RGB(r, g, b) {(r)*255/63, (g)*255/63, (b)*255/63, 0}
+
+SDL_Color gamepal[]={
+#ifdef SPEAR
+    #include "sodpal.inc"
+#else
+    #include "wolfpal.inc"
+#endif
+};
+
+CASSERT(lengthof(gamepal) == 256)
+
 //===========================================================================
 
 
@@ -64,12 +79,6 @@ void	VL_SetVGAPlaneMode (void)
     }
     SDL_ShowCursor(SDL_DISABLE);
 
-    for(int i = 0; i < 256; i++)
-    {
-        gamepal[i].r = (gamepal[i].r * 255) / 63;
-        gamepal[i].g = (gamepal[i].g * 255) / 63;
-        gamepal[i].b = (gamepal[i].b * 255) / 63;
-    }
     SDL_SetColors(screen, gamepal, 0, 256);
     memcpy(curpal, gamepal, sizeof(SDL_Color) * 256);
 
@@ -197,7 +206,6 @@ void VL_SetPalette (SDL_Color *palette)
 
 void VL_GetPalette (SDL_Color *palette)
 {
-//    memcpy(palette, screen->format->palette, sizeof(SDL_Color) * 256);
     memcpy(palette, curpal, sizeof(SDL_Color) * 256);
 }
 
@@ -218,6 +226,10 @@ void VL_FadeOut (int start, int end, int red, int green, int blue, int steps)
 {
 	int		    i,j,orig,delta;
 	SDL_Color   *origptr, *newptr;
+
+    red = red * 255 / 63;
+    green = green * 255 / 63;
+    blue = blue * 255 / 63;
 
 	VL_WaitVBL(1);
 	VL_GetPalette(palette1);
