@@ -20,13 +20,37 @@ hear, when a guard opens the door behind you ;)
 Higher screen resolutions (multiples of 320x200, default is 640x400) can be
 set using the --res parameter (start Wolf4SDL with --help to see usage).
 
+
+How to play:
+
 To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original WL6
 files into the same directory as the Wolf4SDL executable. If you want to use
 Wolf4SDL with the shareware version (tested) or with Spear (currently broken),
 you can compile Wolf4SDL with other defines at the beginning of "wl_def.h".
 
+
+Compiling from source:
+
 The current version of the source code is available in the svn repository at:
    svn://tron.homeunix.org:3690/wolf3d/trunk
+
+The following ways to compile the source code are supported:
+ - Makefile (for Linux and BSD variants)
+ - Visual Studio 2005 or above project (Wolf4SDL.sln and Wolf4SDL.vcproj)
+ - Code::Blocks project (Wolf4SDL.cbp)
+ - Dev-C++ project (Wolf4SDL.dev)
+
+To compile the source code you need the development libraries of
+ - SDL (http://www.libsdl.org/download-1.2.php) and
+ - SDL_mixer (http://www.libsdl.org/projects/SDL_mixer/)
+and have to adjust the include and library paths in the projects accordingly.
+
+Please note, that there is no official SDL_mixer development pack for MinGW,
+yet, but you can get the needed files from a Dev-C++ package here:
+http://sourceforge.net/project/showfiles.php?group_id=94270&package_id=151751
+Just rename the file extension from ".devpack" to ".tar.bz2" and unpack it
+with for example WinRAR. Then add the directories include/SDL and lib to the
+according search paths in your project.
 
 
 Known bugs:
@@ -34,12 +58,15 @@ Known bugs:
    all colors are wrong. This only appears in fullscreen mode, so consider
    using the --windowed option in that case.
 
+
 Credits:
  - Special thanks to id Software! Without the source code we would still have
-   to throw with hex editors and disassemblers after Wolfenstein 3D ;D
+   to pelt Wolfenstein 3D with hex editors and disassemblers ;D
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
+ - Thanks to Codetech for his help on Code::Blocks and Dev-C++.
+
 
 Licenses:
  - The original source code of Wolfenstein 3D: license-id.txt
