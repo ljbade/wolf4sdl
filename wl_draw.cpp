@@ -406,9 +406,9 @@ void HitHorizWall (void)
 
     texture = ((xintercept+texdelta)>>4)&0xfc0;
     if (ytilestep == -1)
-            yintercept += TILEGLOBAL;
+        yintercept += TILEGLOBAL;
     else
-            texture = 0xfc0-texture;
+        texture = 0xfc0-texture;
 
     if(lastside==0 && lastintercept==ytile && lasttilehit==tilehit && !(lasttilehit & 0x40))
     {
@@ -1592,6 +1592,9 @@ void    ThreeDRefresh (void)
 //
     DrawScaleds();                  // draw scaled stuff
     DrawPlayerWeapon ();    // draw player's hands
+
+    if(Keyboard[sc_Tab] && viewsize == 20 && gamestate.weapon != -1)
+        ShowActStatus();
 
     VL_UnlockSurface(screenBuffer);
     vbuf = NULL;

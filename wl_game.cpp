@@ -775,6 +775,8 @@ void SetupGameLevel (void)
 */
 void DrawPlayBorderSides(void)
 {
+    if(viewsize == 20) return;
+
 	const int sw = screenWidth;
 	const int sh = screenHeight;
 	const int vw = viewwidth;
@@ -841,8 +843,6 @@ void DrawStatusBorder (byte color)
 
 void DrawPlayBorder (void)
 {
-    int     xl,yl;
-
     if (bordercol != VIEWCOLOR)
         DrawStatusBorder(bordercol);
     else
@@ -854,10 +854,12 @@ void DrawPlayBorder (void)
             statusborderw+scaleFactor*8, scaleFactor*STATUSLINES, bordercol);
     }
 
+    if(viewheight == screenHeight) return;
+
     VWB_BarScaledCoord (0,0,screenWidth,screenHeight-scaleFactor*STATUSLINES,bordercol);
 
-    xl = screenWidth/2-viewwidth/2;
-    yl = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
+    int xl = screenWidth/2-viewwidth/2;
+    int yl = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
     VWB_BarScaledCoord (xl,yl,viewwidth,viewheight,0);
 
     VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, viewwidth+scaleFactor, scaleFactor, 0);
@@ -879,9 +881,8 @@ void DrawPlayBorder (void)
 void DrawPlayScreen (void)
 {
     CA_CacheGrChunk (STATUSBARPIC);
-    VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
     DrawPlayBorder ();
-    UNCACHEGRCHUNK (STATUSBARPIC);
+    VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
 
     DrawFace ();
     DrawHealth ();
@@ -893,6 +894,72 @@ void DrawPlayScreen (void)
     DrawScore ();
 }
 
+// Uses LatchDrawPic instead of StatusDrawPic
+void LatchNumberHERE (int x, int y, unsigned width, int32_t number)
+{
+    unsigned length,c;
+    char str[20];
+
+    ltoa (number,str,10);
+
+    length = (unsigned) strlen (str);
+
+    while (length<width)
+    {
+        LatchDrawPic (x,y,N_BLANKPIC);
+        x++;
+        width--;
+    }
+
+    c = length <= width ? 0 : length-width;
+
+    while (c<length)
+    {
+        LatchDrawPic (x,y,str[c]-'0'+ N_0PIC);
+        x++;
+        c++;
+    }
+}
+
+void ShowActStatus()
+{
+    byte *source = grsegs[STATUSBARPIC];
+    int	picnum = STATUSBARPIC - STARTPICS;
+    int width = pictable[picnum].width;
+    int height = pictable[picnum].height;
+    int xoffs = 9;
+    int yoffs = 4;
+    int scx = (screenWidth-scaleFactor*320)/2;
+    int scy = (200 - height) * scaleFactor;
+
+    VL_LockSurface(curSurface);
+    byte *vbuf = (byte *) curSurface->pixels;
+    for(int j=yoffs,scj=yoffs*scaleFactor; j<height-yoffs+1; j++, scj+=scaleFactor)
+    {
+        for(int i=xoffs,sci=xoffs*scaleFactor; i<width-xoffs; i++, sci+=scaleFactor)
+        {
+            for(unsigned m=0; m<scaleFactor; m++)
+            {
+                for(unsigned n=0; n<scaleFactor; n++)
+                {
+                    vbuf[(scj+m+scy)*curPitch+sci+n+scx] = source[(j*(width>>2)+(i>>2))+(i&3)*(width>>2)*height];
+                }
+            }
+        }
+    }
+    VL_UnlockSurface(curSurface);
+
+    ingame = false;
+    DrawFace ();
+    DrawHealth ();
+    DrawLives ();
+    DrawLevel ();
+    DrawAmmo ();
+    DrawKeys ();
+    DrawWeapon ();
+    DrawScore ();
+    ingame = true;
+}
 
 
 //==========================================================================
@@ -1232,14 +1299,16 @@ void Died (void)
         gamestate.attackframe = gamestate.attackcount =
             gamestate.weaponframe = 0;
 
-        DrawKeys ();
-        DrawWeapon ();
-        DrawAmmo ();
-        DrawHealth ();
-        DrawFace ();
-        DrawLives ();
+        if(viewsize != 20)
+        {
+            DrawKeys ();
+            DrawWeapon ();
+            DrawAmmo ();
+            DrawHealth ();
+            DrawFace ();
+            DrawLives ();
+        }
     }
-
 }
 
 //==========================================================================
@@ -1268,7 +1337,7 @@ restartgame:
     {
         if (!loadedgame)
             gamestate.score = gamestate.oldscore;
-        DrawScore();
+        if(!died || viewsize != 20) DrawScore();
 
         startgame = false;
         if (!loadedgame)
@@ -1346,6 +1415,7 @@ startplayloop:
         {
             case ex_completed:
             case ex_secretlevel:
+                if(viewsize == 20) DrawPlayScreen();
                 gamestate.keys = 0;
                 DrawKeys ();
                 VW_FadeOut ();
@@ -1353,6 +1423,7 @@ startplayloop:
                 ClearMemory ();
 
                 LevelCompleted ();              // do the intermission
+                if(viewsize == 20) DrawPlayScreen();
 
 #ifdef SPEARDEMO
                 if (gamestate.mapon == 1)
@@ -1455,7 +1526,7 @@ startplayloop:
                 return;
 
             case ex_victorious:
-
+                if(viewsize == 20) DrawPlayScreen();
 #ifndef SPEAR
                 VW_FadeOut ();
 #else
@@ -1475,6 +1546,7 @@ startplayloop:
                 return;
 
             default:
+                if(viewsize == 20) DrawPlayScreen();
                 ClearMemory ();
                 break;
         }

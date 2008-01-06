@@ -900,6 +900,7 @@ void    DrawPlayBorder (void);
 void    DrawStatusBorder (byte color);
 void    DrawPlayScreen (void);
 void    DrawPlayBorderSides (void);
+void    ShowActStatus();
 
 void    PlayDemo (int demonumber);
 void    RecordDemo (void);

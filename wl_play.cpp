@@ -781,7 +781,8 @@ void CheckKeys (void)
 
         SETFONTCOLOR (0, 15);
         IN_ClearKeysDown ();
-        DrawPlayScreen ();
+        if(viewsize != 20)
+            DrawPlayScreen ();
         if (!startgame && !loadedgame)
             ContinueMusic (lastoffs);
         if (loadedgame)

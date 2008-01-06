@@ -37,7 +37,6 @@ int32_t         thrustspeed;
 word            plux,pluy;          // player coordinates scaled to unsigned
 
 short           anglefrac;
-short           gotgatgun;          // JR
 
 objtype        *LastAttacker;
 
@@ -253,7 +252,10 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 void DrawFace (void)
 {
-    if (gamestate.health)
+    if(viewsize == 20 && ingame) return;
+    if (SD_SoundPlaying() == GETGATLINGSND)
+        StatusDrawPic (17,4,GOTGATLINGPIC);
+    else if (gamestate.health)
     {
 #ifdef SPEAR
         if (godmode)
@@ -285,9 +287,9 @@ void DrawFace (void)
 
 #define FACETICS        70
 
-int     facecount=0;
+int facecount=0;
 
-void    UpdateFace (void)
+void UpdateFace (void)
 {
     if (SD_SoundPlaying() == GETGATLINGSND)
         return;
@@ -351,8 +353,9 @@ static void LatchNumber (int x, int y, unsigned width, int32_t number)
 ===============
 */
 
-void    DrawHealth (void)
+void DrawHealth (void)
 {
+    if(viewsize == 20 && ingame) return;
     LatchNumber (21,16,3,gamestate.health);
 }
 
@@ -365,7 +368,7 @@ void    DrawHealth (void)
 ===============
 */
 
-void    TakeDamage (int points,objtype *attacker)
+void TakeDamage (int points,objtype *attacker)
 {
     LastAttacker = attacker;
 
@@ -386,8 +389,6 @@ void    TakeDamage (int points,objtype *attacker)
 
     if (godmode != 2)
         StartDamageFlash (points);
-
-    gotgatgun=0;
 
     DrawHealth ();
     DrawFace ();
@@ -412,14 +413,13 @@ void    TakeDamage (int points,objtype *attacker)
 ===============
 */
 
-void    HealSelf (int points)
+void HealSelf (int points)
 {
     gamestate.health += points;
     if (gamestate.health>100)
         gamestate.health = 100;
 
     DrawHealth ();
-    gotgatgun = 0;  // JR
     DrawFace ();
 }
 
@@ -435,8 +435,9 @@ void    HealSelf (int points)
 ===============
 */
 
-void    DrawLevel (void)
+void DrawLevel (void)
 {
+    if(viewsize == 20 && ingame) return;
 #ifdef SPEAR
     if (gamestate.mapon == 20)
         LatchNumber (2,16,2,18);
@@ -456,8 +457,9 @@ void    DrawLevel (void)
 ===============
 */
 
-void    DrawLives (void)
+void DrawLives (void)
 {
+    if(viewsize == 20 && ingame) return;
     LatchNumber (14,16,1,gamestate.lives);
 }
 
@@ -470,7 +472,7 @@ void    DrawLives (void)
 ===============
 */
 
-void    GiveExtraMan (void)
+void GiveExtraMan (void)
 {
     if (gamestate.lives<9)
         gamestate.lives++;
@@ -488,8 +490,9 @@ void    GiveExtraMan (void)
 ===============
 */
 
-void    DrawScore (void)
+void DrawScore (void)
 {
+    if(viewsize == 20 && ingame) return;
     LatchNumber (6,16,6,gamestate.score);
 }
 
@@ -501,7 +504,7 @@ void    DrawScore (void)
 ===============
 */
 
-void    GivePoints (int32_t points)
+void GivePoints (int32_t points)
 {
     gamestate.score += points;
     while (gamestate.score >= gamestate.nextextra)
@@ -524,6 +527,7 @@ void    GivePoints (int32_t points)
 
 void DrawWeapon (void)
 {
+    if(viewsize == 20 && ingame) return;
     StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
 }
 
@@ -538,6 +542,7 @@ void DrawWeapon (void)
 
 void DrawKeys (void)
 {
+    if(viewsize == 20 && ingame) return;
     if (gamestate.keys & 1)
         StatusDrawPic (30,4,GOLDKEYPIC);
     else
@@ -578,8 +583,9 @@ void GiveWeapon (int weapon)
 ===============
 */
 
-void    DrawAmmo (void)
+void DrawAmmo (void)
 {
+    if(viewsize == 20 && ingame) return;
     LatchNumber (27,16,2,gamestate.ammo);
 }
 
@@ -591,7 +597,7 @@ void    DrawAmmo (void)
 ===============
 */
 
-void    GiveAmmo (int ammo)
+void GiveAmmo (int ammo)
 {
     if (!gamestate.ammo)                            // knife was out
     {
@@ -717,7 +723,6 @@ void GetBonus (statobj_t *check)
 
             StatusDrawPic (17,4,GOTGATLINGPIC);
             facecount = 0;
-            gotgatgun = 1;
             break;
 
         case    bo_fullheal:

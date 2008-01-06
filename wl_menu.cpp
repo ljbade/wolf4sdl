@@ -830,7 +830,8 @@ CP_CheckQuick (ScanCode scancode)
 
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
-                DrawPlayScreen ();
+                if(viewsize != 20)
+                    DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
                     ContinueMusic (lastgamemusicoffset);
@@ -897,7 +898,8 @@ CP_CheckQuick (ScanCode scancode)
 
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
-                DrawPlayScreen ();
+                if(viewsize != 20)
+                    DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
                     ContinueMusic (lastgamemusicoffset);
@@ -2948,6 +2950,7 @@ CP_ChangeView (int)
     WindowH = 200;
     newview = oldview = viewsize;
     DrawChangeView (oldview);
+    MenuFadeIn ();
 
     do
     {
@@ -2960,7 +2963,8 @@ CP_ChangeView (int)
                 newview--;
                 if (newview < 4)
                     newview = 4;
-                ShowViewSize (newview);
+                if(newview == 19) DrawChangeView(newview);
+                else ShowViewSize (newview);
                 VW_UpdateScreen ();
                 SD_PlaySound (HITWALLSND);
                 TicDelay (10);
@@ -2969,9 +2973,12 @@ CP_ChangeView (int)
             case dir_North:
             case dir_East:
                 newview++;
-                if (newview > 19)
-                    newview = 19;
-                ShowViewSize (newview);
+                if (newview >= 20)
+                {
+                    newview = 20;
+                    DrawChangeView(newview);
+                }
+                else ShowViewSize (newview);
                 VW_UpdateScreen ();
                 SD_PlaySound (HITWALLSND);
                 TicDelay (10);
@@ -2982,15 +2989,12 @@ CP_ChangeView (int)
             exit = 1;
         else if (ci.button1 || Keyboard[sc_Escape])
         {
-            viewwidth = oldview * 16;
             SD_PlaySound (ESCPRESSEDSND);
             MenuFadeOut ();
             return 0;
         }
-
     }
     while (!exit);
-
 
     if (oldview != newview)
     {
@@ -3019,7 +3023,7 @@ DrawChangeView (int view)
     ShowViewSize (view);
 #else
     ShowViewSize (view);
-    VWB_Bar (0, 160, 320, 40, bordercol);
+    if(view != 20) VWB_Bar (0, 160, 320, 40, bordercol);
 
     PrintY = 161;
     WindowX = 0;
@@ -3031,8 +3035,6 @@ DrawChangeView (int view)
     US_CPrint (STR_SIZE3);
 #endif
     VW_UpdateScreen ();
-
-    MenuFadeIn ();
 }
 
 

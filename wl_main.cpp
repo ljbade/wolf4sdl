@@ -169,7 +169,7 @@ void ReadConfig(void)
         else if(mouseadjustment>9) mouseadjustment=9;
 
         if(viewsize<4) viewsize=4;
-        else if(viewsize>19) viewsize=19;
+        else if(viewsize>20) viewsize=20;
 
         MainMenu[6].active=1;
         MainItems.curpos=0;
@@ -1277,9 +1277,14 @@ boolean SetViewSize (unsigned width, unsigned height)
     viewheight = height&~1;                 // must be even
     centerx = viewwidth/2-1;
     shootdelta = viewwidth/10;
-    viewscreenx = (screenWidth-viewwidth) / 2;
-    viewscreeny = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
-    screenofs = viewscreeny*screenWidth+viewscreenx;
+    if(viewheight == screenHeight)
+        viewscreenx = viewscreeny = screenofs = 0;
+    else
+    {
+        viewscreenx = (screenWidth-viewwidth) / 2;
+        viewscreeny = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
+        screenofs = viewscreeny*screenWidth+viewscreenx;
+    }
 
 //
 // calculate trace angles and projection constants
@@ -1297,19 +1302,31 @@ void ShowViewSize (int width)
     oldwidth = viewwidth;
     oldheight = viewheight;
 
-    viewwidth = width*16*screenWidth/320;
-    viewheight = (int) (width*16*HEIGHTRATIO*screenHeight/200);
-    DrawPlayBorder ();
+    if(width == 20)
+    {
+        viewwidth = screenWidth;
+        viewheight = screenHeight;
+        VWB_BarScaledCoord (0, 0, screenWidth, screenHeight, 0);
+    }
+    else
+    {
+        viewwidth = width*16*screenWidth/320;
+        viewheight = (int) (width*16*HEIGHTRATIO*screenHeight/200);
+        DrawPlayBorder ();
+    }
 
-    viewheight = oldheight;
     viewwidth = oldwidth;
+    viewheight = oldheight;
 }
 
 
 void NewViewSize (int width)
 {
     viewsize = width;
-    SetViewSize (width*16*screenWidth/320, (unsigned) (width*16*HEIGHTRATIO*screenHeight/200));
+    if(viewsize == 20)
+        SetViewSize(screenWidth, screenHeight);
+    else
+        SetViewSize (width*16*screenWidth/320, (unsigned) (width*16*HEIGHTRATIO*screenHeight/200));
 }
 
 
