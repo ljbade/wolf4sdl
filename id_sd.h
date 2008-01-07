@@ -169,8 +169,13 @@ extern  SDSMode         DigiMode;
 extern  SMMode          MusicMode;
 extern  int             DigiMap[];
 extern  int             DigiChannel[];
+
 #define GetTimeCount()  ((SDL_GetTicks()*7)/100)
-#define Delay(wolfticks) SDL_Delay(wolfticks * 100 / 7)
+
+inline void Delay(int wolfticks)
+{
+    if(wolfticks>0) SDL_Delay(wolfticks * 100 / 7);
+}
 
 // Function prototypes
 extern  void    SD_Startup(void),

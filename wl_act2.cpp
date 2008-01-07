@@ -1458,7 +1458,7 @@ void T_Will (objtype *ob)
     if (CheckLine(ob))                                              // got a shot at player?
     {
         ob->hidden = false;
-        if ( US_RndT() < (tics<<3) && objfreelist)
+        if ( (unsigned) US_RndT() < (tics<<3) && objfreelist)
         {
             //
             // go into attack frame
@@ -1628,10 +1628,10 @@ void T_Launch (objtype *ob)
 
     deltax = player->x - ob->x;
     deltay = ob->y - player->y;
-    angle = atan2 (deltay,deltax);
+    angle = atan2 ((float) deltay, (float) deltax);
     if (angle<0)
-        angle = M_PI*2+angle;
-    iangle = angle/(M_PI*2)*ANGLES;
+        angle = (float) (M_PI*2+angle);
+    iangle = (int) (angle/(M_PI*2)*ANGLES);
     if (ob->obclass == deathobj)
     {
         T_Shoot (ob);
@@ -1770,13 +1770,11 @@ statetype s_spark3              = {false,SPR_SPARK3,6,(statefunc)T_Projectile,NU
 statetype s_spark4              = {false,SPR_SPARK4,6,(statefunc)T_Projectile,NULL,&s_spark1};
 
 
-#pragma argsused
 void A_Slurpie (objtype *)
 {
     SD_PlaySound(SLURPIESND);
 }
 
-#pragma argsused
 void A_Breathing (objtype *)
 {
     SD_PlaySound(ANGELTIREDSND);
@@ -1812,7 +1810,6 @@ void SpawnAngel (int tilex, int tiley)
 =================
 */
 
-#pragma argsused
 void A_Victory (objtype *)
 {
     playstate = ex_victorious;
@@ -1930,7 +1927,7 @@ void A_Dormant (objtype *ob)
     int32_t     deltax,deltay;
     int         xl,xh,yl,yh;
     int         x,y;
-    unsigned    tile;
+    uintptr_t   tile;
 
     deltax = ob->x - player->x;
     if (deltax < -MINACTORDIST || deltax > MINACTORDIST)
@@ -1950,7 +1947,7 @@ moveok:
     for (y=yl ; y<=yh ; y++)
         for (x=xl ; x<=xh ; x++)
         {
-            tile = (unsigned)actorat[x][y];
+            tile = (uintptr_t)actorat[x][y];
             if (!tile)
                 continue;
             if (!ISPOINTER(tile))

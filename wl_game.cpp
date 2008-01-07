@@ -1370,10 +1370,7 @@ startplayloop:
             SD_PlaySound(GETSPEARSND);
             if (DigiMode != sds_Off)
             {
-                int32_t lasttimecount = TimeCount;
-
-                while(TimeCount < lasttimecount+150)
-                    SD_Poll();
+                Delay(150);
             }
             else
                 SD_WaitSoundDone();

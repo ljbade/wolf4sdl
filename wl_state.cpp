@@ -234,7 +234,8 @@ boolean TryWalk (objtype *ob)
         switch (ob->dir)
         {
             case north:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj
+                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
                 {
                     CHECKDIAG(ob->tilex,ob->tiley-1);
                 }
@@ -254,7 +255,8 @@ boolean TryWalk (objtype *ob)
                 break;
 
             case east:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj
+                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
                 {
                     CHECKDIAG(ob->tilex+1,ob->tiley);
                 }
@@ -274,7 +276,8 @@ boolean TryWalk (objtype *ob)
                 break;
 
             case south:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj
+                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
                 {
                     CHECKDIAG(ob->tilex,ob->tiley+1);
                 }
@@ -294,7 +297,8 @@ boolean TryWalk (objtype *ob)
                 break;
 
             case west:
-                if (ob->obclass == dogobj || ob->obclass == fakeobj)
+                if (ob->obclass == dogobj || ob->obclass == fakeobj
+                    || ob->obclass == ghostobj || ob->obclass == spectreobj)
                 {
                     CHECKDIAG(ob->tilex-1,ob->tiley);
                 }

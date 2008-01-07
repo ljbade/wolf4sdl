@@ -780,7 +780,6 @@ void SetupWalls (void)
 void SignonScreen (void)                        // VGA version
 {
     VL_SetVGAPlaneMode ();
-    VL_SetPalette (gamepal);
 
     VL_MungePic (signon,320,200);
     VL_MemToScreen (signon,320,200,0,0);
@@ -836,6 +835,8 @@ void FinishSignon (void)
 
     SETFONTCOLOR(0,15);
 #else
+    VH_UpdateScreen();
+
     if (!param_nowait)
         VW_WaitVBL(3*70);
 #endif
@@ -1496,7 +1497,9 @@ static void DemoLoop()
 #ifndef DEMOTEST
 
 #ifdef SPEAR
+            SDL_Color pal[256];
             CA_CacheGrChunk (TITLEPALETTE);
+            VL_ConvertPalette(grsegs[TITLEPALETTE], pal, 256);
 
             CA_CacheGrChunk (TITLE1PIC);
             VWB_DrawPic (0,0,TITLE1PIC);
@@ -1506,7 +1509,7 @@ static void DemoLoop()
             VWB_DrawPic (0,80,TITLE2PIC);
             UNCACHEGRCHUNK (TITLE2PIC);
             VW_UpdateScreen ();
-            VL_FadeIn(0,255,grsegs[TITLEPALETTE],30);
+            VL_FadeIn(0,255,pal,30);
 
             UNCACHEGRCHUNK (TITLEPALETTE);
 #else

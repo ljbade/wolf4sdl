@@ -41,10 +41,12 @@ ClearSplitVWB (void)
 void
 EndScreen (int palette, int screen)
 {
+    SDL_Color pal[256];
     CA_CacheScreen (screen);
     VW_UpdateScreen ();
     CA_CacheGrChunk (palette);
-    VL_FadeIn (0, 255, grsegs[palette], 30);
+    VL_ConvertPalette(grsegs[palette], pal, 256);
+    VL_FadeIn (0, 255, pal, 30);
     UNCACHEGRCHUNK (palette);
     IN_ClearKeysDown ();
     IN_Ack ();
@@ -55,12 +57,15 @@ EndScreen (int palette, int screen)
 void
 EndSpear (void)
 {
+    SDL_Color pal[256];
+
     EndScreen (END1PALETTE, ENDSCREEN11PIC);
 
     CA_CacheScreen (ENDSCREEN3PIC);
     VW_UpdateScreen ();
     CA_CacheGrChunk (END3PALETTE);
-    VL_FadeIn (0, 255, grsegs[END3PALETTE], 30);
+    VL_ConvertPalette(grsegs[END3PALETTE], pal, 256);
+    VL_FadeIn (0, 255, pal, 30);
     UNCACHEGRCHUNK (END3PALETTE);
     fontnumber = 0;
     fontcolor = 0xd0;
@@ -71,9 +76,7 @@ EndSpear (void)
     US_CPrint (STR_ENDGAME1 "\n");
     US_CPrint (STR_ENDGAME2);
     VW_UpdateScreen ();
-    IN_StartAck ();
-    TimeCount = 0;
-    while (!IN_CheckAck () && TimeCount < 700);
+    IN_UserInput(700);
 
     PrintX = 0;
     PrintY = 180;
@@ -81,9 +84,7 @@ EndSpear (void)
     US_CPrint (STR_ENDGAME3 "\n");
     US_CPrint (STR_ENDGAME4);
     VW_UpdateScreen ();
-    IN_StartAck ();
-    TimeCount = 0;
-    while (!IN_CheckAck () && TimeCount < 700);
+    IN_UserInput(700);
 
     VW_FadeOut ();
 
@@ -1446,13 +1447,9 @@ char MiscCorrect[4][5] = { "ss", "8", STR_STAR, "45" };
 int
 BackDoor (char *s)
 {
-    int i;
-
-
-    strlwr (s);
-
-    for (i = 0; i < 5; i++)
-        if (!_fstrcmp (s, BackDoorStrs[i]))
+    for (int i = 0; i < 5; i++)
+    {
+        if (!strcasecmp (s, BackDoorStrs[i]))
         {
             SETFONTCOLOR (14, 15);
             fontnumber = 0;
@@ -1463,6 +1460,7 @@ BackDoor (char *s)
             VW_UpdateScreen ();
             return 1;
         }
+    }
 
     return 0;
 }
@@ -1471,11 +1469,12 @@ BackDoor (char *s)
 void
 CopyProtection (void)
 {
-#define TYPEBOX_Y               177
+#define TYPEBOX_Y       177
 #define TYPEBOX_BKGD    0x9c
-#define PRINTCOLOR              HIGHLIGHT
+#define PRINTCOLOR      HIGHLIGHT
 
-    int i, match, whichboss, bossnum, attempt, whichline;
+    unsigned i;
+    int match, whichboss, bossnum, attempt, whichline;
     int enemypicked[4] = { 0, 0, 0, 0 };
     int bosses[4] = { BOSSPIC1PIC, BOSSPIC2PIC, BOSSPIC3PIC, BOSSPIC4PIC };
     int whichpicked[4] = { 0, 0, 0, 0 };
@@ -1522,10 +1521,11 @@ CopyProtection (void)
         quiztype = US_RndT () % totaltypes;
         switch (quiztype)
         {
-                //
-                // BOSSES QUIZ
-                //
+            //
+            // BOSSES QUIZ
+            //
             case debriefing:
+            {
                 PrintX = 0;
                 US_Print (STR_DEBRIEF);
                 SETFONTCOLOR (PRINTCOLOR, 15);
@@ -1551,18 +1551,29 @@ CopyProtection (void)
                 US_LineInput (PrintX, PrintY, inputbuffer, 0, true, 20, 100);
 
                 match = 0;
-                for (i = 0; i < _fstrlen (bossstrs[whichboss]); i++)
-                    if (!_fstrnicmp (inputbuffer, bossstrs[whichboss] + i, strlen (inputbuffer)) &&
-                        strlen (inputbuffer) > 3)
-                        match = 1;
+                size_t inputlen = strlen(inputbuffer);
+                if(inputlen > 3)
+                {
+                    size_t bosslen = strlen(bossstrs[whichboss]);
+                    for (i = 0; i < bosslen; i++)
+                    {
+                        if (!strncasecmp (inputbuffer, bossstrs[whichboss] + i, inputlen))
+                        {
+                            match = 1;
+                            break;
+                        }
+                    }
+                }
 
                 match += BackDoor (inputbuffer);
                 break;
+            }
 
-                //
-                // MANUAL CHECK
-                //
+            //
+            // MANUAL CHECK
+            //
             case checkmanual:
+            {
                 while (wordpicked[whichword = US_RndT () % 5]);
                 wordpicked[whichword] = 1;
                 US_CPrint (STR_CHECKMAN);
@@ -1570,9 +1581,7 @@ CopyProtection (void)
                 PrintY += 25;
                 US_CPrint (STR_MAN1);
                 US_CPrint (STR_MAN2);
-                _fstrcpy (message, STR_MAN3 " \"");
-                _fstrcat (message, WordStr[whichword]);
-                _fstrcat (message, "\" " STR_MAN4);
+                sprintf(message, STR_MAN3 " \"%s\" " STR_MAN4, WordStr[whichword]);
                 US_CPrint (message);
                 VW_UpdateScreen ();
                 VW_FadeIn ();
@@ -1584,15 +1593,16 @@ CopyProtection (void)
                 PrintY = TYPEBOX_Y;
                 US_LineInput (PrintX, PrintY, inputbuffer, 0, true, 6, 100);
 
-                strlwr (inputbuffer);
-                match = 1 - (_fstrcmp (inputbuffer, WordCorrect[whichword]) != 0);
+                match = 1 - (strcasecmp (inputbuffer, WordCorrect[whichword]) != 0);
                 match += BackDoor (inputbuffer);
                 break;
+            }
 
-                //
-                // STAFF QUIZ
-                //
+            //
+            // STAFF QUIZ
+            //
             case staffquiz:
+            {
                 while (memberpicked[whichmem = US_RndT () % 5]);
                 memberpicked[whichmem] = 1;
                 US_CPrint (STR_ID1);
@@ -1610,19 +1620,30 @@ CopyProtection (void)
                 PrintY = TYPEBOX_Y;
                 US_LineInput (PrintX, PrintY, inputbuffer, 0, true, 20, 120);
 
-                strlwr (inputbuffer);
                 match = 0;
-                for (i = 0; i < _fstrlen (MemberCorrect[whichmem]); i++)
-                    if (!_fstrnicmp (inputbuffer, MemberCorrect[whichmem] + i, strlen (inputbuffer))
-                        && strlen (inputbuffer) > 2)
-                        match = 1;
+                size_t inputlen = strlen(inputbuffer);
+                if(inputlen > 2)
+                {
+                    size_t memberlen = strlen(MemberCorrect[whichmem]);
+                    for (i = 0; i < memberlen; i++)
+                    {
+                        if (!strncasecmp (inputbuffer, MemberCorrect[whichmem] + i, inputlen))
+                        {
+                            match = 1;
+                            break;
+                        }
+                    }
+                }
+
                 match += BackDoor (inputbuffer);
                 break;
+            }
 
-                //
-                // MISCELLANEOUS QUESTIONS
-                //
+            //
+            // MISCELLANEOUS QUESTIONS
+            //
             case miscquiz:
+            {
                 while (whichpicked[whichone = US_RndT () & 3]);
                 whichpicked[whichone] = 1;
                 US_CPrint (MiscTitle[whichone]);
@@ -1641,10 +1662,10 @@ CopyProtection (void)
                 PrintY = TYPEBOX_Y;
                 US_LineInput (PrintX, PrintY, inputbuffer, 0, true, 6, 100);
 
-                strlwr (inputbuffer);
-                match = 1 - (_fstrcmp (inputbuffer, MiscCorrect[whichone]) != 0);
+                match = 1 - (strcasecmp (inputbuffer, MiscCorrect[whichone]) != 0);
                 match += BackDoor (inputbuffer);
                 break;
+            }
         }
 
         //
@@ -1663,14 +1684,13 @@ CopyProtection (void)
 
             VW_UpdateScreen ();
             SD_PlaySound (NOWAYSND);
-            IN_UserInput (TickBase * 3);
+            IN_UserInput (TickBase * 6);
             VW_FadeOut ();
             attempt++;
         }
         else
         {
             int start;
-
 
             SD_PlaySound (BONUS1UPSND);
             SD_WaitSoundDone ();
@@ -1698,13 +1718,7 @@ CopyProtection (void)
     ClearMemory ();
     ShutdownId ();
 
-    _fstrcpy (message, DosMessages[US_RndT () % 9]);
-
-    _AX = 3;
-//      geninterrupt(0x10);
-
-    printf ("%s\n", message);
-    VW_WaitVBL (150);
+    printf ("%s\n", DosMessages[US_RndT () % 9]);
     exit (1);
 }
 

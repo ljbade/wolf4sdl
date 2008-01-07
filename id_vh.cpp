@@ -357,8 +357,7 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
         VL_UnlockSurface(dest);
         SDL_UpdateRect(dest, 0, 0, 0, 0);
 		frame++;
-		while (GetTimeCount()<frame)		// don't go too fast
-            SDL_Delay(5);
+        Delay(frame-GetTimeCount());        // don't go too fast
 	} while (1);
 
 finished:

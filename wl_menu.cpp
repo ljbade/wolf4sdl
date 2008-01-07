@@ -486,6 +486,8 @@ US_ControlPanel (ScanCode scancode)
 
 #ifdef SPEAR
 #ifndef SPEARDEMO
+        IN_ProcessEvents();
+
         //
         // EASTER EGG FOR SPEAR OF DESTINY!
         //
@@ -495,7 +497,6 @@ US_ControlPanel (ScanCode scancode)
             StartCPMusic (XJAZNAZI_MUS);
             UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
             UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-//                      MM_SortMem ();
             ClearMemory ();
 
 
@@ -509,8 +510,10 @@ US_ControlPanel (ScanCode scancode)
 
             VW_UpdateScreen ();
 
+            SDL_Color pal[256];
             CA_CacheGrChunk (IDGUYSPALETTE);
-            VL_FadeIn (0, 255, grsegs[IDGUYSPALETTE], 30);
+            VL_ConvertPalette(grsegs[IDGUYSPALETTE], pal, 256);
+            VL_FadeIn (0, 255, pal, 30);
             UNCACHEGRCHUNK (IDGUYSPALETTE);
 
             while (Keyboard[sc_I] || Keyboard[sc_D])
@@ -739,6 +742,7 @@ BossKey (void)
 void
 BossKey (void)
 {
+#ifdef NOTYET
     byte palette1[256][3];
     SD_MusicOff ();
 /*       _AX = 3;
@@ -759,6 +763,7 @@ BossKey (void)
 
     VL_SetPalette (&palette1[0][0]);
     LoadLatchMem ();
+#endif
 }
 #endif
 #endif

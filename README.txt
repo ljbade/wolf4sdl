@@ -25,8 +25,8 @@ How to play:
 
 To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original WL6
 files into the same directory as the Wolf4SDL executable. If you want to use
-Wolf4SDL with the shareware version (tested) or with Spear (currently broken),
-you can compile Wolf4SDL with other defines at the beginning of "wl_def.h".
+Wolf4SDL with the shareware version (tested) or with Spear (tested), you can
+compile Wolf4SDL with other defines at the beginning of "wl_def.h".
 
 
 Compiling from source:

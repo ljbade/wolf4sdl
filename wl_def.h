@@ -1,7 +1,7 @@
 //#define BETA
 #define YEAR    1992
 #define MONTH   9
-#define DAY             30
+#define DAY     30
 
 /* Defines used for different versions */
 
@@ -1296,7 +1296,12 @@ void PM_Shutdown();
 #define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
 
 
-#ifndef _WIN32
+#ifdef _WIN32
+
+#define strcasecmp stricmp
+#define strncasecmp strnicmp
+
+#else
 
 static inline char* itoa(int value, char* string, int radix)
 {

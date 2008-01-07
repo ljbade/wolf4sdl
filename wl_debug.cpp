@@ -228,8 +228,8 @@ void BasicOverhead (void)
         for(y=0;y<MAPSIZE;y++)
         {
             tile = (uintptr_t)actorat[x][y];
-            if (tile > 255 && ((objtype *)tile)->flags&FL_SHOOTABLE) color = 72;  // enemy
-            else if (!tile || tile > 255)
+            if (ISPOINTER(tile) && ((objtype *)tile)->flags&FL_SHOOTABLE) color = 72;  // enemy
+            else if (!tile || ISPOINTER(tile))
             {
                 if (spotvis[x][y]) color = 111;  // visable
                 else color = 0;  // nothing

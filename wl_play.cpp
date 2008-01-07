@@ -462,26 +462,16 @@ void PollControls (void)
 //
     if (demoplayback)
     {
-        int delay = lasttimecount + DEMOTICS - GetTimeCount();
-        if(delay > 0)
-            Delay(delay);
-//        while (TimeCount < lasttimecount + DEMOTICS)
-//            ;
-//        TimeCount = lasttimecount + DEMOTICS;
+        Delay(lasttimecount + DEMOTICS - GetTimeCount());
         lasttimecount = GetTimeCount();
         tics = DEMOTICS;
     }
     else if (demorecord)        // demo recording and playback needs
     {                           // to be constant
 //
-// take DEMOTICS or more tics, and modify Timecount to reflect time taken
+// take DEMOTICS or more tics
 //
-        int delay = lasttimecount + DEMOTICS - GetTimeCount();
-        if(delay > 0)
-            Delay(delay);
-//        while (TimeCount < lasttimecount + DEMOTICS)
-//            ;
-//        TimeCount = lasttimecount + DEMOTICS;
+        Delay(lasttimecount + DEMOTICS - GetTimeCount());
         lasttimecount = GetTimeCount();
         tics = DEMOTICS;
     }
