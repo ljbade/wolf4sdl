@@ -38,7 +38,6 @@ LDFLAGS += $(LDFLAGS_SDL)
 LDFLAGS += -lSDL_mixer
 
 SRCS :=
-SRCS += Gamepal3d.cpp
 SRCS += fmopl.cpp
 SRCS += id_ca.cpp
 SRCS += id_in.cpp

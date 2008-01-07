@@ -90,7 +90,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=Gamepal3d.cpp
+FileName=wl_text.cpp
 CompileCpp=1
 Folder=Wolf4SDL
 Compile=1
@@ -381,26 +381,6 @@ BuildCmd=
 
 [Unit37]
 FileName=wl_state.cpp
-CompileCpp=1
-Folder=Wolf4SDL
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit38]
-FileName=wl_text.cpp
-CompileCpp=1
-Folder=Wolf4SDL
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit39]
-FileName=wl_text.cpp
 CompileCpp=1
 Folder=Wolf4SDL
 Compile=1

@@ -22,7 +22,6 @@
 			<Add library="SDL" />
 			<Add library="SDL_mixer" />
 		</Linker>
-		<Unit filename="Gamepal3d.cpp" />
 		<Unit filename="audiosod.h" />
 		<Unit filename="audiowl6.h" />
 		<Unit filename="f_spear.h" />
