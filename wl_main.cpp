@@ -1645,7 +1645,7 @@ void CheckParameters(int argc, char *argv[])
     }
     if(hasError)
     {
-        printf("Wolf4SDL v1.1 ($Revision$) by Chaos-Software\n"
+        printf("Wolf4SDL v1.2 ($Revision$) by Chaos-Software\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"

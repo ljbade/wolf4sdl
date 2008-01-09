@@ -1,4 +1,25 @@
-Wolf4SDL v1.1 (released 2007-12-28)
+Wolf4SDL v1.2 (released 2008-01-09, revision 108)
+ - Fixed fading for 'End Game'
+ - Corrected fading speed
+ - Added Spear of Destiny compile support
+ - Reimplemented palette file (Sorry...)
+ - Fixed end game crash, when player did not die yet
+   (Thanks to Agent87 for noticing this bug!)
+ - Added full size screen feature
+ - Added project files for Code::Blocks and Dev-C++
+   (Thanks to Codetech84!)
+ - Made it MinGW compatible
+ - Fixed demo fading issues
+ - Reformatted many source code files
+ - Resolved all warnings reported by VC++ 8 and GCC
+ - Fixed crash when starting the game with no sound >effects<
+   (Thanks to Agent87 for noticing this bug!)
+ - Always grab mouse when started in fullscreen
+ - Map left and right alt, shift and ctrl keys to the same keys
+ - Fix numpad keys with numlock off
+ - Fixed a buffer overflow causing a crash
+
+Wolf4SDL v1.1 (released 2007-12-28, revision 70)
  - Fixed Pause
  - Fixed IN_Ack()
  - Added command line parameters for windowed mode and screen resolution
@@ -10,5 +31,5 @@ Wolf4SDL v1.1 (released 2007-12-28)
  - Use software surfaces to reduce problems with palette on Windows
  - Windows: Statically links to MSVCR80.DLL now to avoid missing files
 
-Wolf4SDL v1.0 (released 2007-12-26)
+Wolf4SDL v1.0 (released 2007-12-26, revision 53)
  - Initial release

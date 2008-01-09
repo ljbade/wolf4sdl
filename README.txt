@@ -28,6 +28,9 @@ files into the same directory as the Wolf4SDL executable. If you want to use
 Wolf4SDL with the shareware version (tested) or with Spear (tested), you can
 compile Wolf4SDL with other defines at the beginning of "wl_def.h".
 
+If you play in windowed mode (--windowed parameter), press SCROLLLOCK to grab
+the mouse. Press it again to release the mouse.
+
 
 Compiling from source:
 
@@ -59,6 +62,7 @@ Known bugs:
    the game one or two times, it should be OK (smells like a race condition).
    You can press ALT+F4 to leave the game faster. If it does not help you,
    consider using the --windowed option.
+ - Demos don't work very well...
 
 
 Credits:
@@ -67,7 +71,6 @@ Credits:
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
- - Thanks to Codetech for his help on Code::Blocks and Dev-C++.
 
 
 Licenses:
