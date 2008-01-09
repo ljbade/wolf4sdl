@@ -55,8 +55,10 @@ according search paths in your project.
 
 Known bugs:
  - There seem to exist some problems with the palette sometimes. Then some or
-   all colors are wrong. This only appears in fullscreen mode, so consider
-   using the --windowed option in that case.
+   all colors are wrong. This only appears in fullscreen mode. If you restart
+   the game one or two times, it should be OK (smells like a race condition).
+   You can press ALT+F4 to leave the game faster. If it does not help you,
+   consider using the --windowed option.
 
 
 Credits:
