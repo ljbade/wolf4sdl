@@ -335,10 +335,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\sdl_winmain.h"
-				>
-			</File>
-			<File
 				RelativePath=".\wl_def.h"
 				>
 			</File>
