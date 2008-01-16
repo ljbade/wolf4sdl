@@ -1678,18 +1678,6 @@ int main (int argc, char *argv[])
     _fmode=O_BINARY;                // DON'T create save games in text mode!!
 #endif
 
-#ifdef BETA
-    //
-    // THIS IS FOR BETA ONLY!
-    //
-    struct tm *d = gmtime(time(NULL));
-    if (d->tm_year > YEAR || (d->tm_mon >= MONTH && d->tm_mday >= DAY))
-    {
-        printf("Sorry, BETA-TESTING is over. Thanks for you help.\n");
-        exit(1);
-    }
-#endif
-
     CheckForEpisodes();
 
     InitGame();

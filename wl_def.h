@@ -1,8 +1,3 @@
-//#define BETA
-#define YEAR    1992
-#define MONTH   9
-#define DAY     30
-
 /* Defines used for different versions */
 
 //#define SPEAR

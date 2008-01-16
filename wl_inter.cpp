@@ -1334,11 +1334,7 @@ char BackDoorStrs[5][16] = {
     "bite me!",
     "joshua",
     "pelt",
-#ifdef BETA
-    "beta"
-#else
     "snoops"
-#endif
 };
 
 char GoodBoyStrs[10][40] = {
@@ -1354,11 +1350,7 @@ char GoodBoyStrs[10][40] = {
     "Do you have any gold spray paint?",
     "",
 
-#ifdef BETA
-    "Beta testing approved.",
-#else
     "I wish I had a 21\" monitor...",
-#endif
     ""
 };
 
