@@ -1,4 +1,5 @@
-Wolf4SDL v1.3 (not released yet)
+Wolf4SDL v1.3 (released 2008-01-20, revision 113)
+ - Added parameter for SOD to disable copy protection quiz
  - F12 now also grabs the mouse (for keyboards without scrolllock)
  - Fixed out of bounds array access in key processing
 
