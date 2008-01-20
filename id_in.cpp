@@ -478,7 +478,7 @@ static void processEvent(SDL_Event *event)
         // check for keypresses
         case SDL_KEYDOWN:
         {
-            if(event->key.keysym.sym==SDLK_SCROLLOCK)
+            if(event->key.keysym.sym==SDLK_SCROLLOCK || event->key.keysym.sym==SDLK_F12)
             {
                 GrabInput = !GrabInput;
                 SDL_WM_GrabInput(GrabInput ? SDL_GRAB_ON : SDL_GRAB_OFF);

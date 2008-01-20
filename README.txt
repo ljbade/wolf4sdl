@@ -28,8 +28,8 @@ files into the same directory as the Wolf4SDL executable. If you want to use
 Wolf4SDL with the shareware version (tested) or with Spear (tested), you can
 compile Wolf4SDL with other defines at the beginning of "wl_def.h".
 
-If you play in windowed mode (--windowed parameter), press SCROLLLOCK to grab
-the mouse. Press it again to release the mouse.
+If you play in windowed mode (--windowed parameter), press SCROLLLOCK or F12
+to grab the mouse. Press it again to release the mouse.
 
 
 Compiling from source:

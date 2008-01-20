@@ -1,3 +1,7 @@
+Wolf4SDL v1.3 (not released yet)
+ - F12 now also grabs the mouse (for keyboards without scrolllock)
+ - Fixed out of bounds array access in key processing
+
 Wolf4SDL v1.2 (released 2008-01-09, revision 108)
  - Fixed fading for 'End Game'
  - Corrected fading speed
