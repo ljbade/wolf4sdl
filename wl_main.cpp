@@ -81,7 +81,7 @@ boolean param_debugmode = false;
 boolean param_nowait = false;
 int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
-
+boolean param_goodtimes = false;
 
 /*
 =============================================================================
@@ -1471,7 +1471,8 @@ static void DemoLoop()
             #ifndef GOODTIMES
             #ifndef SPEARDEMO
             extern void CopyProtection(void);
-            CopyProtection();
+            if(!param_goodtimes)
+                CopyProtection();
             #endif
             #endif
         #endif
@@ -1581,14 +1582,6 @@ static void DemoLoop()
 
 //===========================================================================
 
-/* Perhaps use case insensitive check?
-#ifdef _WIN32
-#define IFARG(str) if(!stricmp(arg, (str)))
-#else
-#define IFARG(str) if(!strcasecmp(arg, (str)))
-#endif
-*/
-
 #define IFARG(str) if(!strcmp(arg, (str)))
 
 void CheckParameters(int argc, char *argv[])
@@ -1641,11 +1634,13 @@ void CheckParameters(int argc, char *argv[])
                     printf("Screen height must be a multiple of 200!\n"), hasError = true;
             }
         }
+        else IFARG("--goodtimes")
+            param_goodtimes = true;
         else hasError = true;
     }
     if(hasError)
     {
-        printf("Wolf4SDL v1.2 ($Revision$) by Chaos-Software\n"
+        printf("Wolf4SDL v1.3 ($Revision$) by Chaos-Software\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"
@@ -1657,7 +1652,11 @@ void CheckParameters(int argc, char *argv[])
             " --nowait               Skips intro screens\n"
             " --windowed             Starts the game in a window\n"
             "                        (Use this when you have palette problems)\n"
-            " --res <width> <height> Sets the screen resolution (must be multiple of 320x200)\n");
+            " --res <width> <height> Sets the screen resolution (must be multiple of 320x200)\n"
+#ifdef SPEAR
+            " --goodtimes            Disable copy protection quiz\n"
+#endif
+        );
         exit(1);
     }
 }
