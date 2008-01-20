@@ -86,6 +86,8 @@ typedef struct
 
 #define abs(x) ABS(x)
 
+#define LENGTHOF(x)     (sizeof(x)/sizeof(x[0]))
+
 /*
 =============================================================================
 
