@@ -864,7 +864,7 @@ extern  boolean  param_debugmode;
 extern  boolean  param_nowait;
 extern  int      param_difficulty;
 extern  int      param_tedlevel;
-
+extern  int      param_joystickindex;
 
 void            NewGame (int difficulty,int episode);
 void            Quit (const char *errorStr, ...);

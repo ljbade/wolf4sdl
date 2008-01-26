@@ -20,16 +20,6 @@
 #include "wl_def.h"
 
 
-#define	MaxPlayers 4
-#define	MaxJoys    2
-
-//
-// joystick constants
-//
-#define	JoyScaleMax		32768
-#define	JoyScaleShift	8
-#define	MaxJoyValue		5000
-
 /*
 =============================================================================
 
@@ -42,9 +32,7 @@
 //
 // configuration variables
 //
-boolean		MousePresent;
-boolean		JoysPresent[MaxJoys];
-boolean		JoyPadPresent;
+boolean MousePresent;
 
 
 // 	Global variables
@@ -67,15 +55,8 @@ static KeyboardDef KbdDefs = {
     sc_PgDn                 // downright
 };
 
-static JoystickDef JoyDefs[MaxJoys];
-static ControlType Controls[MaxPlayers];
-
-longword	MouseDownCount;
-
-static Demo  DemoMode   = demo_Off;
-static byte* DemoBuffer;
-static word  DemoOffset;
-static word  DemoSize;
+static SDL_Joystick *Joystick;
+static int JoyNumButtons;
 
 static bool GrabInput = false;
 
@@ -125,8 +106,6 @@ byte SpecialNames[] =	// ASCII for 0xe0 prefixed codes
 
 
 static	boolean		IN_Started;
-static	boolean		CapsLock;
-static	ScanCode	CurCode,LastCode;
 
 static	Direction	DirTable[] =		// Quick lookup for total direction
 {
@@ -134,8 +113,6 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
     dir_West,		dir_None,	dir_East,
     dir_SouthWest,	dir_South,	dir_SouthEast
 };
-
-static const char* const ParmStrings[] = { "nojoys", "nomouse", 0 };
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -157,315 +134,49 @@ INL_GetMouseButtons(void)
     return buttons;
 }
 
-#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
-//	IN_GetJoyAbs() - Reads the absolute position of the specified joystick
-//
-///////////////////////////////////////////////////////////////////////////
-void
-IN_GetJoyAbs(word joy,word *xp,word *yp)
-{
-	byte	xb,yb,
-			xs,ys;
-	word	x,y;
-
-	x = y = 0;
-	xs = joy? 2 : 0;		// Find shift value for x axis
-	xb = 1 << xs;			// Use shift value to get x bit mask
-	ys = joy? 3 : 1;		// Do the same for y axis
-	yb = 1 << ys;
-
-// Read the absolute joystick values
-	_asm {
-//			pushf				// Save some registers
-			push		esi
-			push		edi
-			cli					// Make sure an interrupt doesn't screw the timings
-
-
-			mov		dx,0x201
-			in			al,dx
-			out		dx,al		// Clear the resistors
-
-			mov		ah,[xb]		// Get masks into registers
-			mov		ch,[yb]
-
-			xor		si,si		// Clear count registers
-			xor		di,di
-			xor		bh,bh		// Clear high byte of bx for later
-
-			push		ebp			// Don't mess up stack frame
-			mov		bp,MaxJoyValue
-looplabel:
-			in		al,dx		// Get bits indicating whether all are finished
-
-			dec		bp			// Check bounding register
-			jz		done		// We have a silly value - abort
-
-			mov		bl,al		// Duplicate the bits
-			and		bl,ah		// Mask off useless bits (in [xb])
-			add		si,bx		// Possibly increment count register
-			mov		cl,bl		// Save for testing later
-
-			mov		bl,al
-			and		bl,ch		// [yb]
-			add		di,bx
-
-			add		cl,bl
-			jnz		looplabel 		// If both bits were 0, drop out
-			dec bp
-
-done:
-			pop		ebp
-
-			mov		cl,[xs]		// Get the number of bits to shift
-			shr		si,cl		//  and shift the count that many times
-
-			mov		cl,[ys]
-			shr		di,cl
-
-			mov		[x],si		// Store the values into the variables
-			mov		[y],di
-
-			pop		edi
-			pop		esi
-//			popf				// Restore the registers
-			sti
-	}
-
-	*xp = x;
-	*yp = y;
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_GetJoyDelta() - Returns the relative movement of the specified
+//	IN_GetJoyDelta() - Returns the relative movement of the specified
 //		joystick (from +/-127)
 //
 ///////////////////////////////////////////////////////////////////////////
-void INL_GetJoyDelta(word joy,int *dx,int *dy)
+void IN_GetJoyDelta(int *dx,int *dy)
 {
-	word		x,y;
-	JoystickDef	*def;
-	static	longword	lasttime;
+    if(!Joystick)
+    {
+        *dx = *dy = 0;
+        return;
+    }
 
-	IN_GetJoyAbs(joy,&x,&y);
-	def = JoyDefs + joy;
-
-	if (x < def->threshMinX)
-	{
-		if (x < def->joyMinX)
-			x = def->joyMinX;
-
-		x = -(x - def->threshMinX);
-		x *= def->joyMultXL;
-		x >>= JoyScaleShift;
-		*dx = (x > 127)? -127 : -x;
-	}
-	else if (x > def->threshMaxX)
-	{
-		if (x > def->joyMaxX)
-			x = def->joyMaxX;
-
-		x = x - def->threshMaxX;
-		x *= def->joyMultXH;
-		x >>= JoyScaleShift;
-		*dx = (x > 127)? 127 : x;
-	}
-	else
-		*dx = 0;
-
-	if (y < def->threshMinY)
-	{
-		if (y < def->joyMinY)
-			y = def->joyMinY;
-
-		y = -(y - def->threshMinY);
-		y *= def->joyMultYL;
-		y >>= JoyScaleShift;
-		*dy = (y > 127)? -127 : -y;
-	}
-	else if (y > def->threshMaxY)
-	{
-		if (y > def->joyMaxY)
-			y = def->joyMaxY;
-
-		y = y - def->threshMaxY;
-		y *= def->joyMultYH;
-		y >>= JoyScaleShift;
-		*dy = (y > 127)? 127 : y;
-	}
-	else
-		*dy = 0;
-
-	lasttime = TimeCount;
+    SDL_JoystickUpdate();
+    *dx = SDL_JoystickGetAxis(Joystick, 0) >> 8;
+    *dy = SDL_JoystickGetAxis(Joystick, 1) >> 8;
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_GetJoyButtons() - Returns the button status of the specified
-//		joystick
-//
-///////////////////////////////////////////////////////////////////////////
-static word
-INL_GetJoyButtons(word joy)
-{
-	register word	result;
+/*
+===================
+=
+= IN_JoyButtons
+=
+===================
+*/
 
-	result = inp(0x201);	// Get all the joystick buttons
-	result >>= joy? 6 : 4;	// Shift into bits 0-1
-	result &= 3;				// Mask off the useless bits
-	result ^= 3;
-	return(result);
+int IN_JoyButtons()
+{
+    if(!Joystick) return 0;
+
+    SDL_JoystickUpdate();
+
+    int res = 0;
+    for(int i = 0; i < JoyNumButtons && i < 32; i++)
+        res |= SDL_JoystickGetButton(Joystick, i) << i;
+    return res;
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-//	IN_GetJoyButtonsDB() - Returns the de-bounced button status of the
-//		specified joystick
-//
-///////////////////////////////////////////////////////////////////////////
-word
-IN_GetJoyButtonsDB(word joy)
+boolean IN_JoyPresent()
 {
-	longword	lasttime;
-	word		result1,result2;
-
-	do
-	{
-		result1 = INL_GetJoyButtons(joy);
-		lasttime = TimeCount;
-		while (TimeCount == lasttime)
-			;
-		result2 = INL_GetJoyButtons(joy);
-	} while (result1 != result2);
-	return(result1);
+    return Joystick != NULL;
 }
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_StartMouse() - Detects and sets up the mouse
-//
-///////////////////////////////////////////////////////////////////////////
-static boolean
-INL_StartMouse(void)
-{
-#if 0
-	if (getvect(MouseInt))
-	{
-		Mouse(MReset);
-		if (_AX == 0xffff)
-			return(true);
-	}
-	return(false);
-#endif
-	unsigned char *vector;
-
-	if ((vector=(unsigned char *)(((long)*((word *)(0x33*4+2)))*16+(long)*((word *)(0x33*4))))==NULL)
-   	return false;
-
-	if (*vector == 207)
-   	return false;
-
-	Mouse(MReset);
-	return true;
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_ShutMouse() - Cleans up after the mouse
-//
-///////////////////////////////////////////////////////////////////////////
-static void
-INL_ShutMouse(void)
-{
-}
-
-//
-//	INL_SetJoyScale() - Sets up scaling values for the specified joystick
-//
-static void
-INL_SetJoyScale(word joy)
-{
-	JoystickDef	*def;
-
-	def = &JoyDefs[joy];
-	def->joyMultXL = JoyScaleMax / (def->threshMinX - def->joyMinX);
-	def->joyMultXH = JoyScaleMax / (def->joyMaxX - def->threshMaxX);
-	def->joyMultYL = JoyScaleMax / (def->threshMinY - def->joyMinY);
-	def->joyMultYH = JoyScaleMax / (def->joyMaxY - def->threshMaxY);
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	IN_SetupJoy() - Sets up thresholding values and calls INL_SetJoyScale()
-//		to set up scaling values
-//
-///////////////////////////////////////////////////////////////////////////
-void
-IN_SetupJoy(word joy,word minx,word maxx,word miny,word maxy)
-{
-	word		d,r;
-	JoystickDef	*def;
-
-	def = &JoyDefs[joy];
-
-	def->joyMinX = minx;
-	def->joyMaxX = maxx;
-	r = maxx - minx;
-	d = r / 3;
-	def->threshMinX = ((r / 2) - d) + minx;
-	def->threshMaxX = ((r / 2) + d) + minx;
-
-	def->joyMinY = miny;
-	def->joyMaxY = maxy;
-	r = maxy - miny;
-	d = r / 3;
-	def->threshMinY = ((r / 2) - d) + miny;
-	def->threshMaxY = ((r / 2) + d) + miny;
-
-	INL_SetJoyScale(joy);
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_StartJoy() - Detects & auto-configures the specified joystick
-//					The auto-config assumes the joystick is centered
-//
-///////////////////////////////////////////////////////////////////////////
-static boolean
-INL_StartJoy(word joy)
-{
-	word		x,y;
-
-	IN_GetJoyAbs(joy,&x,&y);
-
-	if
-	(
-		((x == 0) || (x > MaxJoyValue - 10))
-	||	((y == 0) || (y > MaxJoyValue - 10))
-	)
-		return(false);
-	else
-	{
-		IN_SetupJoy(joy,0,x * 2,0,y * 2);
-		return(true);
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	INL_ShutJoy() - Cleans up the joystick stuff
-//
-///////////////////////////////////////////////////////////////////////////
-static void
-INL_ShutJoy(word joy)
-{
-	JoysPresent[joy] = false;
-}
-
-#endif
 
 static void processEvent(SDL_Event *event)
 {
@@ -595,27 +306,12 @@ IN_Startup(void)
 
     IN_ClearKeysDown();
 
-#ifdef NOTYET
-	boolean checkjoys = true;
-	boolean checkmouse = true;
-	for (word i = 1;i < __argc;i++)
-	{
-		switch (US_CheckParm(__argv[i],ParmStrings))
-		{
-		case 0:
-			checkjoys = false;
-			break;
-		case 1:
-			checkmouse = false;
-			break;
-		}
-	}
-
-	MousePresent = checkmouse? INL_StartMouse() : false;
-
-	for (i = 0;i < MaxJoys;i++)
-		JoysPresent[i] = checkjoys? INL_StartJoy(i) : false;
-#endif
+    if(param_joystickindex >= 0 && param_joystickindex < SDL_NumJoysticks())
+    {
+        Joystick = SDL_JoystickOpen(param_joystickindex);
+        if(Joystick)
+            JoyNumButtons = SDL_JoystickNumButtons(Joystick);
+    }
 
     SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
 
@@ -631,25 +327,6 @@ IN_Startup(void)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	IN_Default() - Sets up default conditions for the Input Mgr
-//
-///////////////////////////////////////////////////////////////////////////
-void
-IN_Default(boolean gotit,ControlType in)
-{
-	if
-	(
-		(!gotit)
-	|| 	((in == ctrl_Joystick1) && !JoysPresent[0])
-	|| 	((in == ctrl_Joystick2) && !JoysPresent[1])
-	|| 	((in == ctrl_Mouse) && !MousePresent)
-	)
-		in = ctrl_Keyboard1;
-	IN_SetControlType(0,in);
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
 //	IN_Shutdown() - Shuts down the Input Mgr
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -659,10 +336,8 @@ IN_Shutdown(void)
 	if (!IN_Started)
 		return;
 
-#ifdef NOTYET
-	for (word i = 0;i < MaxJoys;i++)
-		INL_ShutJoy(i);
-#endif
+    if(Joystick)
+        SDL_JoystickClose(Joystick);
 
 	IN_Started = false;
 }
@@ -690,13 +365,9 @@ IN_ClearKeysDown(void)
 void
 IN_ReadControl(int player,ControlInfo *info)
 {
-	boolean		realdelta;
-	byte		dbyte;
 	word		buttons;
 	int			dx,dy;
 	Motion		mx,my;
-	ControlType	type;
-	register KeyboardDef	*def;
 
 	dx = dy = 0;
 	mx = my = motion_None;
@@ -704,88 +375,32 @@ IN_ReadControl(int player,ControlInfo *info)
 
 	IN_ProcessEvents();
 
-	if (DemoMode == demo_Playback)
-	{
-		dbyte = DemoBuffer[DemoOffset + 1];
-		my = (Motion) ((dbyte & 3) - 1);
-		mx = (Motion) (((dbyte >> 2) & 3) - 1);
-		buttons = (dbyte >> 4) & 3;
+    if (Keyboard[KbdDefs.upleft])
+        mx = motion_Left,my = motion_Up;
+    else if (Keyboard[KbdDefs.upright])
+        mx = motion_Right,my = motion_Up;
+    else if (Keyboard[KbdDefs.downleft])
+        mx = motion_Left,my = motion_Down;
+    else if (Keyboard[KbdDefs.downright])
+        mx = motion_Right,my = motion_Down;
 
-		if (!(--DemoBuffer[DemoOffset]))
-		{
-			DemoOffset += 2;
-			if (DemoOffset >= DemoSize)
-				DemoMode = demo_PlayDone;
-		}
+    if (Keyboard[KbdDefs.up])
+        my = motion_Up;
+    else if (Keyboard[KbdDefs.down])
+        my = motion_Down;
 
-		realdelta = false;
-	}
-	else if (DemoMode == demo_PlayDone)
-		Quit("Demo playback exceeded");
-	else
-	{
-		switch (type = Controls[player])
-		{
-            case ctrl_Keyboard:
-                def = &KbdDefs;
+    if (Keyboard[KbdDefs.left])
+        mx = motion_Left;
+    else if (Keyboard[KbdDefs.right])
+        mx = motion_Right;
 
-                if (Keyboard[def->upleft])
-                    mx = motion_Left,my = motion_Up;
-                else if (Keyboard[def->upright])
-                    mx = motion_Right,my = motion_Up;
-                else if (Keyboard[def->downleft])
-                    mx = motion_Left,my = motion_Down;
-                else if (Keyboard[def->downright])
-                    mx = motion_Right,my = motion_Down;
+    if (Keyboard[KbdDefs.button0])
+        buttons += 1 << 0;
+    if (Keyboard[KbdDefs.button1])
+        buttons += 1 << 1;
 
-                if (Keyboard[def->up])
-                    my = motion_Up;
-                else if (Keyboard[def->down])
-                    my = motion_Down;
-
-                if (Keyboard[def->left])
-                    mx = motion_Left;
-                else if (Keyboard[def->right])
-                    mx = motion_Right;
-
-                if (Keyboard[def->button0])
-                    buttons += 1 << 0;
-                if (Keyboard[def->button1])
-                    buttons += 1 << 1;
-                realdelta = false;
-                break;
-#ifdef NOTYET
-            case ctrl_Joystick1:
-            case ctrl_Joystick2:
-                INL_GetJoyDelta(type - ctrl_Joystick,&dx,&dy);
-                buttons = INL_GetJoyButtons(type - ctrl_Joystick);
-                realdelta = true;
-                break;
-#endif
-            case ctrl_Mouse:
-            {
-                buttons = SDL_GetRelativeMouseState(&dx, &dy);
-                int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
-                int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
-                buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
-                if(middlePressed) buttons |= 1 << 2;
-                if(rightPressed) buttons |= 1 << 1;
-                realdelta = true;
-                break;
-            }
-		}
-	}
-
-	if (realdelta)
-	{
-		mx = (dx < 0)? motion_Left : ((dx > 0)? motion_Right : motion_None);
-		my = (dy < 0)? motion_Up : ((dy > 0)? motion_Down : motion_None);
-	}
-	else
-	{
-		dx = mx * 127;
-		dy = my * 127;
-	}
+	dx = mx * 127;
+	dy = my * 127;
 
 	info->x = dx;
 	info->xaxis = mx;
@@ -796,39 +411,6 @@ IN_ReadControl(int player,ControlInfo *info)
 	info->button2 = buttons & (1 << 2);
 	info->button3 = buttons & (1 << 3);
 	info->dir = DirTable[((my + 1) * 3) + (mx + 1)];
-
-	if (DemoMode == demo_Record)
-	{
-		// Pack the control info into a byte
-		dbyte = (buttons << 4) | ((mx + 1) << 2) | (my + 1);
-
-		if	((DemoBuffer[DemoOffset + 1] == dbyte)	&&	(DemoBuffer[DemoOffset] < 255))
-			(DemoBuffer[DemoOffset])++;
-		else
-		{
-			if (DemoOffset || DemoBuffer[DemoOffset])
-				DemoOffset += 2;
-
-			if (DemoOffset >= DemoSize)
-				Quit("Demo buffer overflow");
-
-			DemoBuffer[DemoOffset] = 1;
-			DemoBuffer[DemoOffset + 1] = dbyte;
-		}
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////
-//
-//	IN_SetControlType() - Sets the control type to be used by the specified
-//		player
-//
-///////////////////////////////////////////////////////////////////////////
-void
-IN_SetControlType(int player,ControlType type)
-{
-	// DEBUG - check that requested type is present?
-	Controls[player] = type;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -885,9 +467,7 @@ void IN_StartAck(void)
 	IN_ClearKeysDown();
 	memset (btnstate,0,sizeof(btnstate));
 
-#ifdef NOTYET
 	buttons = IN_JoyButtons () << 4;
-#endif
 
 	if (MousePresent)
 		buttons |= IN_MouseButtons ();
@@ -909,14 +489,13 @@ boolean IN_CheckAck (void)
 	if (LastScan)
 		return true;
 
-#ifdef NOTYET
 	buttons = IN_JoyButtons () << 4;
-#endif
 
 	if (MousePresent)
 		buttons |= IN_MouseButtons ();
 
 	for (i=0;i<8;i++,buttons>>=1)
+	{
 		if ( buttons&1 )
 		{
 			if (!btnstate[i])
@@ -924,6 +503,7 @@ boolean IN_CheckAck (void)
 		}
 		else
 			btnstate[i]=false;
+	}
 
 	return false;
 }
@@ -981,28 +561,6 @@ int IN_MouseButtons (void)
 	else
 		return 0;
 }
-
-#ifdef NOTYET
-/*
-===================
-=
-= IN_JoyButtons
-=
-===================
-*/
-
-byte	IN_JoyButtons (void)
-{
-	unsigned joybits;
-
-	joybits = inp(0x201);	// Get all the joystick buttons
-	joybits >>= 4;				// only the high bits are useful
-	joybits ^= 15;				// return with 1=pressed
-
-	return (byte)joybits;
-}
-
-#endif
 
 bool IN_IsInputGrabbed()
 {

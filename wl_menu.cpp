@@ -1820,102 +1820,6 @@ CP_SaveGame (int quick)
     return exit;
 }
 
-
-////////////////////////////////////////////////////////////////////
-//
-// CALIBRATE JOYSTICK
-//
-////////////////////////////////////////////////////////////////////
-int
-CalibrateJoystick (void)
-{
-#ifdef NOTYET
-
-#define CALX    85
-#define CALY    40
-#define CALW    158
-#define CALH    140
-
-    word xmin, ymin, xmax, ymax, jb;
-
-
-
-#ifdef JAPAN
-    VWB_DrawPic (CALX, CALY, C_JOY0PIC);
-#else
-    DrawWindow (CALX - 5, CALY - 5, CALW, CALH, TEXTCOLOR);
-    DrawOutline (CALX - 5, CALY - 5, CALW, CALH, 0, HIGHLIGHT);
-    SETFONTCOLOR (0, TEXTCOLOR);
-
-    WindowX = PrintX = CALX;
-    WindowW = CALW;
-    WindowH = CALH;
-    WindowY = PrintY = CALY;
-    US_Print ("    " STR_CALIB "\n    " STR_JOYST "\n");
-    VWB_DrawPic (CALX + 40, CALY + 30, C_JOY1PIC);
-    PrintY = CALY + 80;
-    US_Print (STR_MOVEJOY);
-    SETFONTCOLOR (BKGDCOLOR, TEXTCOLOR);
-    US_Print ("   " STR_ESCEXIT);
-#endif
-    VW_UpdateScreen ();
-
-    do
-    {
-        jb = IN_JoyButtons ();
-        if (Keyboard[sc_Escape])
-            return 0;
-    }
-    while (!(jb & 1));
-
-    SD_PlaySound (SHOOTSND);
-    IN_GetJoyAbs (joystickport, &xmin, &ymin);
-
-
-#ifdef JAPAN
-    VWB_DrawPic (CALX, CALY, C_JOY1PIC);
-#else
-    DrawWindow (CALX - 5, CALY - 5, CALW, CALH, TEXTCOLOR);
-    DrawOutline (CALX - 5, CALY - 5, CALW, CALH, 0, HIGHLIGHT);
-    SETFONTCOLOR (0, TEXTCOLOR);
-
-    PrintX = CALX;
-    PrintY = CALY;
-    US_Print ("    " STR_CALIB "\n    " STR_JOYST "\n");
-    VWB_DrawPic (CALX + 40, CALY + 30, C_JOY2PIC);
-    PrintY = CALY + 80;
-    US_Print (STR_MOVEJOY2);
-    SETFONTCOLOR (BKGDCOLOR, TEXTCOLOR);
-    US_Print ("   " STR_ESCEXIT);
-#endif
-    VW_UpdateScreen ();
-
-    do
-    {
-        jb = IN_JoyButtons ();
-        if (Keyboard[sc_Escape])
-            return 0;
-    }
-    while (!(jb & 2));
-
-    IN_GetJoyAbs (joystickport, &xmax, &ymax);
-    SD_PlaySound (SHOOTSND);
-
-    while (IN_JoyButtons ()) ;
-
-    //
-    // ASSIGN ACTUAL VALUES HERE
-    //
-    if ((xmin != xmax) && (ymin != ymax))
-        IN_SetupJoy (joystickport, xmin, xmax, ymin, ymax);
-    else
-        return 0;
-#endif
-
-    return 1;
-}
-
-
 ////////////////////////////////////////////////////////////////////
 //
 // DEFINE CONTROLS
@@ -1953,12 +1857,8 @@ CP_Control (int)
                 ShootSnd ();
                 break;
 
-#ifdef NOTYET
             case JOYENABLE:
                 joystickenabled ^= 1;
-                if (joystickenabled)
-                    if (!CalibrateJoystick ())
-                        joystickenabled = 0;
                 DrawCtlScreen ();
                 CusItems.curpos = -1;
                 ShootSnd ();
@@ -1970,6 +1870,7 @@ CP_Control (int)
                 ShootSnd ();
                 break;
 
+#ifdef NOTYET
             case PADENABLE:
                 joypadenabled ^= 1;
                 DrawCtlScreen ();
@@ -2144,7 +2045,7 @@ DrawCtlScreen (void)
     WindowW = 320;
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 
-    if (JoysPresent[0])
+    if (IN_JoyPresent())
         CtlMenu[1].active = CtlMenu[2].active = CtlMenu[3].active = 1;
 
     CtlMenu[2].active = CtlMenu[3].active = joystickenabled;
@@ -2434,7 +2335,6 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                         }
                         break;
 
-#ifdef NOTYET
                     case JOYSTICK:
                         if (ci.button0)
                             result = 1;
@@ -2447,22 +2347,20 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
 
                         if (result)
                         {
-                            int z;
-
-
-                            for (z = 0; z < 4; z++)
+                            for (int z = 0; z < 4; z++)
+                            {
                                 if (order[which] == buttonjoy[z])
                                 {
                                     buttonjoy[z] = bt_nobutton;
                                     break;
                                 }
+                            }
 
                             buttonjoy[result - 1] = order[which];
                             picked = 1;
                             SD_PlaySound (SHOOTDOORSND);
                         }
                         break;
-#endif
 
                     case KEYBOARDBTNS:
                         if (LastScan)
@@ -2858,22 +2756,21 @@ DrawCustMouse (int hilight)
 void
 PrintCustJoy (int i)
 {
-    int j;
-
-    for (j = 0; j < 4; j++)
+    for (int j = 0; j < 4; j++)
+    {
         if (order[i] == buttonjoy[j])
         {
             PrintX = CST_START + CST_SPC * i;
             US_Print (mbarray[j]);
             break;
         }
+    }
 }
 
 void
 DrawCustJoy (int hilight)
 {
     int i, color;
-
 
     color = TEXTCOLOR;
     if (hilight)
@@ -3154,7 +3051,7 @@ IntroScreen (void)
     if (MousePresent)
         VWB_Bar (164, 82, 12, 2, FILLCOLOR);
 
-    if (JoysPresent[0] || JoysPresent[1])
+    if (IN_JoyPresent())
         VWB_Bar (164, 105, 12, 2, FILLCOLOR);
 
     if (AdLibPresent && !SoundBlasterPresent)
@@ -3749,13 +3646,11 @@ ReadAnyControl (ControlInfo * ci)
         }
     }
 
-#ifdef NOTYET
     if (joystickenabled && !mouseactive)
     {
         int jx, jy, jb;
 
-
-        INL_GetJoyDelta (joystickport, &jx, &jy);
+        IN_GetJoyDelta (&jx, &jy);
         if (jy < -SENSITIVE)
             ci->dir = dir_North;
         else if (jy > SENSITIVE)
@@ -3771,16 +3666,10 @@ ReadAnyControl (ControlInfo * ci)
         {
             ci->button0 = jb & 1;
             ci->button1 = jb & 2;
-            if (joypadenabled)
-            {
-                ci->button2 = jb & 4;
-                ci->button3 = jb & 8;
-            }
-            else
-                ci->button2 = ci->button3 = false;
+            ci->button2 = jb & 4;
+            ci->button3 = jb & 8;
         }
     }
-#endif
 }
 
 

@@ -232,7 +232,7 @@ static void CAL_HuffExpand(byte *source, byte *dest, int32_t length, huffnode *h
         return;
     }
 
-    headptr = hufftable+254;        // head node is allways node 254
+    headptr = hufftable+254;        // head node is always node 254
 
     int written = 0;
 

@@ -293,33 +293,16 @@ void PollMouseButtons (void)
 
 void PollJoystickButtons (void)
 {
-#ifdef NOTYET
-    int buttons;
+    int buttons = IN_JoyButtons();
 
-    buttons = IN_JoyButtons ();
-
-    if (joystickport && !joypadenabled)
-    {
-        if (buttons & 4)
-            buttonstate[buttonjoy[0]] = true;
-        if (buttons & 8)
-            buttonstate[buttonjoy[1]] = true;
-    }
-    else
-    {
-        if (buttons & 1)
-            buttonstate[buttonjoy[0]] = true;
-        if (buttons & 2)
-            buttonstate[buttonjoy[1]] = true;
-        if (joypadenabled)
-        {
-            if (buttons & 4)
-                buttonstate[buttonjoy[2]] = true;
-            if (buttons & 8)
-                buttonstate[buttonjoy[3]] = true;
-        }
-    }
-#endif
+    if (buttons & 1)
+        buttonstate[buttonjoy[0]] = true;
+    if (buttons & 2)
+        buttonstate[buttonjoy[1]] = true;
+    if (buttons & 4)
+        buttonstate[buttonjoy[2]] = true;
+    if (buttons & 8)
+        buttonstate[buttonjoy[3]] = true;
 }
 
 
@@ -382,8 +365,6 @@ void PollMouseMove (void)
 }
 
 
-#ifdef NOTYET
-
 /*
 ===================
 =
@@ -396,7 +377,7 @@ void PollJoystickMove (void)
 {
     int joyx, joyy;
 
-    INL_GetJoyDelta (joystickport, &joyx, &joyy);
+    IN_GetJoyDelta (&joyx, &joyy);
 
     if (joystickprogressive)
     {
@@ -432,8 +413,6 @@ void PollJoystickMove (void)
             controly -= BASEMOVE * tics;
     }
 }
-
-#endif
 
 /*
 ===================
@@ -516,10 +495,8 @@ void PollControls (void)
     if (mouseenabled && IN_IsInputGrabbed())
         PollMouseButtons ();
 
-#ifdef NOTYET
     if (joystickenabled)
         PollJoystickButtons ();
-#endif
 
 //
 // get movements
@@ -529,10 +506,8 @@ void PollControls (void)
     if (mouseenabled && IN_IsInputGrabbed())
         PollMouseMove ();
 
-#ifdef NOTYET
     if (joystickenabled)
         PollJoystickMove ();
-#endif
 
 //
 // bound movement to a maximum

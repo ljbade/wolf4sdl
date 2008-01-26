@@ -81,6 +81,7 @@ boolean param_debugmode = false;
 boolean param_nowait = false;
 int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
+int     param_joystickindex = 0;
 boolean param_goodtimes = false;
 
 /*
@@ -162,7 +163,7 @@ void ReadConfig(void)
 
         if (!MousePresent)
             mouseenabled = false;
-        if (!JoysPresent[joystickport])
+        if (!IN_JoyPresent())
             joystickenabled = false;
 
         if(mouseadjustment<0) mouseadjustment=0;
@@ -1158,12 +1159,22 @@ static void InitGame()
 #if defined _WIN32
     putenv("SDL_VIDEODRIVER=directx");
 #endif
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
     {
         printf("Unable to init SDL: %s\n", SDL_GetError());
         exit(1);
     }
     atexit(SDL_Quit);
+
+    int numJoysticks = SDL_NumJoysticks();
+    if(param_joystickindex && (param_joystickindex < 0 || param_joystickindex >= numJoysticks))
+    {
+        if(!numJoysticks)
+            printf("No joysticks are available to SDL!\n");
+        else
+            printf("The joystick index must be between 0 and %i!\n", numJoysticks - 1);
+        exit(1);
+    }
 
 #if defined _WIN32
     struct SDL_SysWMinfo wmInfo;
@@ -1610,7 +1621,7 @@ void CheckParameters(int argc, char *argv[])
         {
             if(++i >= argc)
             {
-                printf("The tedlevel option is missing a level argument!\n");
+                printf("The tedlevel option is missing thr level argument!\n");
                 hasError = true;
             }
             else param_tedlevel = atoi(argv[i]);
@@ -1621,7 +1632,7 @@ void CheckParameters(int argc, char *argv[])
         {
             if(i + 2 >= argc)
             {
-                printf("The res option needs a width and a height argument!\n");
+                printf("The res option needs the width and/or the height argument!\n");
                 hasError = true;
             }
             else
@@ -1633,6 +1644,15 @@ void CheckParameters(int argc, char *argv[])
                 if(screenHeight % 200)
                     printf("Screen height must be a multiple of 200!\n"), hasError = true;
             }
+        }
+        else IFARG("--joystick")
+        {
+            if(++i >= argc)
+            {
+                printf("The joystick option is missing the index argument!\n");
+                hasError = true;
+            }
+            else param_joystickindex = atoi(argv[i]);   // index is checked in InitGame
         }
         else IFARG("--goodtimes")
             param_goodtimes = true;
@@ -1653,6 +1673,7 @@ void CheckParameters(int argc, char *argv[])
             " --windowed             Starts the game in a window\n"
             "                        (Use this when you have palette problems)\n"
             " --res <width> <height> Sets the screen resolution (must be multiple of 320x200)\n"
+            " --joystick <index>     Use the index-th joystick if available (default: 0)\n"
 #ifdef SPEAR
             " --goodtimes            Disable copy protection quiz\n"
 #endif

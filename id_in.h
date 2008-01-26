@@ -137,7 +137,6 @@ typedef	struct		{
 					} JoystickDef;
 // Global variables
 extern	volatile boolean	Keyboard[];
-extern           boolean    JoysPresent[];
 extern	         boolean	MousePresent;
 extern	volatile boolean	Paused;
 extern	volatile char		LastASCII;
@@ -151,12 +150,8 @@ extern	volatile ScanCode	LastScan;
 
 // DEBUG - put names in prototypes
 extern	void		IN_Startup(void),IN_Shutdown(void);
-extern	void		IN_Default(boolean gotit,ControlType in);
-extern	void		IN_SetKeyHook(void (*)());
 extern	void		IN_ClearKeysDown(void);
-extern	void		IN_ReadCursor(CursorInfo *);
 extern	void		IN_ReadControl(int,ControlInfo *);
-extern	void		IN_SetControlType(int,ControlType);
 extern	void		IN_GetJoyAbs(word joy,word *xp,word *yp);
 extern	void		IN_SetupJoy(word joy,word minx,word maxx,
 								word miny,word maxy);
@@ -172,9 +167,12 @@ void    IN_WaitAndProcessEvents();
 void    IN_ProcessEvents();
 
 int     IN_MouseButtons (void);
-byte	IN_JoyButtons (void);
 
-void    INL_GetJoyDelta(word joy,int *dx,int *dy);
+boolean IN_JoyPresent();
+void    IN_SetJoyCurrent(int joyIndex);
+int     IN_JoyButtons (void);
+void    IN_GetJoyDelta(int *dx,int *dy);
+
 void    IN_StartAck(void);
 boolean IN_CheckAck (void);
 bool    IN_IsInputGrabbed();
