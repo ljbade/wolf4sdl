@@ -14,6 +14,7 @@ loaded into the data segment
 =============================================================================
 */
 
+#include <assert.h>
 #include <sys/types.h>
 #if defined _WIN32
 	#include <io.h>
@@ -87,7 +88,7 @@ static const char afilename[] = "audiot.";
 
 void CA_CannotOpen(const char *string);
 
-static byte     grstarts[(NUMCHUNKS + 1) * 3];
+static int32_t  grstarts[NUMCHUNKS + 1];
 static int32_t* audiostarts; // array of offsets in audio / audiot
 
 #ifdef GRHEADERLINKED
@@ -105,29 +106,11 @@ int32_t   chunkcomplen,chunkexplen;
 SDMode oldsoundmode;
 
 
-#ifdef THREEBYTEGRSTARTS
-#define FILEPOSSIZE     3
-//#define       GRFILEPOS(c) (*(long far *)(((byte far *)grstarts)+(c)*3)&0xffffff)
-static int32_t GRFILEPOS(int c)
+static int32_t GRFILEPOS(const size_t idx)
 {
-    int32_t value;
-    int     offset;
-
-    offset = c*3;
-
-    value = *(int32_t *)(grstarts+offset);
-
-    value &= 0x00ffffffl;
-
-    if (value == 0xffffffl)
-        value = -1;
-
-    return value;
-};
-#else
-#define FILEPOSSIZE     4
-#define GRFILEPOS(c) (grstarts[c])
-#endif
+	assert(idx < lengthof(grstarts));
+	return grstarts[idx];
+}
 
 /*
 =============================================================================
@@ -484,11 +467,7 @@ void CAL_SetupGrFile (void)
     read(handle, grhuffman, sizeof(grhuffman));
     close(handle);
 
-//
-// load the data offsets from ???head.ext
-//
-//      MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
-
+    // load the data offsets from ???head.ext
     strcpy(fname,gheadname);
     strcat(fname,extension);
 
@@ -496,11 +475,17 @@ void CAL_SetupGrFile (void)
     if (handle == -1)
         CA_CannotOpen(fname);
 
-    read(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
-
+    byte data[lengthof(grstarts) * 3];
+    read(handle, data, sizeof(data));
     close(handle);
 
-
+    const byte* d = data;
+    for (int32_t* i = grstarts; i != endof(grstarts); ++i)
+    {
+        const int32_t val = d[0] | d[1] << 8 | d[2] << 16;
+        *i = (val == 0x00FFFFFF ? -1 : val);
+        d += 3;
+    }
 #endif
 
 //

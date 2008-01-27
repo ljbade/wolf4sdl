@@ -1314,4 +1314,7 @@ static inline char* ltoa(long value, char* string, int radix)
 	return string;
 }
 
+#define lengthof(x) (sizeof(x) / sizeof(*(x)))
+#define endof(x)    ((x) + lengthof(x))
+
 #endif
