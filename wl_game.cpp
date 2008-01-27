@@ -963,6 +963,7 @@ char    demoname[13] = "DEMO?.";
 void StartDemoRecord (int levelnumber)
 {
     demobuffer=malloc(MAXDEMOSIZE);
+    CHECKMALLOCRESULT(demobuffer);
     demoptr = (char *) demobuffer;
     lastdemoptr = demoptr+MAXDEMOSIZE;
 

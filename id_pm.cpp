@@ -23,14 +23,17 @@ void PM_Startup()
     fread(&PMSoundStart, sizeof(word), 1, file);
 
     int32_t* pageOffsets = (int32_t *) malloc(ChunksInFile * sizeof(int32_t));
+    CHECKMALLOCRESULT(pageOffsets);
     fread(pageOffsets, sizeof(int32_t), ChunksInFile, file);
 
     PageLengths = (word *) malloc(ChunksInFile * sizeof(word));
+    CHECKMALLOCRESULT(PageLengths);
     fread(PageLengths, sizeof(word), ChunksInFile, file);
 
     // TODO: Doesn't support variable page lengths as used by the sounds (page length always <=4096 there)
 
     Pages = (byte *) malloc(ChunksInFile * 4096);
+    CHECKMALLOCRESULT(Pages);
     for(int i = 0; i < ChunksInFile; i++)
     {
         fseek(file, pageOffsets[i], SEEK_SET);

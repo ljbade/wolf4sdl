@@ -104,7 +104,9 @@ void	VL_SetVGAPlaneMode (void)
     if(screenHeight/200 < scaleFactor) scaleFactor = screenHeight/200;
 
     pixelangle = (short *) malloc(screenWidth * sizeof(short));
+    CHECKMALLOCRESULT(pixelangle);
     wallheight = (int *) malloc(screenWidth * sizeof(int));
+    CHECKMALLOCRESULT(wallheight);
 }
 
 /*

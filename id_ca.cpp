@@ -204,6 +204,7 @@ boolean CA_LoadFile (const char *filename, memptr *ptr)
     size = lseek(handle, 0, SEEK_END);
     lseek(handle, 0, SEEK_SET);
     *ptr=malloc(size);
+    CHECKMALLOCRESULT(*ptr);
     if (!read (handle,*ptr,size))
     {
         close (handle);
@@ -517,8 +518,10 @@ void CAL_SetupGrFile (void)
 // load the pic and sprite headers into the arrays in the data segment
 //
     pictable=(pictabletype *) malloc(NUMPICS*sizeof(pictabletype));
+    CHECKMALLOCRESULT(pictable);
     CAL_GetGrChunkLength(STRUCTPIC);                // position file pointer
     compseg=(byte *) malloc(chunkcomplen);
+    CHECKMALLOCRESULT(compseg);
     read (grhandle,compseg,chunkcomplen);
     CAL_HuffExpand(compseg, (byte*)pictable, NUMPICS * sizeof(pictabletype), grhuffman);
     free(compseg);
@@ -554,6 +557,7 @@ void CAL_SetupMapFile (void)
 
     length = NUMMAPS*4+2; // used to be "filelength(handle);"
     mapfiletype *tinf=(mapfiletype *) malloc(sizeof(mapfiletype));
+    CHECKMALLOCRESULT(tinf);
     read(handle, tinf, length);
     close(handle);
 
@@ -588,6 +592,7 @@ void CAL_SetupMapFile (void)
             continue;
 
         mapheaderseg[i]=(maptype *) malloc(sizeof(maptype));
+        CHECKMALLOCRESULT(mapheaderseg[i]);
         lseek(maphandle,pos,SEEK_SET);
         read (maphandle,(memptr)mapheaderseg[i],sizeof(maptype));
     }
@@ -598,7 +603,10 @@ void CAL_SetupMapFile (void)
 // allocate space for 3 64*64 planes
 //
     for (i=0;i<MAPPLANES;i++)
+    {
         mapsegs[i]=(word *) malloc(maparea*2);
+        CHECKMALLOCRESULT(mapsegs[i]);
+    }
 }
 
 
@@ -737,8 +745,7 @@ void CA_CacheAudioChunk (int chunk)
     lseek(audiohandle,pos,SEEK_SET);
 
     audiosegs[chunk]=(byte *) malloc(compressed);
-    if (!audiosegs[chunk])
-        return;
+    CHECKMALLOCRESULT(audiosegs[chunk]);
 
     read(audiohandle,audiosegs[chunk],compressed);
 }
@@ -848,8 +855,7 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
     // Sprites need to have shifts made and various other junk
     //
     grsegs[chunk]=(byte *) malloc(expanded);
-    if (!grsegs[chunk])
-        return;
+    CHECKMALLOCRESULT(grsegs[chunk]);
     CAL_HuffExpand(source, grsegs[chunk], expanded, grhuffman);
 }
 
@@ -898,6 +904,7 @@ void CA_CacheGrChunk (int chunk)
     else
     {
         bigbufferseg=(byte *) malloc(compressed);
+        CHECKMALLOCRESULT(bigbufferseg);
         read(grhandle,bigbufferseg,compressed);
         source = bigbufferseg;
     }
@@ -941,6 +948,7 @@ void CA_CacheScreen (int chunk)
     lseek(grhandle,pos,SEEK_SET);
 
     bigbufferseg=malloc(compressed);
+    CHECKMALLOCRESULT(bigbufferseg);
     read(grhandle,bigbufferseg,compressed);
     source = (byte *) bigbufferseg;
 
@@ -952,6 +960,7 @@ void CA_CacheScreen (int chunk)
 // Sprites need to have shifts made and various other junk
 //
     byte *pic = (byte *) malloc(64000);
+    CHECKMALLOCRESULT(pic);
     CAL_HuffExpand(source, pic, expanded, grhuffman);
 
     byte *vbuf = LOCK();
@@ -1015,6 +1024,7 @@ void CA_CacheMap (int mapnum)
         else
         {
             bigbufferseg=malloc(compressed);
+            CHECKMALLOCRESULT(bigbufferseg);
             source = (word *) bigbufferseg;
         }
 
@@ -1029,6 +1039,7 @@ void CA_CacheMap (int mapnum)
         expanded = *source;
         source++;
         buffer2seg=malloc(expanded);
+        CHECKMALLOCRESULT(buffer2seg);
         CAL_CarmackExpand (source, (word *)buffer2seg,expanded);
         CA_RLEWexpand (((word *)buffer2seg)+1,(word *) *dest,size,RLEWtag);
         free(buffer2seg);

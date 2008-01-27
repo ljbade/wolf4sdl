@@ -1338,10 +1338,8 @@ void SD_PrepareSound(int which)
     byte *wavebuffer = (byte *) malloc(sizeof(headchunk) + sizeof(wavechunk)
         + destsamples * 2);     // dest are 16-bit samples
     if(wavebuffer == NULL)
-    {
-        printf("Unable to allocate wave buffer for sound %i!\n", which);
-        return;
-    }
+        Quit("Unable to allocate wave buffer for sound %i!\n", which);
+
     headchunk head = {{'R','I','F','F'}, 0, {'W','A','V','E'},
         {'f','m','t',' '}, 0x10, 0x0001, 1, SAMPLERATE, SAMPLERATE*2, 2, 16};
     wavechunk dhead = {{'d', 'a', 't', 'a'}, destsamples*2};
@@ -1518,6 +1516,7 @@ SDL_SetupDigi(void)
     int             i;
 
     list=malloc(PMPageSize);
+    CHECKMALLOCRESULT(list);
     p=(word *)(Pages+((ChunksInFile-1)<<12));
     memcpy(list,p,PMPageSize);
 
@@ -1530,6 +1529,7 @@ SDL_SetupDigi(void)
     }
 
     DigiList=(word *) malloc(i*sizeof(word)*2);
+    CHECKMALLOCRESULT(DigiList);
     memcpy(DigiList,list,i*sizeof(word)*2);
     free(list);
 

@@ -1292,6 +1292,7 @@ void PM_Shutdown();
 
 #define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
 
+#define CHECKMALLOCRESULT(x) if(!(x)) Quit("Out of memory at %s:%i", __FILE__, __LINE__)
 
 #ifdef _WIN32
 
