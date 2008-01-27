@@ -1,3 +1,5 @@
+#ifndef WL_DEF_H
+#define WL_DEF_H
 /* Defines used for different versions */
 
 //#define SPEAR
@@ -1313,6 +1315,8 @@ static inline char* ltoa(long value, char* string, int radix)
 	sprintf(string, "%ld", value);
 	return string;
 }
+
+#endif
 
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #define endof(x)    ((x) + lengthof(x))
