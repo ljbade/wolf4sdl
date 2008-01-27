@@ -82,6 +82,7 @@ boolean param_nowait = false;
 int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
 int     param_joystickindex = 0;
+int     param_joystickhat = -1;
 boolean param_goodtimes = false;
 
 /*
@@ -129,7 +130,8 @@ void ReadConfig(void)
         read(file,&mouseenabled,sizeof(mouseenabled));
         read(file,&joystickenabled,sizeof(joystickenabled));
         read(file,&joypadenabled,sizeof(joypadenabled));
-        read(file,&joystickprogressive,sizeof(joystickprogressive));
+        boolean dummyJoystickProgressive;
+        read(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
         read(file,&joystickport,sizeof(joystickport));
 
         read(file,dirscan,sizeof(dirscan));
@@ -157,7 +159,6 @@ void ReadConfig(void)
 
         if(mouseenabled) mouseenabled=true;
         if(joystickenabled) joystickenabled=true;
-        if(joystickprogressive) joystickprogressive = true;
         if(joypadenabled) joypadenabled = true;
         if(joystickport) joystickport = 1;
 
@@ -205,7 +206,6 @@ noconfig:
         joystickenabled = false;
         joypadenabled = false;
         joystickport = 0;
-        joystickprogressive = false;
 
         viewsize = 19;                          // start with a good size
         mouseadjustment=5;
@@ -241,7 +241,8 @@ void WriteConfig(void)
         write(file,&mouseenabled,sizeof(mouseenabled));
         write(file,&joystickenabled,sizeof(joystickenabled));
         write(file,&joypadenabled,sizeof(joypadenabled));
-        write(file,&joystickprogressive,sizeof(joystickprogressive));
+        boolean dummyJoystickProgressive = false;
+        write(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
         write(file,&joystickport,sizeof(joystickport));
 
         write(file,dirscan,sizeof(dirscan));
@@ -1660,6 +1661,15 @@ void CheckParameters(int argc, char *argv[])
             }
             else param_joystickindex = atoi(argv[i]);   // index is checked in InitGame
         }
+        else IFARG("--joystickhat")
+        {
+            if(++i >= argc)
+            {
+                printf("The joystickhat option is missing the index argument!\n");
+                hasError = true;
+            }
+            else param_joystickhat = atoi(argv[i]);
+        }
         else IFARG("--goodtimes")
             param_goodtimes = true;
         else hasError = true;
@@ -1680,6 +1690,7 @@ void CheckParameters(int argc, char *argv[])
             "                        (Use this when you have palette problems)\n"
             " --res <width> <height> Sets the screen resolution (must be multiple of 320x200)\n"
             " --joystick <index>     Use the index-th joystick if available (default: 0)\n"
+            " --joystickhat <index>  Enables movement with the given coolie hat\n"
 #ifdef SPEAR
             " --goodtimes            Disable copy protection quiz\n"
 #endif

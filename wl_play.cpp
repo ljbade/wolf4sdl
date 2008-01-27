@@ -47,7 +47,7 @@ unsigned tics;
 //
 // control info
 //
-boolean mouseenabled, joystickenabled, joypadenabled, joystickprogressive;
+boolean mouseenabled, joystickenabled, joypadenabled;
 int joystickport;
 int dirscan[4] = { sc_UpArrow, sc_RightArrow, sc_DownArrow, sc_LeftArrow };
 int buttonscan[NUMBUTTONS] = { sc_Control, sc_Alt, sc_LShift, sc_Space, sc_1, sc_2, sc_3, sc_4 };
@@ -379,18 +379,7 @@ void PollJoystickMove (void)
 
     IN_GetJoyDelta (&joyx, &joyy);
 
-    if (joystickprogressive)
-    {
-        if (joyx > 64)
-            controlx += (joyx - 64) * JOYSCALE * tics;
-        else if (joyx < -64)
-            controlx -= (-joyx - 64) * JOYSCALE * tics;
-        if (joyy > 64)
-            controlx += (joyy - 64) * JOYSCALE * tics;
-        else if (joyy < -64)
-            controly -= (-joyy - 64) * JOYSCALE * tics;
-    }
-    else if (buttonstate[bt_run])
+    if (buttonstate[bt_run])
     {
         if (joyx > 64)
             controlx += RUNMOVE * tics;

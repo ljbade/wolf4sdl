@@ -865,6 +865,7 @@ extern  boolean  param_nowait;
 extern  int      param_difficulty;
 extern  int      param_tedlevel;
 extern  int      param_joystickindex;
+extern  int      param_joystickhat;
 
 void            NewGame (int difficulty,int episode);
 void            Quit (const char *errorStr, ...);
@@ -961,7 +962,7 @@ extern  memptr      demobuffer;
 //
 // control info
 //
-extern  boolean     mouseenabled,joystickenabled,joypadenabled,joystickprogressive;
+extern  boolean     mouseenabled,joystickenabled,joypadenabled;
 extern  int         joystickport;
 extern  int         dirscan[4];
 extern  int         buttonscan[NUMBUTTONS];

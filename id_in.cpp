@@ -57,6 +57,7 @@ static KeyboardDef KbdDefs = {
 
 static SDL_Joystick *Joystick;
 static int JoyNumButtons;
+static int JoyNumHats;
 
 static bool GrabInput = false;
 
@@ -149,8 +150,30 @@ void IN_GetJoyDelta(int *dx,int *dy)
     }
 
     SDL_JoystickUpdate();
-    *dx = SDL_JoystickGetAxis(Joystick, 0) >> 8;
-    *dy = SDL_JoystickGetAxis(Joystick, 1) >> 8;
+    int x = SDL_JoystickGetAxis(Joystick, 0) >> 8;
+    int y = SDL_JoystickGetAxis(Joystick, 1) >> 8;
+
+    if(param_joystickhat != -1)
+    {
+        uint8_t hatState = SDL_JoystickGetHat(Joystick, param_joystickhat);
+        if(hatState & SDL_HAT_RIGHT)
+            x += 127;
+        else if(hatState & SDL_HAT_LEFT)
+            x -= 127;
+        if(hatState & SDL_HAT_DOWN)
+            y += 127;
+        else if(hatState & SDL_HAT_UP)
+            y -= 127;
+
+        if(x < -128) x = -128;
+        else if(x > 127) x = 127;
+
+        if(y < -128) y = -128;
+        else if(y > 127) y = 127;
+    }
+
+    *dx = x;
+    *dy = y;
 }
 
 /*
@@ -310,7 +333,12 @@ IN_Startup(void)
     {
         Joystick = SDL_JoystickOpen(param_joystickindex);
         if(Joystick)
+        {
             JoyNumButtons = SDL_JoystickNumButtons(Joystick);
+            JoyNumHats = SDL_JoystickNumHats(Joystick);
+            if(param_joystickhat < -1 || param_joystickhat >= JoyNumHats)
+                Quit("The joystickhat param must be between 0 and %i!", JoyNumHats - 1);
+        }
     }
 
     SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
