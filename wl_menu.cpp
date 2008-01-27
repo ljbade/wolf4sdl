@@ -59,27 +59,14 @@ char endStrings[9][80] = {
 #endif
 };
 
-CP_iteminfo MainItems =
-{
-MENU_X, MENU_Y, 10, STARTITEM, 24}, SndItems =
-
-{
-SM_X, SM_Y1, 12, 0, 52}, LSItems =
-
-{
-LSM_X, LSM_Y, 10, 0, 24}, CtlItems =
-
-{
-CTL_X, CTL_Y, 6, -1, 56}, CusItems =
-
-{
-8, CST_Y + 13 * 2, 9, -1, 0}, NewEitems =
-
-{
-NE_X, NE_Y, 11, 0, 88}, NewItems =
-
-{
-NM_X, NM_Y, 4, 2, 24};
+// CP_iteminfo struct format: short x, y, amount, curpos, indent;
+CP_iteminfo MainItems = { MENU_X, MENU_Y, 10, STARTITEM, 24 },
+            SndItems  = { SM_X, SM_Y1, 12, 0, 52 },
+            LSItems   = { LSM_X, LSM_Y, 10, 0, 24 },
+            CtlItems  = { CTL_X, CTL_Y, 6, -1, 56 },
+            CusItems  = { 8, CST_Y + 13 * 2, 9, -1, 0},
+            NewEitems = { NE_X, NE_Y, 11, 0, 88 },
+            NewItems  = { NM_X, NM_Y, 4, 2, 24 };
 
 CP_itemtype MainMenu[] = {
 #ifdef JAPAN
@@ -149,6 +136,8 @@ CP_itemtype SndMenu[] = {
     {1, STR_ALSB, 0}
 #endif
 };
+
+enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_USEPORT2, CTL_PADENABLE, CTL_MOUSESENS, CTL_CUSTOMIZE };
 
 CP_itemtype CtlMenu[] = {
 #ifdef JAPAN
@@ -1828,11 +1817,7 @@ CP_SaveGame (int quick)
 int
 CP_Control (int)
 {
-#define CTL_SPC 70
-    enum
-    { MOUSEENABLE, JOYENABLE, USEPORT2, PADENABLE, MOUSESENS, CUSTOMIZE };
     int which;
-
 
 #ifdef SPEAR
     UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
@@ -1845,10 +1830,10 @@ CP_Control (int)
 
     do
     {
-        which = HandleMenu (&CtlItems, &CtlMenu[0], NULL);
+        which = HandleMenu (&CtlItems, CtlMenu, NULL);
         switch (which)
         {
-            case MOUSEENABLE:
+            case CTL_MOUSEENABLE:
                 mouseenabled ^= 1;
                 if(IN_IsInputGrabbed())
                     IN_CenterMouse();
@@ -1857,29 +1842,29 @@ CP_Control (int)
                 ShootSnd ();
                 break;
 
-            case JOYENABLE:
+            case CTL_JOYENABLE:
                 joystickenabled ^= 1;
                 DrawCtlScreen ();
                 CusItems.curpos = -1;
                 ShootSnd ();
                 break;
 
-            case USEPORT2:
+            case CTL_USEPORT2:
                 joystickport ^= 1;
                 DrawCtlScreen ();
                 ShootSnd ();
                 break;
 
 #ifdef NOTYET
-            case PADENABLE:
+            case CTL_PADENABLE:
                 joypadenabled ^= 1;
                 DrawCtlScreen ();
                 ShootSnd ();
                 break;
 #endif
 
-            case MOUSESENS:
-            case CUSTOMIZE:
+            case CTL_MOUSESENS:
+            case CTL_CUSTOMIZE:
                 DrawCtlScreen ();
                 MenuFadeIn ();
                 WaitKeyUp ();
@@ -2031,7 +2016,6 @@ DrawCtlScreen (void)
 {
     int i, x, y;
 
-
 #ifdef JAPAN
     CA_CacheScreen (S_CONTROLPIC);
 #else
@@ -2046,19 +2030,19 @@ DrawCtlScreen (void)
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 
     if (IN_JoyPresent())
-        CtlMenu[1].active = CtlMenu[2].active = CtlMenu[3].active = 1;
+        CtlMenu[CTL_JOYENABLE].active = CtlMenu[CTL_USEPORT2].active = CtlMenu[CTL_PADENABLE].active = 1;
 
-    CtlMenu[2].active = CtlMenu[3].active = joystickenabled;
+    CtlMenu[CTL_USEPORT2].active = CtlMenu[CTL_PADENABLE].active = joystickenabled;
 
     if (MousePresent)
     {
-        CtlMenu[4].active = CtlMenu[0].active = 1;
+        CtlMenu[CTL_MOUSESENS].active = CtlMenu[CTL_MOUSEENABLE].active = 1;
     }
 
-    CtlMenu[4].active = mouseenabled;
+    CtlMenu[CTL_MOUSESENS].active = mouseenabled;
 
 
-    DrawMenu (&CtlItems, &CtlMenu[0]);
+    DrawMenu (&CtlItems, CtlMenu);
 
 
     x = CTL_X + CtlItems.indent - 24;
@@ -2090,12 +2074,16 @@ DrawCtlScreen (void)
     // PICK FIRST AVAILABLE SPOT
     //
     if (CtlItems.curpos < 0 || !CtlMenu[CtlItems.curpos].active)
-        for (i = 0; i < 6; i++)
+    {
+        for (i = 0; i < CtlItems.amount; i++)
+        {
             if (CtlMenu[i].active)
             {
                 CtlItems.curpos = i;
                 break;
             }
+        }
+    }
 
     DrawMenuGun (&CtlItems);
     VW_UpdateScreen ();
@@ -2117,7 +2105,6 @@ int
 CustomControls (int)
 {
     int which;
-
 
     DrawCustomScreen ();
     do
