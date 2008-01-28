@@ -778,7 +778,7 @@ moveok:
 ===============
 */
 
-void DropItem (stat_t itemtype, int tilex, int tiley)
+void DropItem (wl_stat_t itemtype, int tilex, int tiley)
 {
     int     x,y,xl,xh,yl,yh;
 

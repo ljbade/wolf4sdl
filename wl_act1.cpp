@@ -19,7 +19,7 @@ statobj_t       *laststatobj;
 struct
 {
     short   picnum;
-    stat_t  type;
+    wl_stat_t  type;
 } statinfo[] =
 {
     {SPR_STAT_0},                           // puddle          spr1v

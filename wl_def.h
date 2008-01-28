@@ -25,7 +25,11 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef _WIN32
+#if defined(_arch_dreamcast)
+    #include <kos.h>
+    #include <SDL_types.h>
+    #include <SDL_dreamcast.h>
+#elif !defined(_WIN32)
 	#include <stdint.h>
 #endif
 #include <SDL.h>
@@ -49,6 +53,17 @@
     #include "audiosod.h"
     #include "gfxv_sod.h"
     #include "F_SPEAR.H"
+#endif
+
+#ifdef _arch_dreamcast
+typedef uint8 uint8_t;
+typedef uint16 uint16_t;
+typedef uint32 uint32_t;
+typedef int8 int8_t;
+typedef int16 int16_t;
+typedef int32 int32_t;
+typedef int64 int64_t;
+typedef ptr_t uintptr_t;
 #endif
 
 typedef uint8_t byte;
@@ -620,7 +635,7 @@ typedef enum {
     bo_fullheal,
     bo_25clip,
     bo_spear
-} stat_t;
+} wl_stat_t;
 
 typedef enum {
     east,

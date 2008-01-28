@@ -36,7 +36,13 @@
 
 //#define BUFFERDMA
 //#define SHOWSDDEBUG
+
+#ifdef _arch_dreamcast
+#define SAMPLERATE 22050            // higher samplerates result in "out of memory"
+#else
 #define SAMPLERATE 44100
+#endif
+
 #define ORIGSAMPLERATE 7042
 
 typedef struct

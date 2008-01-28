@@ -66,7 +66,12 @@ void	VL_Shutdown (void)
 
 void	VL_SetVGAPlaneMode (void)
 {
+#ifdef _arch_dreamcast
+    SDL_DC_ShowAskHz(SDL_FALSE);
+    SDL_DC_Default60Hz(SDL_TRUE);
+#else
     SDL_WM_SetCaption("Wolfenstein 3D", NULL);
+#endif
 
     screen = SDL_SetVideoMode(screenWidth, screenHeight, 8,
         SDL_SWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0));

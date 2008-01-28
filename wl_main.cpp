@@ -1709,6 +1709,10 @@ void CheckParameters(int argc, char *argv[])
 
 int main (int argc, char *argv[])
 {
+#ifdef _arch_dreamcast
+    fs_chdir("/cd");
+#endif
+
     CheckParameters(argc, argv);
 
 #if defined _WIN32
