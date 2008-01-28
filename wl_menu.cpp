@@ -1944,8 +1944,7 @@ MouseSensitivity (int)
                     VWB_Bar (61 + 20 * mouseadjustment, 98, 19, 9, READHCOLOR);
                     VW_UpdateScreen ();
                     SD_PlaySound (MOVEGUN1SND);
-                    while (Keyboard[sc_LeftArrow]) IN_WaitAndProcessEvents();
-                    WaitKeyUp ();
+                    TicDelay(20);
                 }
                 break;
 
@@ -1960,8 +1959,7 @@ MouseSensitivity (int)
                     VWB_Bar (61 + 20 * mouseadjustment, 98, 19, 9, READHCOLOR);
                     VW_UpdateScreen ();
                     SD_PlaySound (MOVEGUN1SND);
-                    while (Keyboard[sc_RightArrow]) IN_WaitAndProcessEvents();
-                    WaitKeyUp ();
+                    TicDelay(20);
                 }
                 break;
         }
@@ -3545,7 +3543,10 @@ WaitKeyUp (void)
     ControlInfo ci;
     while (ReadAnyControl (&ci), ci.button0 |
            ci.button1 |
-           ci.button2 | ci.button3 | Keyboard[sc_Space] | Keyboard[sc_Enter] | Keyboard[sc_Escape]);
+           ci.button2 | ci.button3 | Keyboard[sc_Space] | Keyboard[sc_Enter] | Keyboard[sc_Escape])
+    {
+        IN_WaitAndProcessEvents();
+    }
 }
 
 
@@ -3638,10 +3639,11 @@ Confirm (const char *string)
 {
     int xit = 0, x, y, tick = 0, lastBlinkTime;
     int whichsnd[2] = { ESCPRESSEDSND, SHOOTSND };
-
+    ControlInfo ci;
 
     Message (string);
     IN_ClearKeysDown ();
+    WaitKeyUp ();
 
     //
     // BLINK CURSOR
@@ -3652,8 +3654,9 @@ Confirm (const char *string)
 
     do
     {
-        IN_ProcessEvents();
-        if (GetTimeCount() - lastBlinkTime>= 10)
+        ReadAnyControl(&ci);
+
+        if (GetTimeCount() - lastBlinkTime >= 10)
         {
             switch (tick)
             {
@@ -3676,32 +3679,26 @@ Confirm (const char *string)
     while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
 #else
     }
-    while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
+    while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape] && !ci.button0 && !ci.button1);
 #endif
 
 #ifdef SPANISH
-    if (Keyboard[sc_S])
+    if (Keyboard[sc_S] || ci.button0)
     {
         xit = 1;
         ShootSnd ();
     }
-
-    while (Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape])
-        IN_WaitAndProcessEvents();
-
 #else
-
-    if (Keyboard[sc_Y])
+    if (Keyboard[sc_Y] || ci.button0)
     {
         xit = 1;
         ShootSnd ();
     }
-
-    while (Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape])
-        IN_WaitAndProcessEvents();
 #endif
 
     IN_ClearKeysDown ();
+    WaitKeyUp ();
+
     SD_PlaySound ((soundnames) whichsnd[xit]);
 
     return xit;

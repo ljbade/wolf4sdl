@@ -629,6 +629,7 @@ void ShowArticle (char *article)
 #endif
     unsigned    oldfontnumber;
     boolean     newpage,firstpage;
+    ControlInfo ci;
 
 #ifdef JAPAN
     pagenum = 1;
@@ -665,20 +666,43 @@ void ShowArticle (char *article)
             if (firstpage)
             {
                 VL_FadeIn(0,255,gamepal,10);
-                // VW_FadeIn ()
                 firstpage = false;
             }
         }
 
         LastScan = 0;
-        while (!LastScan)
-            IN_WaitAndProcessEvents();
-
-        switch (LastScan)
+        ReadAnyControl(&ci);
+        Direction dir = ci.dir;
+        switch(dir)
         {
-            case sc_UpArrow:
-            case sc_PgUp:
-            case sc_LeftArrow:
+            case dir_North:
+            case dir_South:
+                break;
+
+            default:
+                if(ci.button0) dir = dir_South;
+                switch(LastScan)
+                {
+                    case sc_UpArrow:
+                    case sc_PgUp:
+                    case sc_LeftArrow:
+                        dir = dir_North;
+                        break;
+
+                    case sc_Enter:
+                    case sc_DownArrow:
+                    case sc_PgDn:
+                    case sc_RightArrow:
+                        dir = dir_South;
+                        break;
+                }
+                break;
+        }
+
+        switch(dir)
+        {
+            case dir_North:
+            case dir_West:
                 if (pagenum>1)
                 {
 #ifndef JAPAN
@@ -689,12 +713,11 @@ void ShowArticle (char *article)
 #endif
                     newpage = true;
                 }
+                TicDelay(20);
                 break;
 
-            case sc_Enter:
-            case sc_DownArrow:
-            case sc_PgDn:
-            case sc_RightArrow:         // the text already points at next page
+            case dir_South:
+            case dir_East:
                 if (pagenum<numpages)
                 {
                     newpage = true;
@@ -702,9 +725,10 @@ void ShowArticle (char *article)
                     pagenum++;
 #endif
                 }
+                TicDelay(20);
                 break;
         }
-    } while (LastScan != sc_Escape);
+    } while (LastScan != sc_Escape && !ci.button1);
 
     IN_ClearKeysDown ();
     fontnumber = oldfontnumber;
