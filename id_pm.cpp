@@ -1,3 +1,7 @@
+#ifdef GP2x
+#include <sys/mman.h>
+#include <unistd.h>
+#endif
 #include "wl_def.h"
 
 int ChunksInFile;
