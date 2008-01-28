@@ -23,7 +23,7 @@ void VWB_DrawPropString(const char* string)
 	height = font->height;
 	dest = vbuf + scaleFactor * (py * curPitch + px);
 
-	while ((ch = *string++)!=0)
+	while ((ch = (byte)*string++)!=0)
 	{
 		width = step = font->width[ch];
 		source = ((byte *)font)+font->location[ch];

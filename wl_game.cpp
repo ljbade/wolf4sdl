@@ -964,7 +964,7 @@ void StartDemoRecord (int levelnumber)
 {
     demobuffer=malloc(MAXDEMOSIZE);
     CHECKMALLOCRESULT(demobuffer);
-    demoptr = (char *) demobuffer;
+    demoptr = (int8_t *) demobuffer;
     lastdemoptr = demoptr+MAXDEMOSIZE;
 
     *demoptr = levelnumber;
@@ -987,9 +987,9 @@ void FinishDemoRecord (void)
 
     demorecord = false;
 
-    length = (int32_t) (demoptr - (char *)demobuffer);
+    length = (int32_t) (demoptr - (int8_t *)demobuffer);
 
-    demoptr = ((char *)demobuffer)+1;
+    demoptr = ((int8_t *)demobuffer)+1;
     *(word *)demoptr = (word) length;
 
     VW_FadeIn();
@@ -1120,12 +1120,11 @@ void PlayDemo (int demonumber)
 #endif
 
     CA_CacheGrChunk(dems[demonumber]);
-    demoptr = (char *) grsegs[dems[demonumber]];
+    demoptr = (int8_t *) grsegs[dems[demonumber]];
 #else
     demoname[4] = '0'+demonumber;
     CA_LoadFile (demoname,&demobuffer);
-    MM_SetLock (&demobuffer,true);
-    demoptr = (char far *)demobuffer;
+    demoptr = (int8_t *)demobuffer;
 #endif
 
     NewGame (1,0);

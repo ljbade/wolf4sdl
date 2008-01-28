@@ -289,7 +289,7 @@ void NewGame (int difficulty,int episode)
 
 void DiskFlopAnim(int x,int y)
 {
-    static char which=0;
+    static int8_t which=0;
     if (!x && !y)
         return;
     VWB_DrawPic(x,y,C_DISKLOADING1PIC+which);

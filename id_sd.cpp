@@ -1320,9 +1320,9 @@ Sint16 GetSample(float csample, byte *samples, int size)
     int cursample = (int) csample;
     float sf = csample - (float) cursample;
 
-    if(cursample-1 >= 0) s0 = (float) ((char) (samples[cursample-1] - 128));
-    s1 = (float) ((char) (samples[cursample] - 128));
-    if(cursample+1 < size) s2 = (float) ((char) (samples[cursample+1] - 128));
+    if(cursample-1 >= 0) s0 = (float) (samples[cursample-1] - 128);
+    s1 = (float) (samples[cursample] - 128);
+    if(cursample+1 < size) s2 = (float) (samples[cursample+1] - 128);
 
     float val = s0*sf*(sf-1)/2 - s1*(sf*sf-1) + s2*(sf+1)*sf/2;
     int32_t intval = (int32_t) (val * 256);
@@ -1333,6 +1333,9 @@ Sint16 GetSample(float csample, byte *samples, int size)
 
 void SD_PrepareSound(int which)
 {
+    if(DigiList == NULL)
+        Quit("SD_PrepageSound(%i): DigiList not initialized!\n", which);
+
     int page = DigiList[which * 2];
     int size = DigiList[(which * 2) + 1];
 

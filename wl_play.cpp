@@ -59,7 +59,7 @@ int viewsize;
 boolean buttonheld[NUMBUTTONS];
 
 boolean demorecord, demoplayback;
-char *demoptr, *lastdemoptr;
+int8_t *demoptr, *lastdemoptr;
 memptr demobuffer;
 
 //

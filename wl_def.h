@@ -774,7 +774,7 @@ enum
 };
 
 
-#define NUMWEAPONS      5
+#define NUMWEAPONS      4
 typedef enum
 {
     wp_knife,
@@ -973,7 +973,7 @@ extern  doorobj_t   *lastdoorobj;
 extern  int         godmode;
 
 extern  boolean     demorecord,demoplayback;
-extern  char        *demoptr, *lastdemoptr;
+extern  int8_t      *demoptr, *lastdemoptr;
 extern  memptr      demobuffer;
 
 //
