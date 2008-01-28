@@ -63,7 +63,7 @@ char endStrings[9][80] = {
 CP_iteminfo MainItems = { MENU_X, MENU_Y, 10, STARTITEM, 24 },
             SndItems  = { SM_X, SM_Y1, 12, 0, 52 },
             LSItems   = { LSM_X, LSM_Y, 10, 0, 24 },
-            CtlItems  = { CTL_X, CTL_Y, 6, -1, 56 },
+            CtlItems  = { CTL_X, CTL_Y, 4, -1, 56 },
             CusItems  = { 8, CST_Y + 13 * 2, 9, -1, 0},
             NewEitems = { NE_X, NE_Y, 11, 0, 88 },
             NewItems  = { NM_X, NM_Y, 4, 2, 24 };
@@ -137,22 +137,18 @@ CP_itemtype SndMenu[] = {
 #endif
 };
 
-enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_USEPORT2, CTL_PADENABLE, CTL_MOUSESENS, CTL_CUSTOMIZE };
+enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_CUSTOMIZE };
 
 CP_itemtype CtlMenu[] = {
 #ifdef JAPAN
     {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
-    {0, "", 0},
     {0, "", MouseSensitivity},
+    {0, "", 0},
     {1, "", CustomControls}
 #else
     {0, STR_MOUSEEN, 0},
-    {0, STR_JOYEN, 0},
-    {0, STR_PORT2, 0},
-    {0, STR_GAMEPAD, 0},
     {0, STR_SENS, MouseSensitivity},
+    {0, STR_JOYEN, 0},
     {1, STR_CUSTOM, CustomControls}
 #endif
 };
@@ -1849,20 +1845,6 @@ CP_Control (int)
                 ShootSnd ();
                 break;
 
-            case CTL_USEPORT2:
-                joystickport ^= 1;
-                DrawCtlScreen ();
-                ShootSnd ();
-                break;
-
-#ifdef NOTYET
-            case CTL_PADENABLE:
-                joypadenabled ^= 1;
-                DrawCtlScreen ();
-                ShootSnd ();
-                break;
-#endif
-
             case CTL_MOUSESENS:
             case CTL_CUSTOMIZE:
                 DrawCtlScreen ();
@@ -2030,9 +2012,7 @@ DrawCtlScreen (void)
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
 
     if (IN_JoyPresent())
-        CtlMenu[CTL_JOYENABLE].active = CtlMenu[CTL_USEPORT2].active = CtlMenu[CTL_PADENABLE].active = 1;
-
-    CtlMenu[CTL_USEPORT2].active = CtlMenu[CTL_PADENABLE].active = joystickenabled;
+        CtlMenu[CTL_JOYENABLE].active = 1;
 
     if (MousePresent)
     {
@@ -2052,20 +2032,8 @@ DrawCtlScreen (void)
     else
         VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
 
-    y = CTL_Y + 16;
-    if (joystickenabled)
-        VWB_DrawPic (x, y, C_SELECTEDPIC);
-    else
-        VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
-
     y = CTL_Y + 29;
-    if (joystickport)
-        VWB_DrawPic (x, y, C_SELECTEDPIC);
-    else
-        VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
-
-    y = CTL_Y + 42;
-    if (joypadenabled)
+    if (joystickenabled)
         VWB_DrawPic (x, y, C_SELECTEDPIC);
     else
         VWB_DrawPic (x, y, C_NOTSELECTEDPIC);
