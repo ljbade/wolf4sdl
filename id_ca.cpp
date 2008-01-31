@@ -58,7 +58,7 @@ typedef struct
 */
 
 #define BUFFERSIZE 0x1000
-static byte bufferseg[BUFFERSIZE];
+static int32_t bufferseg[BUFFERSIZE/4];
 
 int     mapon;
 
@@ -266,34 +266,34 @@ static void CAL_HuffExpand(byte *source, byte *dest, int32_t length, huffnode *h
 #define NEARTAG 0xa7
 #define FARTAG  0xa8
 
-void CAL_CarmackExpand (word *source, word *dest, int length)
+void CAL_CarmackExpand (byte *source, word *dest, int length)
 {
     word ch,chhigh,count,offset;
-    word *copyptr, *inptr, *outptr;
+    byte *inptr;
+    word *copyptr, *outptr;
 
     length/=2;
 
-    inptr = source;
+    inptr = (byte *) source;
     outptr = dest;
 
     while (length>0)
     {
-        ch = *inptr++;
+        ch = inptr[0] | inptr[1] << 8;
+        inptr += 2;
         chhigh = ch>>8;
         if (chhigh == NEARTAG)
         {
             count = ch&0xff;
             if (!count)
             {                               // have to insert a word containing the tag byte
-                ch |= *((byte *)inptr);
-                inptr=(word *)(((byte *)inptr)+1);
+                ch |= *inptr++;
                 *outptr++ = ch;
                 length--;
             }
             else
             {
-                offset = *(byte *)inptr;
-                inptr=(word *)(((byte *)inptr)+1);
+                offset = *inptr++;
                 copyptr = outptr - offset;
                 length -= count;
                 if(length<0) return;
@@ -306,14 +306,14 @@ void CAL_CarmackExpand (word *source, word *dest, int length)
             count = ch&0xff;
             if (!count)
             {                               // have to insert a word containing the tag byte
-                ch |= *((byte *)inptr);
-                inptr=(word *)(((byte *)inptr)+1);
+                ch |= *inptr++;
                 *outptr++ = ch;
                 length --;
             }
             else
             {
-                offset = *inptr++;
+                offset = inptr[0] | inptr[1] << 8;
+                inptr += 2;
                 copyptr = dest + offset;
                 length -= count;
                 if(length<0) return;
@@ -800,7 +800,7 @@ cachein:
 ======================
 */
 
-void CAL_ExpandGrChunk (int chunk, byte *source)
+void CAL_ExpandGrChunk (int chunk, int32_t *source)
 {
     int32_t    expanded;
 
@@ -831,8 +831,7 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
         //
         // everything else has an explicit size longword
         //
-        expanded = *(int32_t *) source;
-        source += 4;                    // skip over length
+        expanded = *source++;
     }
 
     //
@@ -841,7 +840,7 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
     //
     grsegs[chunk]=(byte *) malloc(expanded);
     CHECKMALLOCRESULT(grsegs[chunk]);
-    CAL_HuffExpand(source, grsegs[chunk], expanded, grhuffman);
+    CAL_HuffExpand((byte *) source, grsegs[chunk], expanded, grhuffman);
 }
 
 
@@ -858,8 +857,7 @@ void CAL_ExpandGrChunk (int chunk, byte *source)
 void CA_CacheGrChunk (int chunk)
 {
     int32_t pos,compressed;
-    byte *bigbufferseg;
-    byte *source;
+    int32_t *source;
     int  next;
 
     if (grsegs[chunk])
@@ -888,16 +886,15 @@ void CA_CacheGrChunk (int chunk)
     }
     else
     {
-        bigbufferseg=(byte *) malloc(compressed);
-        CHECKMALLOCRESULT(bigbufferseg);
-        read(grhandle,bigbufferseg,compressed);
-        source = bigbufferseg;
+        source = (int32_t *) malloc(compressed);
+        CHECKMALLOCRESULT(source);
+        read(grhandle,source,compressed);
     }
 
     CAL_ExpandGrChunk (chunk,source);
 
     if (compressed>BUFFERSIZE)
-        free(bigbufferseg);
+        free(source);
 }
 
 
@@ -918,7 +915,7 @@ void CA_CacheScreen (int chunk)
 {
     int32_t    pos,compressed,expanded;
     memptr  bigbufferseg;
-    byte    *source;
+    int32_t    *source;
     int             next;
 
 //
@@ -935,10 +932,9 @@ void CA_CacheScreen (int chunk)
     bigbufferseg=malloc(compressed);
     CHECKMALLOCRESULT(bigbufferseg);
     read(grhandle,bigbufferseg,compressed);
-    source = (byte *) bigbufferseg;
+    source = (int32_t *) bigbufferseg;
 
-    expanded = *(int32_t *) source;
-    source += 4;                    // skip over length
+    expanded = *source++;
 
 //
 // allocate final space, decompress it, and free bigbuffer
@@ -946,7 +942,7 @@ void CA_CacheScreen (int chunk)
 //
     byte *pic = (byte *) malloc(64000);
     CHECKMALLOCRESULT(pic);
-    CAL_HuffExpand(source, pic, expanded, grhuffman);
+    CAL_HuffExpand((byte *) source, pic, expanded, grhuffman);
 
     byte *vbuf = LOCK();
     for(int y = 0, scy = 0; y < 200; y++, scy += scaleFactor)
@@ -978,15 +974,15 @@ void CA_CacheScreen (int chunk)
 
 void CA_CacheMap (int mapnum)
 {
-    int32_t    pos,compressed;
-    int             plane;
-    memptr  *dest;
-    memptr bigbufferseg;
-    unsigned size;
-    word *source;
+    int32_t   pos,compressed;
+    int       plane;
+    word     *dest;
+    memptr    bigbufferseg;
+    unsigned  size;
+    word     *source;
 #ifdef CARMACIZED
-    memptr  buffer2seg;
-    int32_t    expanded;
+    word     *buffer2seg;
+    int32_t   expanded;
 #endif
 
     mapon = mapnum;
@@ -1001,7 +997,7 @@ void CA_CacheMap (int mapnum)
         pos = mapheaderseg[mapnum]->planestart[plane];
         compressed = mapheaderseg[mapnum]->planelength[plane];
 
-        dest = (memptr *) &mapsegs[plane];
+        dest = mapsegs[plane];
 
         lseek(maphandle,pos,SEEK_SET);
         if (compressed<=BUFFERSIZE)
@@ -1023,17 +1019,17 @@ void CA_CacheMap (int mapnum)
         //
         expanded = *source;
         source++;
-        buffer2seg=malloc(expanded);
+        buffer2seg = (word *) malloc(expanded);
         CHECKMALLOCRESULT(buffer2seg);
-        CAL_CarmackExpand (source, (word *)buffer2seg,expanded);
-        CA_RLEWexpand (((word *)buffer2seg)+1,(word *) *dest,size,RLEWtag);
+        CAL_CarmackExpand((byte *) source, buffer2seg,expanded);
+        CA_RLEWexpand(buffer2seg+1,dest,size,RLEWtag);
         free(buffer2seg);
 
 #else
         //
         // unRLEW, skipping expanded length
         //
-        CA_RLEWexpand (source+1, *dest,size,RLEWtag);
+        CA_RLEWexpand (source+1,dest,size,RLEWtag);
 #endif
 
         if (compressed>BUFFERSIZE)
