@@ -37,12 +37,6 @@
 //#define BUFFERDMA
 //#define SHOWSDDEBUG
 
-#ifdef _arch_dreamcast
-#define SAMPLERATE 22050            // higher samplerates result in "out of memory"
-#else
-#define SAMPLERATE 44100
-#endif
-
 #define ORIGSAMPLERATE 7042
 
 typedef struct
@@ -1341,7 +1335,7 @@ void SD_PrepareSound(int which)
 
     byte *origsamples = SDL_LoadDigiSegment(page);
 
-    int destsamples = (int) ((float) size * (float) SAMPLERATE
+    int destsamples = (int) ((float) size * (float) param_samplerate
         / (float) ORIGSAMPLERATE);
 
     byte *wavebuffer = (byte *) malloc(sizeof(headchunk) + sizeof(wavechunk)
@@ -1350,7 +1344,7 @@ void SD_PrepareSound(int which)
         Quit("Unable to allocate wave buffer for sound %i!\n", which);
 
     headchunk head = {{'R','I','F','F'}, 0, {'W','A','V','E'},
-        {'f','m','t',' '}, 0x10, 0x0001, 1, SAMPLERATE, SAMPLERATE*2, 2, 16};
+        {'f','m','t',' '}, 0x10, 0x0001, 1, param_samplerate, param_samplerate*2, 2, 16};
     wavechunk dhead = {{'d', 'a', 't', 'a'}, destsamples*2};
     head.filelenminus8 = sizeof(head) + destsamples*2;  // (sizeof(dhead)-8 = 0)
     memcpy(wavebuffer, &head, sizeof(head));
@@ -1359,7 +1353,7 @@ void SD_PrepareSound(int which)
     Sint16 *newsamples = (Sint16 *) (wavebuffer + sizeof(headchunk)
         + sizeof(wavechunk));
     float cursample = 0.F;
-    float samplestep = (float) ORIGSAMPLERATE / (float) SAMPLERATE;
+    float samplestep = (float) ORIGSAMPLERATE / (float) param_samplerate;
     for(int i=0; i<destsamples; i++, cursample+=samplestep)
     {
         newsamples[i] = GetSample((float)size * (float)i / (float)destsamples,
@@ -1822,6 +1816,7 @@ byte *curAlSound = 0;
 byte *curAlSoundPtr = 0;
 longword curAlLengthLeft = 0;
 int soundTimeCounter = 5;
+int samplesPerMusicTick;
 
 void myMusicPlayer(void *udata, Uint8 *stream, int len)
 {
@@ -1894,7 +1889,7 @@ void myMusicPlayer(void *udata, Uint8 *stream, int len)
                 alTimeCount = 0;
             }
         }
-        numreadysamples = 64;
+        numreadysamples = samplesPerMusicTick;
     }
 }
 
@@ -1912,7 +1907,7 @@ SD_Startup(void)
     if (SD_Started)
         return;
 
-    if(Mix_OpenAudio(SAMPLERATE, AUDIO_S16, 2, 2048))
+    if(Mix_OpenAudio(param_samplerate, AUDIO_S16, 2, param_audiobuffer))
     {
         printf("Unable to open audio: %s\n", Mix_GetError());
         return;
@@ -1944,7 +1939,9 @@ SD_Startup(void)
 
     // Init music
 
-    if(YM3812Init(1,3579545,44100))
+    samplesPerMusicTick = param_samplerate / 700;    // SDL_t0FastAsmService played at 700Hz
+
+    if(YM3812Init(1,3579545,param_samplerate))
     {
         printf("Unable to create virtual OPL!!\n");
     }

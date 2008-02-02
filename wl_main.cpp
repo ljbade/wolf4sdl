@@ -63,7 +63,7 @@ int      viewheight;
 short    centerx;
 int      shootdelta;           // pixels away from centerx a target can be
 fixed    scale;
-int32_t     heightnumerator;
+int32_t  heightnumerator;
 
 
 void    Quit (const char *error,...);
@@ -83,6 +83,14 @@ int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
 int     param_joystickindex = 0;
 int     param_joystickhat = -1;
+
+#ifdef _arch_dreamcast
+int     param_samplerate = 22050;       // higher samplerates result in "out of memory"
+#else
+int     param_samplerate = 44100;
+#endif
+
+int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 boolean param_goodtimes = false;
 
 /*
@@ -1605,6 +1613,9 @@ static void DemoLoop()
 void CheckParameters(int argc, char *argv[])
 {
     bool hasError = false;
+    bool sampleRateGiven = false, audioBufferGiven = false;
+    int defaultSampleRate = param_samplerate;
+
     for(int i = 1; i < argc; i++)
     {
         char *arg = argv[i];
@@ -1670,6 +1681,26 @@ void CheckParameters(int argc, char *argv[])
             }
             else param_joystickhat = atoi(argv[i]);
         }
+        else IFARG("--samplerate")
+        {
+            if(++i >= argc)
+            {
+                printf("The samplerate option is missing the rate argument!\n");
+                hasError = true;
+            }
+            else param_samplerate = atoi(argv[i]);
+            sampleRateGiven = true;
+        }
+        else IFARG("--audiobuffer")
+        {
+            if(++i >= argc)
+            {
+                printf("The audiobuffer option is missing the size argument!\n");
+                hasError = true;
+            }
+            else param_audiobuffer = atoi(argv[i]);
+            audioBufferGiven = true;
+        }
         else IFARG("--goodtimes")
             param_goodtimes = true;
         else hasError = true;
@@ -1691,12 +1722,19 @@ void CheckParameters(int argc, char *argv[])
             " --res <width> <height> Sets the screen resolution (must be multiple of 320x200)\n"
             " --joystick <index>     Use the index-th joystick if available (default: 0)\n"
             " --joystickhat <index>  Enables movement with the given coolie hat\n"
+            " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"
+            " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
+            "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
 #ifdef SPEAR
             " --goodtimes            Disable copy protection quiz\n"
 #endif
+            , defaultSampleRate
         );
         exit(1);
     }
+
+    if(sampleRateGiven && !audioBufferGiven)
+        param_audiobuffer = 2048 / (44100 / param_samplerate);
 }
 
 /*
