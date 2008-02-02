@@ -1346,4 +1346,11 @@ static inline word READWORD(byte *&ptr)
     return val;
 }
 
+static inline longword READLONGWORD(byte *&ptr)
+{
+    longword val = ptr[0] | ptr[1] << 8 | ptr[2] << 16 | ptr[3] << 24;
+    ptr += 4;
+    return val;
+}
+
 #endif

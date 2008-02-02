@@ -10,10 +10,6 @@
 
 #define alOut(n,b) YM3812Write(0, n, b)
 
-#ifdef  __DEBUG__
-#define __DEBUG_SoundMgr__
-#endif
-
 #define TickBase        70      // 70Hz per tick - used as a base for timer 0
 
 typedef enum
@@ -37,6 +33,8 @@ typedef struct
     longword        length;
     word            priority;
 } SoundCommon;
+
+#define ORIG_SOUNDCOMMON_SIZE 6
 
 //      PC Sound stuff
 #define pcTimer         0x42
@@ -80,6 +78,8 @@ typedef struct
     byte    unused[3];
 } Instrument;
 
+#define ORIG_INSTRUMENT_SIZE 16
+
 typedef struct
 {
     SoundCommon     common;
@@ -88,59 +88,18 @@ typedef struct
     byte            data[1];
 } AdLibSound;
 
+#define ORIG_ADLIBSOUND_SIZE (ORIG_SOUNDCOMMON_SIZE + ORIG_INSTRUMENT_SIZE + 2)
+
 //
 //      Sequencing stuff
 //
 #define sqMaxTracks     10
-#define sqMaxMoods      1       // DEBUG
 
-#define sev_Null        0       // Does nothing
-#define sev_NoteOff     1       // Turns a note off
-#define sev_NoteOn      2       // Turns a note on
-#define sev_NotePitch   3       // Sets the pitch of a currently playing note
-#define sev_NewInst     4       // Installs a new instrument
-#define sev_NewPerc     5       // Installs a new percussive instrument
-#define sev_PercOn      6       // Turns a percussive note on
-#define sev_PercOff     7       // Turns a percussive note off
-#define sev_SeqEnd      -1      // Terminates a sequence
-
-//      Flags for MusicGroup.flags
-#define sf_Melodic              0
-#define sf_Percussive   1
-
-#if 1
 typedef struct
 {
     word    length;
     word    values[1];
 } MusicGroup;
-#else
-typedef struct
-{
-    word    flags,
-            count;
-    word    offsets[1];
-} MusicGroup;
-#endif
-
-typedef struct
-{
-    /* This part needs to be set up by the user */
-    word        mood;
-    word        *moods[sqMaxMoods];
-
-    /* The rest is set up by the code */
-    Instrument  inst;
-    boolean     percussive;
-    word        *seq;
-    longword    nextevent;
-} ActiveTrack;
-
-#define sqmode_Normal           0
-#define sqmode_FadeIn           1
-#define sqmode_FadeOut          2
-
-#define sqMaxFade               64      // DEBUG
 
 typedef struct
 {

@@ -711,26 +711,61 @@ void CA_Shutdown (void)
 ======================
 */
 
-void CA_CacheAudioChunk (int chunk)
+int32_t CA_CacheAudioChunk (int chunk)
 {
-    int32_t    pos,compressed;
+    int32_t pos = audiostarts[chunk];
+    int32_t size = audiostarts[chunk+1]-pos;
 
     if (audiosegs[chunk])
-        return;                             // already in memory
+        return size;                        // already in memory
 
-//
-// load the chunk into a buffer, either the miscbuffer if it fits, or allocate
-// a larger buffer
-//
-    pos = audiostarts[chunk];
-    compressed = audiostarts[chunk+1]-pos;
-
-    lseek(audiohandle,pos,SEEK_SET);
-
-    audiosegs[chunk]=(byte *) malloc(compressed);
+    audiosegs[chunk]=(byte *) malloc(size);
     CHECKMALLOCRESULT(audiosegs[chunk]);
 
-    read(audiohandle,audiosegs[chunk],compressed);
+    lseek(audiohandle,pos,SEEK_SET);
+    read(audiohandle,audiosegs[chunk],size);
+
+    return size;
+}
+
+void CA_CacheAdlibSoundChunk (int chunk)
+{
+    int32_t pos = audiostarts[chunk];
+    int32_t size = audiostarts[chunk+1]-pos;
+
+    if (audiosegs[chunk])
+        return;                        // already in memory
+
+    lseek(audiohandle, pos, SEEK_SET);
+    read(audiohandle, bufferseg, ORIG_ADLIBSOUND_SIZE - 1);   // without data[1]
+
+    AdLibSound *sound = (AdLibSound *) malloc(size + sizeof(AdLibSound) - ORIG_ADLIBSOUND_SIZE);
+    CHECKMALLOCRESULT(sound);
+
+    byte *ptr = (byte *) bufferseg;
+    sound->common.length = READLONGWORD(ptr);
+    sound->common.priority = READWORD(ptr);
+    sound->inst.mChar = *ptr++;
+    sound->inst.cChar = *ptr++;
+    sound->inst.mScale = *ptr++;
+    sound->inst.cScale = *ptr++;
+    sound->inst.mAttack = *ptr++;
+    sound->inst.cAttack = *ptr++;
+    sound->inst.mSus = *ptr++;
+    sound->inst.cSus = *ptr++;
+    sound->inst.mWave = *ptr++;
+    sound->inst.cWave = *ptr++;
+    sound->inst.nConn = *ptr++;
+    sound->inst.voice = *ptr++;
+    sound->inst.mode = *ptr++;
+    sound->inst.unused[0] = *ptr++;
+    sound->inst.unused[1] = *ptr++;
+    sound->inst.unused[2] = *ptr++;
+    sound->block = *ptr++;
+
+    read(audiohandle, sound->data, size - ORIG_ADLIBSOUND_SIZE + 1);  // + 1 because of byte data[1]
+
+    audiosegs[chunk]=(byte *) sound;
 }
 
 //===========================================================================
@@ -781,8 +816,16 @@ cachein:
             break;
     }
 
-    for (i=0;i<NUMSOUNDS;i++,start++)
-        CA_CacheAudioChunk (start);
+    if(start == STARTADLIBSOUNDS)
+    {
+        for (i=0;i<NUMSOUNDS;i++,start++)
+            CA_CacheAdlibSoundChunk(start);
+    }
+    else
+    {
+        for (i=0;i<NUMSOUNDS;i++,start++)
+            CA_CacheAudioChunk(start);
+    }
 }
 
 //===========================================================================
