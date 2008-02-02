@@ -31,6 +31,8 @@
     #include <SDL_dreamcast.h>
 #elif !defined(_WIN32)
 	#include <stdint.h>
+    #include <string.h>
+    #include <stdarg.h>
 #endif
 #include <SDL.h>
 
