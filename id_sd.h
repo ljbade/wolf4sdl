@@ -138,8 +138,8 @@ extern  void    SD_SetPosition(int channel, int leftvol,int rightvol);
 extern  void    SD_StopSound(void),
                 SD_WaitSoundDone(void);
 
-extern  void    SD_StartMusic(MusicGroup *music);
-extern  void    SD_ContinueMusic(MusicGroup *music, int startoffs);
+extern  void    SD_StartMusic(int chunk);
+extern  void    SD_ContinueMusic(int chunk, int startoffs);
 extern  void    SD_MusicOn(void),
                 SD_FadeOutMusic(void);
 extern  int     SD_MusicOff(void);

@@ -2208,14 +2208,17 @@ SD_MusicOff(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SD_StartMusic(MusicGroup *music)
+SD_StartMusic(int chunk)
 {
     SD_MusicOff();
 
     if (MusicMode == smm_AdLib)
     {
-        sqHackPtr = sqHack = music->values;
-        sqHackLen = sqHackSeqLen = music->length;
+        int32_t chunkLen = CA_CacheAudioChunk(chunk);
+        sqHack = (word *)(void *) audiosegs[chunk];     // alignment is correct
+        if(*sqHack == 0) sqHackLen = sqHackSeqLen = chunkLen;
+        else sqHackLen = sqHackSeqLen = *sqHack++;
+        sqHackPtr = sqHack;
         sqHackTime = 0;
         alTimeCount = 0;
         SD_MusicOn();
@@ -2223,14 +2226,17 @@ SD_StartMusic(MusicGroup *music)
 }
 
 void
-SD_ContinueMusic(MusicGroup *music, int startoffs)
+SD_ContinueMusic(int chunk, int startoffs)
 {
     SD_MusicOff();
 
     if (MusicMode == smm_AdLib)
     {
-        sqHackPtr = sqHack = music->values;
-        sqHackLen = sqHackSeqLen = music->length;
+        int32_t chunkLen = CA_CacheAudioChunk(chunk);
+        sqHack = (word *)(void *) audiosegs[chunk];     // alignment is correct
+        if(*sqHack == 0) sqHackLen = sqHackSeqLen = chunkLen;
+        else sqHackLen = sqHackSeqLen = *sqHack++;
+        sqHackPtr = sqHack;
 
         if(startoffs >= sqHackLen)
         {

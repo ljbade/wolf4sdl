@@ -3820,20 +3820,13 @@ static int lastmusic;
 int
 StartCPMusic (int song)
 {
-    musicnames chunk;
     int lastoffs;
 
-    UNCACHEAUDIOCHUNK (STARTMUSIC + lastmusic);
     lastmusic = song;
-
     lastoffs = SD_MusicOff ();
-    chunk = (musicnames) song;
+    UNCACHEAUDIOCHUNK (STARTMUSIC + lastmusic);
 
-    CA_CacheAudioChunk (STARTMUSIC + chunk);
-    if (audiosegs[STARTMUSIC + chunk])
-    {
-        SD_StartMusic ((MusicGroup *) audiosegs[STARTMUSIC + chunk]);
-    }
+    SD_StartMusic(STARTMUSIC + song);
     return lastoffs;
 }
 

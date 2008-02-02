@@ -25,7 +25,7 @@ boolean madenoise;              // true when shooting or screaming
 
 exit_t playstate;
 
-static musicnames lastmusicchunk = (musicnames) - 1;
+static musicnames lastmusicchunk = (musicnames) 0;
 
 static int DebugOk;
 
@@ -953,20 +953,14 @@ void StartMusic ()
 {
     SD_MusicOff ();
     lastmusicchunk = (musicnames) songs[gamestate.mapon + gamestate.episode * 10];
-
-    CA_CacheAudioChunk (STARTMUSIC + lastmusicchunk);
-    if (audiosegs[STARTMUSIC + lastmusicchunk])
-        SD_StartMusic ((MusicGroup *) audiosegs[STARTMUSIC + lastmusicchunk]);
+    SD_StartMusic(STARTMUSIC + lastmusicchunk);
 }
 
 void ContinueMusic (int offs)
 {
     SD_MusicOff ();
     lastmusicchunk = (musicnames) songs[gamestate.mapon + gamestate.episode * 10];
-
-    CA_CacheAudioChunk (STARTMUSIC + lastmusicchunk);
-    if (audiosegs[STARTMUSIC + lastmusicchunk])
-        SD_ContinueMusic ((MusicGroup *) audiosegs[STARTMUSIC + lastmusicchunk], offs);
+    SD_ContinueMusic(STARTMUSIC + lastmusicchunk, offs);
 }
 
 /*
