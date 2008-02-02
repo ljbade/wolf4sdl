@@ -784,8 +784,8 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
     unsigned scale,pixheight;
     unsigned starty,endy;
     word *cmdptr;
-    word *cline;
-    word *line;
+    byte *cline;
+    byte *line;
     byte *vmem;
     int actx,i,upperedge;
     short newstart;
@@ -837,17 +837,17 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
         {
             if(lpix<0) lpix=0;
             if(rpix>viewwidth) rpix=viewwidth,i=shape->rightpix+1;
-            cline=(word *)((byte *)shape + *cmdptr);
+            cline=(byte *)shape + *cmdptr;
             while(lpix<rpix)
             {
                 if(wallheight[lpix]<=(int)height)
                 {
                     line=cline;
-                    while(*line)
+                    while(line[0] | line[1] << 8)
                     {
-                        starty=(*(line+2))>>1;
-                        endy=(*line)>>1;
-                        newstart=(*(line+1));
+                        endy     = (line[0] | line[1] << 8) >> 1;
+                        newstart =  line[2] | line[3] << 8;
+                        starty   = (line[4] | line[5] << 8) >> 1;
                         j=starty;
                         ycnt=j*pixheight;
                         screndy=(ycnt>>6)+upperedge;
@@ -876,7 +876,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
                                 }
                             }
                         }
-                        line+=3;
+                        line+=6;
                     }
                 }
                 lpix++;
@@ -891,8 +891,8 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
     unsigned scale,pixheight;
     unsigned starty,endy;
     word *cmdptr;
-    word *cline;
-    word *line;
+    byte *cline;
+    byte *line;
     int actx,i,upperedge;
     short newstart;
     int scrstarty,screndy,lpix,rpix,pixcnt,ycnt;
@@ -921,15 +921,15 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
         {
             if(lpix<0) lpix=0;
             if(rpix>viewwidth) rpix=viewwidth,i=shape->rightpix+1;
-            cline=(word *)((byte *)shape + *cmdptr);
+            cline = (byte *)shape + *cmdptr;
             while(lpix<rpix)
             {
                 line=cline;
-                while(*line)
+                while(line[0] | line[1] << 8)
                 {
-                    starty=(*(line+2))>>1;
-                    endy=(*line)>>1;
-                    newstart=(*(line+1));
+                    endy     = (line[0] | line[1] << 8) >> 1;
+                    newstart =  line[2] | line[3] << 8;
+                    starty   = (line[4] | line[5] << 8) >> 1;
                     j=starty;
                     ycnt=j*pixheight;
                     screndy=(ycnt>>6)+upperedge;
@@ -954,7 +954,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
                             }
                         }
                     }
-                    line+=3;
+                    line+=6;
                 }
                 lpix++;
             }
