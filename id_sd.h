@@ -51,15 +51,6 @@ typedef struct
     byte            data[1];
 } PCSound;
 
-typedef struct
-{
-    SoundCommon     common;
-    word            hertz;
-    byte            bits,
-                    reference;
-    byte            data[1];
-} SampledSound;
-
 //      Register addresses
 // Operator stuff
 #define alChar          0x20

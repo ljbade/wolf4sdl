@@ -1339,4 +1339,11 @@ static inline char* ltoa(long value, char* string, int radix)
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #define endof(x)    ((x) + lengthof(x))
 
+static inline word READWORD(byte *&ptr)
+{
+    word val = ptr[0] | ptr[1] << 8;
+    ptr += 2;
+    return val;
+}
+
 #endif

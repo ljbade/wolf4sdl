@@ -279,8 +279,7 @@ void CAL_CarmackExpand (byte *source, word *dest, int length)
 
     while (length>0)
     {
-        ch = inptr[0] | inptr[1] << 8;
-        inptr += 2;
+        ch = READWORD(inptr);
         chhigh = ch>>8;
         if (chhigh == NEARTAG)
         {
@@ -312,8 +311,7 @@ void CAL_CarmackExpand (byte *source, word *dest, int length)
             }
             else
             {
-                offset = inptr[0] | inptr[1] << 8;
-                inptr += 2;
+                offset = READWORD(inptr);
                 copyptr = dest + offset;
                 length -= count;
                 if(length<0) return;
