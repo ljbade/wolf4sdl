@@ -59,15 +59,6 @@ char endStrings[9][80] = {
 #endif
 };
 
-// CP_iteminfo struct format: short x, y, amount, curpos, indent;
-CP_iteminfo MainItems = { MENU_X, MENU_Y, 10, STARTITEM, 24 },
-            SndItems  = { SM_X, SM_Y1, 12, 0, 52 },
-            LSItems   = { LSM_X, LSM_Y, 10, 0, 24 },
-            CtlItems  = { CTL_X, CTL_Y, 4, -1, 56 },
-            CusItems  = { 8, CST_Y + 13 * 2, 9, -1, 0},
-            NewEitems = { NE_X, NE_Y, 11, 0, 88 },
-            NewItems  = { NM_X, NM_Y, 4, 2, 24 };
-
 CP_itemtype MainMenu[] = {
 #ifdef JAPAN
     {1, "", CP_NewGame},
@@ -253,6 +244,14 @@ CP_itemtype CusMenu[] = {
     {1, "", 0}
 };
 
+// CP_iteminfo struct format: short x, y, amount, curpos, indent;
+CP_iteminfo MainItems = { MENU_X, MENU_Y, lengthof(MainMenu), STARTITEM, 24 },
+            SndItems  = { SM_X, SM_Y1, lengthof(SndMenu), 0, 52 },
+            LSItems   = { LSM_X, LSM_Y, lengthof(LSMenu), 0, 24 },
+            CtlItems  = { CTL_X, CTL_Y, lengthof(CtlMenu), -1, 56 },
+            CusItems  = { 8, CST_Y + 13 * 2, lengthof(CusMenu), -1, 0},
+            NewEitems = { NE_X, NE_Y, lengthof(NewEmenu), 0, 88 },
+            NewItems  = { NM_X, NM_Y, lengthof(NewMenu), 2, 24 };
 
 int color_hlite[] = {
     DEACTIVE,
