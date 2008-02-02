@@ -1350,7 +1350,9 @@ void SD_PrepareSound(int which)
     memcpy(wavebuffer, &head, sizeof(head));
     memcpy(wavebuffer+sizeof(head), &dhead, sizeof(dhead));
 
-    Sint16 *newsamples = (Sint16 *) (wavebuffer + sizeof(headchunk)
+    // alignment is correct, as wavebuffer comes from malloc
+    // and sizeof(headchunk) % 4 == 0 and sizeof(wavechunk) % 4 == 0
+    Sint16 *newsamples = (Sint16 *)(void *) (wavebuffer + sizeof(headchunk)
         + sizeof(wavechunk));
     float cursample = 0.F;
     float samplestep = (float) ORIGSAMPLERATE / (float) param_samplerate;
@@ -1520,7 +1522,7 @@ SDL_SetupDigi(void)
 
     list=malloc(PMPageSize);
     CHECKMALLOCRESULT(list);
-    p=(word *)(Pages+((ChunksInFile-1)<<12));
+    p=(word *)(void *)(Pages+((ChunksInFile-1)<<12));   // alignment is correct
     memcpy(list,p,PMPageSize);
 
     pg = PMSoundStart;
@@ -1822,7 +1824,7 @@ void myMusicPlayer(void *udata, Uint8 *stream, int len)
 {
     int stereolen = len>>1;
     int sampleslen = stereolen>>1;
-    INT16 *stream16 = (INT16 *) stream;
+    INT16 *stream16 = (INT16 *) (void *) stream;    // expect correct alignment
 
     while(1)
     {

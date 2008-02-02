@@ -990,7 +990,9 @@ void FinishDemoRecord (void)
     length = (int32_t) (demoptr - (int8_t *)demobuffer);
 
     demoptr = ((int8_t *)demobuffer)+1;
-    *(word *)demoptr = (word) length;
+    demoptr[0] = (int8_t) length;
+    demoptr[1] = (int8_t) (length >> 8);
+    demoptr[2] = 0;
 
     VW_FadeIn();
     CenterWindow(24,3);
@@ -1110,7 +1112,6 @@ void RecordDemo (void) {return;}
 void PlayDemo (int demonumber)
 {
     int length;
-
 #ifdef DEMOSEXTERN
 // debug: load chunk
 #ifndef SPEARDEMO
@@ -1130,8 +1131,10 @@ void PlayDemo (int demonumber)
     NewGame (1,0);
     gamestate.mapon = *demoptr++;
     gamestate.difficulty = gd_hard;
-    length = *((word *)demoptr);
+    length = demoptr[0] | demoptr[1] << 8;
     demoptr+=2;
+    // TODO: Seems like the original demo format supports 16 MB demos
+    //       But T_DEM00 and T_DEM01 of Wolf have a 0xd8 as third length size...
     demoptr++;
     lastdemoptr = demoptr-4+length;
 

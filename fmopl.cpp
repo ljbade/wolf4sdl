@@ -1904,7 +1904,7 @@ static FM_OPL *OPLCreate(int type, int clock, int rate)
 	/* clear */
 	memset(ptr,0,state_size);
 
-	OPL  = (FM_OPL *)ptr;
+	OPL  = (FM_OPL *)(void *)ptr;   // ptr comes from malloc, so it is correctly aligned
 
 	ptr += sizeof(FM_OPL);
 
