@@ -27,14 +27,16 @@
 #include <stdlib.h>
 #if defined(_arch_dreamcast)
     #include <kos.h>
-    #include <SDL_types.h>
+    #include <SDL.h>
     #include <SDL_dreamcast.h>
 #elif !defined(_WIN32)
 	#include <stdint.h>
     #include <string.h>
     #include <stdarg.h>
+    #include <SDL.h>
+#else
+    #include <SDL.h>
 #endif
-#include <SDL.h>
 
 #pragma pack(1)
 
