@@ -687,13 +687,15 @@ void BuildTables (void)
 
     float angle=0;
     float anglestep=(float)(PI/2/ANGLEQUAD);
-    for(int i=0;i<=ANGLEQUAD;i++)
+    for(int i=0; i<ANGLEQUAD; i++)
     {
         fixed value=(int32_t)(GLOBAL1*sin(angle));
         sintable[i]=sintable[i+ANGLES]=sintable[ANGLES/2-i]=value;
         sintable[ANGLES-i]=sintable[ANGLES/2+i]=-value;
         angle+=anglestep;
     }
+    sintable[ANGLEQUAD] = 65536;
+    sintable[3*ANGLEQUAD] = -65536;
 }
 
 //===========================================================================

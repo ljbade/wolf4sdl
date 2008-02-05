@@ -99,7 +99,7 @@ typedef struct
 #include "f_spear.h"
 #endif
 
-#define MAPSPOT(x,y,plane) (*(mapsegs[plane]+((y)<<mapshift)+(x)))
+#define MAPSPOT(x,y,plane) (mapsegs[plane][((y)<<mapshift)+(x)])
 
 #define SIGN(x)         ((x)>0?1:-1)
 #define ABS(x)          ((int)(x)>0?(x):-(x))
@@ -195,10 +195,9 @@ typedef struct
 #define MINDIST         (0x5800l)
 #define mindist         MINDIST
 
-#define MAPSIZE         64              // maps are 64*64
-#define mapshift        6               // 2^mapshift = MAPSIZE
-#define maparea         4096            // MAPSIZE<<mapshift or MAPSIZE*MAPSIZE
-#define mapspotend      8191            // 64<<mapshift-1 or 64*MAPSIZE-1
+#define mapshift        6
+#define MAPSIZE         (1<<mapshift)
+#define maparea         MAPSIZE*MAPSIZE
 
 #define mapheight       MAPSIZE
 #define mapwidth        MAPSIZE

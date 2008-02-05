@@ -1244,8 +1244,8 @@ vertentry:
                 HitHorizBorder();
                 break;
             }
-            if(xspot>mapspotend) break;
-            tilehit=*((byte *)tilemap+xspot);
+            if(xspot>=maparea) break;
+            tilehit=((byte *)tilemap)[xspot];
             if(tilehit)
             {
                 if(tilehit&0x80)
@@ -1389,8 +1389,8 @@ horizentry:
                 HitVertBorder();
                 break;
             }
-            if(yspot>mapspotend) break;
-            tilehit=*((byte *)tilemap+yspot);
+            if(yspot>=maparea) break;
+            tilehit=((byte *)tilemap)[yspot];
             if(tilehit)
             {
                 if(tilehit&0x80)
