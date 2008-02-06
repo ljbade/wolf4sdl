@@ -319,6 +319,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\id_pm.h"
+				>
+			</File>
+			<File
 				RelativePath=".\id_sd.h"
 				>
 			</File>

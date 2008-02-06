@@ -1,4 +1,6 @@
-// ID_CA.H
+#ifndef __ID_CA__
+#define __ID_CA__
+
 //===========================================================================
 
 #define NUMMAPS         60
@@ -48,3 +50,5 @@ void CA_CacheMap (int mapnum);
 void CA_CacheScreen (int chunk);
 
 void CA_CannotOpen(const char *name);
+
+#endif

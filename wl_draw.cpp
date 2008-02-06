@@ -281,11 +281,11 @@ void ScalePost()
    yoffs += postx;
 
    yendoffs = viewheight / 2 + ywcount - 1;
-   yw=63;
+   yw=TEXTURESIZE-1;
 
    while(yendoffs >= viewheight)
    {
-      ywcount -= 32;
+      ywcount -= TEXTURESIZE/2;
       while(ywcount <= 0)
       {
          ywcount += yd;
@@ -298,8 +298,8 @@ void ScalePost()
    yendoffs = yendoffs * vbufPitch + postx;
    while(yoffs <= yendoffs)
    {
-      vbuf[yendoffs]=  col;
-      ywcount -= 32;
+      vbuf[yendoffs] = col;
+      ywcount -= TEXTURESIZE/2;
       if(ywcount <= 0)
       {
          do
@@ -338,10 +338,10 @@ void HitVertWall (void)
     int wallpic;
     int texture;
 
-    texture = ((yintercept+texdelta)>>4)&0xfc0;
+    texture = ((yintercept+texdelta)>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
     if (xtilestep == -1)
     {
-        texture = 0xfc0-texture;
+        texture = TEXTUREMASK-texture;
         xintercept += TILEGLOBAL;
     }
 
@@ -384,7 +384,7 @@ void HitVertWall (void)
     else
         wallpic = vertwall[tilehit];
 
-    postsource = Pages+(wallpic<<12)+texture;
+    postsource = PM_GetTexture(wallpic) + texture;
 }
 
 
@@ -404,11 +404,11 @@ void HitHorizWall (void)
     int wallpic;
     int texture;
 
-    texture = ((xintercept+texdelta)>>4)&0xfc0;
+    texture = ((xintercept+texdelta)>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
     if (ytilestep == -1)
         yintercept += TILEGLOBAL;
     else
-        texture = 0xfc0-texture;
+        texture = TEXTUREMASK-texture;
 
     if(lastside==0 && lastintercept==ytile && lasttilehit==tilehit && !(lasttilehit & 0x40))
     {
@@ -449,7 +449,7 @@ void HitHorizWall (void)
     else
         wallpic = horizwall[tilehit];
 
-    postsource = Pages+(wallpic<<12)+texture;
+    postsource = PM_GetTexture(wallpic) + texture;
 }
 
 //==========================================================================
@@ -469,7 +469,7 @@ void HitHorizDoor (void)
     int texture;
 
     doornum = tilehit&0x7f;
-    texture = ((xintercept-doorposition[doornum])>>4)&0xfc0;
+    texture = ((xintercept-doorposition[doornum])>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
 
     if(lasttilehit==tilehit)
     {
@@ -514,7 +514,7 @@ void HitHorizDoor (void)
             break;
     }
 
-    postsource = Pages+(doorpage<<12)+texture;
+    postsource = PM_GetTexture(doorpage) + texture;
 }
 
 //==========================================================================
@@ -534,7 +534,7 @@ void HitVertDoor (void)
     int texture;
 
     doornum = tilehit&0x7f;
-    texture = ((yintercept-doorposition[doornum])>>4)&0xfc0;
+    texture = ((yintercept-doorposition[doornum])>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
 
     if(lasttilehit==tilehit)
     {
@@ -579,7 +579,7 @@ void HitVertDoor (void)
             break;
     }
 
-    postsource = Pages+(doorpage<<12)+texture;
+    postsource = PM_GetTexture(doorpage) + texture;
 }
 
 //==========================================================================
@@ -600,13 +600,13 @@ void HitHorizPWall (void)
     int wallpic;
     int texture,offset;
 
-    texture = (xintercept>>4)&0xfc0;
+    texture = (xintercept>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
     offset = pwallpos<<10;
     if (ytilestep == -1)
         yintercept += TILEGLOBAL-offset;
     else
     {
-        texture = 0xfc0-texture;
+        texture = TEXTUREMASK-texture;
         yintercept += offset;
     }
 
@@ -639,7 +639,7 @@ void HitHorizPWall (void)
 
     wallpic = horizwall[pwalltile&63];
 
-    postsource = Pages+(wallpic<<12)+texture;
+    postsource = PM_GetTexture(wallpic) + texture;
 }
 
 /*
@@ -657,12 +657,12 @@ void HitVertPWall (void)
     int wallpic;
     int texture,offset;
 
-    texture = (yintercept>>4)&0xfc0;
+    texture = (yintercept>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
     offset = pwallpos<<10;
     if (xtilestep == -1)
     {
         xintercept += TILEGLOBAL-offset;
-        texture = 0xfc0-texture;
+        texture = TEXTUREMASK-texture;
     }
     else
         xintercept += offset;
@@ -696,7 +696,7 @@ void HitVertPWall (void)
 
     wallpic = vertwall[pwalltile&63];
 
-    postsource = Pages+(wallpic<<12)+texture;
+    postsource = PM_GetTexture(wallpic) + texture;
 }
 
 #define HitHorizBorder HitHorizWall
@@ -797,7 +797,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
     byte *curshades;
 #endif
 
-    shape=(t_compshape *)(Pages+((PMSpriteStart+shapenum)<<12));
+    shape = (t_compshape *) PM_GetSprite(shapenum);
 
     scale=height>>3;                 // low three bits are fractional
     if(!scale) return;   // too close or far away
@@ -821,7 +821,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
     curshades=shadetable[shade];
 #endif
 
-    pixheight=scale*2;
+    pixheight=scale*SPRITESCALEFACTOR;
     actx=xcenter-scale;
     upperedge=viewheight/2-scale;
 
@@ -899,7 +899,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
     byte col;
     byte *vmem;
 
-    shape=(t_compshape *)(Pages+((PMSpriteStart+shapenum)<<12));
+    shape = (t_compshape *) PM_GetSprite(shapenum);
 
     scale=height>>1;                 // low three bits are fractional
     if(!scale/* || scale>maxscale*/) return;   // too close or far away

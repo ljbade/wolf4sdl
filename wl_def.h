@@ -86,6 +86,7 @@ typedef struct
     Point ul,lr;
 } Rect;
 
+#include "id_pm.h"
 #include "id_sd.h"
 #include "id_in.h"
 #include "id_vl.h"
@@ -201,6 +202,13 @@ typedef struct
 
 #define mapheight       MAPSIZE
 #define mapwidth        MAPSIZE
+
+#define TEXTURESHIFT    6
+#define TEXTURESIZE     (1<<TEXTURESHIFT)
+#define TEXTUREFROMFIXEDSHIFT 4
+#define TEXTUREMASK     (TEXTURESIZE*(TEXTURESIZE-1))
+
+#define SPRITESCALEFACTOR 2
 
 #define NORTH   0
 #define EAST    1
@@ -841,12 +849,6 @@ typedef enum
 extern word *mapsegs[MAPPLANES];
 extern int mapon;
 
-extern int ChunksInFile;
-extern int PMSpriteStart;
-extern int PMSoundStart;
-extern word *PageLengths;
-extern byte *Pages;
-
 //extern byte *vbuf;
 //extern byte *vdisp;
 
@@ -1302,15 +1304,6 @@ static inline fixed FixedMul(fixed a, fixed b)
 	return (fixed)(((int64_t)a * b + 0x8000) >> 16);
 }
 
-
-extern byte fontcolor,backcolor;
-
-#define SETFONTCOLOR(f,b) fontcolor=f;backcolor=b;
-
-void PM_Startup();
-void PM_Shutdown();
-
-#define PMPageSize 4096
 
 #define GetTicks() ((SDL_GetTicks()*7)/100)
 

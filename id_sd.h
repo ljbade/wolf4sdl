@@ -152,8 +152,7 @@ extern  word    SD_SoundPlaying(void);
 extern  void    SD_SetDigiDevice(SDSMode);
 extern  void	SD_PrepareSound(int which);
 extern  int     SD_PlayDigitized(word which,int leftpos,int rightpos);
-extern  void    SD_StopDigitized(void),
-                SD_Poll(void);
+extern  void    SD_StopDigitized(void);
 
 #ifdef  _MUSE_  // MUSE Goes directly to the lower level routines
 extern  void    SDL_PCPlaySound(PCSound far *sound),
@@ -161,7 +160,5 @@ extern  void    SDL_PCPlaySound(PCSound far *sound),
                 SDL_ALPlaySound(AdLibSound far *sound),
                 SDL_ALStopSound(void);
 #endif
-
-#define SDL_LoadDigiSegment(x) (Pages+((PMSoundStart+(x))<<12))
 
 #endif

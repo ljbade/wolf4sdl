@@ -94,15 +94,8 @@ static  int                     RightPosition;
 static  word                    TimerRate;
 
         word                    NumDigi;
-static  word                    DigiLeft;
-static  word                    DigiPage;
-        word                    *DigiList;
-static  word                    DigiLastStart;
-static  word                    DigiLastEnd;
+static  word                    *DigiList;
 static  boolean                 DigiPlaying;
-static  boolean                 DigiMissed,DigiLastSegment;
-static  memptr                  DigiNextAddr;
-static  word                    DigiNextLen;
 
 //      SoundBlaster variables
 static  boolean                 sbNoCheck,sbNoProCheck;
@@ -1211,10 +1204,6 @@ SDL_PlayDigiSegment(memptr addr,word len,boolean inIRQ)
 void
 SD_StopDigitized(void)
 {
-    DigiLeft = 0;
-    DigiNextAddr = NULL;
-    DigiNextLen = 0;
-    DigiMissed = false;
     DigiPlaying = false;
     DigiNumber = (soundnames) 0;
     DigiPriority = 0;
@@ -1235,50 +1224,6 @@ SD_StopDigitized(void)
             Mix_HaltChannel(-1);
             break;
     }
-
-    DigiLastStart = 1;
-    DigiLastEnd = 0;
-}
-
-void
-SD_Poll(void)
-{
-#ifdef NOTYET
-        if (DigiLeft && !DigiNextAddr)
-        {
-                DigiNextLen = (DigiLeft >= PMPageSize)? PMPageSize : (DigiLeft % PMPageSize);
-                DigiLeft -= DigiNextLen;
-                if (!DigiLeft)
-                        DigiLastSegment = true;
-                DigiNextAddr = SDL_LoadDigiSegment(DigiPage++);
-#ifdef BUFFERDMA
-                if(DigiMode==sds_SoundBlaster)
-                {
-                        DMABufferIndex=(DMABufferIndex+1)&1;
-                        memcpy(DMABuffer[DMABufferIndex],DigiNextAddr,DigiNextLen);
-                        DigiNextAddr=DMABuffer[DMABufferIndex];
-                }
-#endif
-        }
-        if (DigiMissed && DigiNextAddr)
-        {
-#ifdef SHOWSDDEBUG
-                static int nummissed=0;
-                nummissed++;
-                VL_Plot(nummissed,0,12);
-#endif
-
-                SDL_PlayDigiSegment(DigiNextAddr,DigiNextLen,false);
-                DigiNextAddr = NULL;
-                DigiMissed = false;
-                if (DigiLastSegment)
-                {
-                        DigiPlaying = false;
-                        DigiLastSegment = false;
-                }
-        }
-        SDL_SetTimerSpeed();
-#endif
 }
 
 int SD_GetChannelForDigi(int which)
@@ -1333,7 +1278,7 @@ void SD_PrepareSound(int which)
     int page = DigiList[which * 2];
     int size = DigiList[(which * 2) + 1];
 
-    byte *origsamples = SDL_LoadDigiSegment(page);
+    byte *origsamples = PM_GetSound(page);
 
     int destsamples = (int) ((float) size * (float) param_samplerate
         / (float) ORIGSAMPLERATE);
@@ -1369,47 +1314,21 @@ void SD_PrepareSound(int which)
 
 int SD_PlayDigitized(word which,int leftpos,int rightpos)
 {
-    word    len;
-    memptr  addr;
-
     if (!DigiMode)
         return 0;
 
-    //SD_StopDigitized();
     if (which >= NumDigi)
         Quit("SD_PlayDigitized: bad sound number");
 
     int channel = SD_GetChannelForDigi(which);
     SD_SetPosition(channel, leftpos,rightpos);
 
-    DigiPage = DigiList[(which * 2) + 0];
-    DigiLeft = DigiList[(which * 2) + 1];
-
-    DigiLastStart = DigiPage;
-    DigiLastEnd = DigiPage + ((DigiLeft + (PMPageSize - 1)) / PMPageSize);
-
-    len = DigiLeft;
-    addr = SDL_LoadDigiSegment(DigiPage++);
-
-/*#ifdef BUFFERDMA
-    if(DigiMode==sds_SoundBlaster)
-    {
-        DMABufferIndex=(DMABufferIndex+1)&1;
-        memcpy(DMABuffer[DMABufferIndex],addr,len);
-        addr=DMABuffer[DMABufferIndex];
-    }
-#endif*/
-
     DigiPlaying = true;
-    DigiLastSegment = false;
-
-//    SDL_PlayDigiSegment(addr,len,false);
 
     Mix_Chunk *sample = SoundChunks[which];
     if(sample == NULL)
     {
-        printf("SoundChunks[%i] is NULL! (which = %i)\n",
-            DigiLastStart-STARTDIGISOUNDS, which);
+        printf("SoundChunks[%i] is NULL!\n", which);
         return 0;
     }
 
@@ -1419,11 +1338,6 @@ int SD_PlayDigitized(word which,int leftpos,int rightpos)
         return 0;
     }
 
-    DigiLeft -= len;
-    if (!DigiLeft)
-        DigiLastSegment = true;
-
-//    SD_Poll();
     return channel;
 }
 
@@ -1431,40 +1345,6 @@ void SD_ChannelFinished(int channel)
 {
     channelSoundPos[channel].valid = 0;
 }
-
-#ifdef NOTYET
-
-static void SDL_DigitizedDoneInIRQ(void)
-{
-        if (DigiNextAddr)
-        {
-                SDL_PlayDigiSegment(DigiNextAddr,DigiNextLen,true);
-                DigiNextAddr = NULL;
-                DigiMissed = false;
-        }
-        else
-        {
-                if (DigiLastSegment)
-                {
-                        DigiPlaying = false;
-                        DigiLastSegment = false;
-                        if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
-                        {
-                                SDL_SoundFinished();
-                        }
-                        else
-                        {
-                                DigiNumber = (soundnames) 0;
-                                DigiPriority = 0;
-                        }
-                        SoundPositioned = false;
-                }
-                else
-                        DigiMissed = true;
-        }
-}
-
-#endif
 
 void
 SD_SetDigiDevice(SDSMode mode)
@@ -1522,7 +1402,7 @@ SDL_SetupDigi(void)
 
     list=malloc(PMPageSize);
     CHECKMALLOCRESULT(list);
-    p=(word *)(void *)(Pages+((ChunksInFile-1)<<12));   // alignment is correct
+    p=(word *)PM_GetPage(ChunksInFile-1);
     memcpy(list,p,PMPageSize);
 
     pg = PMSoundStart;

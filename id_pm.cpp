@@ -8,11 +8,11 @@ int ChunksInFile;
 int PMSpriteStart;
 int PMSoundStart;
 word *PageLengths;
-byte *Pages;
+uint32_t *PMPages;
 
 #ifdef GP2x         // Use upper memory on GP2X
 
-void* map_upper_mem()
+static void* map_upper_mem()
 {
     int fd = open("/dev/mem", O_RDWR);
     if (fd == -1) return 0;
@@ -24,33 +24,33 @@ void* map_upper_mem()
     return upper_mem;
 }
 
-void unmap_upper_mem(void *mem)
+static void unmap_upper_mem(void *mem)
 {
     munmap(mem, 32 * 1024 * 1024);
 }
 
-void PML_AllocPagesBuffer(int numChunks)
+static void PML_AllocPagesBuffer(int numChunks)
 {
     if(numChunks * 4096 > 16 * 1024 * 1024)
         Quit("Page file needs more than 16 MB!");
-    Pages = (byte *) map_upper_mem();       // use 0x02000000 - 0x03000000 for pages
+    PMPages = (uint32_t *) map_upper_mem();       // use 0x02000000 - 0x03000000 for pages
 }
 
-void PML_FreePagesBuffer()
+static void PML_FreePagesBuffer()
 {
-    unmap_upper_mem(Pages);
+    unmap_upper_mem(PMPages);
 }
 
 #else
 
-void PML_AllocPagesBuffer(int numChunks)
+static void PML_AllocPagesBuffer(int numChunks)
 {
-    Pages = (byte *) malloc(numChunks * 4096);
+    PMPages = (uint32_t *) malloc(numChunks * PMPageSize);
 }
 
-void PML_FreePagesBuffer()
+static void PML_FreePagesBuffer()
 {
-    free(Pages);
+    free(PMPages);
 }
 
 #endif
@@ -82,11 +82,11 @@ void PM_Startup()
     // TODO: Doesn't support variable page lengths as used by the sounds (page length always <=4096 there)
 
     PML_AllocPagesBuffer(ChunksInFile);
-    CHECKMALLOCRESULT(Pages);
+    CHECKMALLOCRESULT(PMPages);
     for(int i = 0; i < ChunksInFile; i++)
     {
         fseek(file, pageOffsets[i], SEEK_SET);
-        fread(Pages + i * 4096, 4096, 1, file);
+        fread(PMPages + i * (PMPageSize / 4), PMPageSize, 1, file);
     }
 
     free(pageOffsets);

@@ -34,9 +34,11 @@ typedef struct
 extern	pictabletype	*pictable;
 extern	pictabletype	*picmtable;
 
-extern	byte            fontcolor;
+extern  byte            fontcolor,backcolor;
 extern	int             fontnumber;
 extern	int             px,py;
+
+#define SETFONTCOLOR(f,b) fontcolor=f;backcolor=b;
 
 //
 // mode independant routines

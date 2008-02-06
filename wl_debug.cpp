@@ -326,8 +326,7 @@ void ShapeTest (void)
         US_PrintUnsigned(page->lastHit);*/
 
         US_Print("\n Address: ");
-        //              addr = PM_GetPageAddress(i);
-        addr = Pages+i*4096;
+        addr = (byte *) PM_GetPage(i);
         sprintf(buf,"0x%08X",(int32_t) addr);
         US_Print(buf);
 
@@ -410,8 +409,8 @@ void ShapeTest (void)
 
         VW_UpdateScreen();
 
-        while ((scan = LastScan)==0)
-            SD_Poll();
+        IN_Ack();
+        scan = LastScan;
 
         IN_ClearKey(scan);
         switch (scan)
