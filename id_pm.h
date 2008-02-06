@@ -1,7 +1,11 @@
 #ifndef __ID_PM__
 #define __ID_PM__
 
+#ifdef USE_HIRES
+#define PMPageSize 16384
+#else
 #define PMPageSize 4096
+#endif
 
 extern int ChunksInFile;
 extern int PMSpriteStart;

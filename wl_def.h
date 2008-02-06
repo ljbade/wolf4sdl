@@ -15,6 +15,7 @@
     Spear Demo, Wolf3d Full v1.1 and Shareware v1.0-1.1    - can be added by the user
 */
 
+//#define USE_HIRES       // This enables high resolution textures/sprites (128x128)
 #define DEBUGKEYS       // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN
 #define DEMOSEXTERN
@@ -203,12 +204,25 @@ typedef struct
 #define mapheight       MAPSIZE
 #define mapwidth        MAPSIZE
 
+#ifdef USE_HIRES
+
+#define TEXTURESHIFT    7
+#define TEXTURESIZE     (1<<TEXTURESHIFT)
+#define TEXTUREFROMFIXEDSHIFT 2
+#define TEXTUREMASK     (TEXTURESIZE*(TEXTURESIZE-1))
+
+#define SPRITESCALEFACTOR 1
+
+#else
+
 #define TEXTURESHIFT    6
 #define TEXTURESIZE     (1<<TEXTURESHIFT)
 #define TEXTUREFROMFIXEDSHIFT 4
 #define TEXTUREMASK     (TEXTURESIZE*(TEXTURESIZE-1))
 
 #define SPRITESCALEFACTOR 2
+
+#endif
 
 #define NORTH   0
 #define EAST    1

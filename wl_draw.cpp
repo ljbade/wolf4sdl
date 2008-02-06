@@ -904,7 +904,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
     scale=height>>1;                 // low three bits are fractional
     if(!scale/* || scale>maxscale*/) return;   // too close or far away
 
-    pixheight=scale*2;
+    pixheight=scale*SPRITESCALEFACTOR;
     actx=xcenter-scale;
     upperedge=viewheight/2-scale;
 
