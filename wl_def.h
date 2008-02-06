@@ -15,8 +15,11 @@
     Spear Demo, Wolf3d Full v1.1 and Shareware v1.0-1.1    - can be added by the user
 */
 
-//#define USE_HIRES       // This enables high resolution textures/sprites (128x128)
-#define DEBUGKEYS       // Comment this out to compile without the Tab debug keys
+//#define USE_HIRES           // This enables high resolution textures/sprites (128x128)
+//#define USE_FEATUREFLAGS    // This enables the level feature flags (see bottom of file)
+//#define USE_PARALLAX 16     // This enables parallax sky with 16 textures per sky
+
+#define DEBUGKEYS           // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN
 #define DEMOSEXTERN
 #define CARMACIZED
@@ -86,6 +89,8 @@ typedef struct
 {
     Point ul,lr;
 } Rect;
+
+void Quit(const char *errorStr, ...);
 
 #include "id_pm.h"
 #include "id_sd.h"
@@ -863,9 +868,6 @@ typedef enum
 extern word *mapsegs[MAPPLANES];
 extern int mapon;
 
-//extern byte *vbuf;
-//extern byte *vdisp;
-
 /*
 =============================================================================
 
@@ -907,7 +909,6 @@ extern  int      param_audiobuffer;
 
 
 void            NewGame (int difficulty,int episode);
-void            Quit (const char *errorStr, ...);
 void            CalcProjection (int32_t focal);
 void            NewViewSize (int width);
 boolean         SetViewSize (unsigned width, unsigned height);
@@ -1313,6 +1314,14 @@ extern  void    HelpScreens(void);
 extern  void    EndText(void);
 
 
+/*
+=============================================================================
+
+                             MISC DEFINITIONS
+
+=============================================================================
+*/
+
 static inline fixed FixedMul(fixed a, fixed b)
 {
 	return (fixed)(((int64_t)a * b + 0x8000) >> 16);
@@ -1326,24 +1335,20 @@ static inline fixed FixedMul(fixed a, fixed b)
 #define CHECKMALLOCRESULT(x) if(!(x)) Quit("Out of memory at %s:%i", __FILE__, __LINE__)
 
 #ifdef _WIN32
-
-#define strcasecmp stricmp
-#define strncasecmp strnicmp
-
+    #define strcasecmp stricmp
+    #define strncasecmp strnicmp
 #else
+    static inline char* itoa(int value, char* string, int radix)
+    {
+	    sprintf(string, "%d", value);
+	    return string;
+    }
 
-static inline char* itoa(int value, char* string, int radix)
-{
-	sprintf(string, "%d", value);
-	return string;
-}
-
-static inline char* ltoa(long value, char* string, int radix)
-{
-	sprintf(string, "%ld", value);
-	return string;
-}
-
+    static inline char* ltoa(long value, char* string, int radix)
+    {
+	    sprintf(string, "%ld", value);
+	    return string;
+    }
 #endif
 
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
@@ -1362,5 +1367,38 @@ static inline longword READLONGWORD(byte *&ptr)
     ptr += 4;
     return val;
 }
+
+
+/*
+=============================================================================
+
+                           FEATURE DEFINITIONS
+
+=============================================================================
+*/
+
+#ifdef USE_FEATUREFLAGS
+    // The currently available feature flags
+    #define FF_PARALLAX     0x0002
+
+    // The feature flags are stored as a wall in the upper right corner of each level
+    static inline word GetFeatureFlags()
+    {
+        return MAPSPOT(MAPSIZE - 1, 0, 0);
+    }
+
+    #define STARTFEATUREFLAGS word curFeatureFlags = GetFeatureFlags()
+#else
+    #define STARTFEATUREFLAGS
+#endif
+
+#ifdef USE_PARALLAX
+    // The lower left tile of every map determines the start texture of the parallax sky.
+    // It must be set to 1000+wallpic to avoid being recognized as e.g. a door.
+    static inline word GetParallaxStartTexture()
+    {
+        return MAPSPOT(0, MAPSIZE - 1, 0) - 1000;
+    }
+#endif
 
 #endif

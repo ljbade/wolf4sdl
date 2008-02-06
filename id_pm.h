@@ -18,6 +18,8 @@ void PM_Shutdown();
 
 static inline uint32_t *PM_GetPage(int page)
 {
+    if(page < 0 || page >= ChunksInFile)
+        Quit("PM_GetPage: Tried to access illegal page: %i", page);
     return PMPages + page * (PMPageSize / 4);
 }
 

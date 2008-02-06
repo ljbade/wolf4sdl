@@ -741,6 +741,40 @@ void VGAClearScreen (void)
         memset(ptr, 0x19, viewwidth);
 }
 
+#ifdef USE_PARALLAX
+
+void DrawParallax(int startpage)
+{
+    int midangle = player->angle * (FINEANGLES / ANGLES);
+    int skyheight = viewheight >> 1;
+    int curtex = -1;
+    byte *skytex;
+
+    startpage += USE_PARALLAX - 1;
+
+    for(int x = 0; x < viewwidth; x++)
+    {
+        int curang = pixelangle[x] + midangle;
+        if(curang < 0) curang += FINEANGLES;
+        else if(curang >= FINEANGLES) curang -= FINEANGLES;
+        int xtex = curang * USE_PARALLAX * TEXTURESIZE / FINEANGLES;
+        int newtex = xtex >> TEXTURESHIFT;
+        if(newtex != curtex)
+        {
+            curtex = newtex;
+            skytex = PM_GetTexture(startpage - curtex);
+        }
+        int texoffs = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
+        int yend = skyheight - (wallheight[x] >> 3);
+        if(yend <= 0) continue;
+
+        for(int y = 0, offs = x; y < yend; y++, offs += vbufPitch)
+            vbuf[offs] = skytex[texoffs + (y * TEXTURESIZE) / skyheight];
+    }
+}
+
+#endif
+
 //==========================================================================
 
 /*
@@ -1578,12 +1612,19 @@ void    ThreeDRefresh (void)
     vbuf+=screenofs;
     vbufPitch = bufferPitch;
 
+    STARTFEATUREFLAGS;
+
 //
 // follow the walls from there to the right, drawwing as we go
 //
     VGAClearScreen ();
 
     WallRefresh ();
+
+#if defined(USE_FEATUREFLAGS) && defined(USE_PARALLAX)
+    if(curFeatureFlags & FF_PARALLAX)
+        DrawParallax(GetParallaxStartTexture());
+#endif
 
 //
 // draw all the scaled images
