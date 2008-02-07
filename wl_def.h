@@ -15,9 +15,10 @@
     Spear Demo, Wolf3d Full v1.1 and Shareware v1.0-1.1    - can be added by the user
 */
 
-//#define USE_HIRES           // This enables high resolution textures/sprites (128x128)
-//#define USE_FEATUREFLAGS    // This enables the level feature flags (see bottom of file)
-//#define USE_PARALLAX 16     // This enables parallax sky with 16 textures per sky
+//#define USE_FLOORCEILINGTEX // Enables floor and ceiling textures stored in the third mapplane
+//#define USE_HIRES           // Enables high resolution textures/sprites (128x128)
+//#define USE_FEATUREFLAGS    // Enables the level feature flags (see bottom of file)
+//#define USE_PARALLAX 16     // Enables parallax sky with 16 textures per sky (see bottom of file)
 
 #define DEBUGKEYS           // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN

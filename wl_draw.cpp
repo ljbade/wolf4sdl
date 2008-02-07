@@ -34,6 +34,7 @@ boolean fpscounter;
 int fps_frames=0, fps_time=0, fps=0;
 
 int *wallheight;
+int min_wallheight;
 
 //
 // math tables
@@ -246,12 +247,14 @@ boolean TransformTile (int tx, int ty, short *dispx, short *dispheight)
 ====================
 */
 
-int32_t CalcHeight()
+int CalcHeight()
 {
     fixed z = FixedMul(xintercept - viewx, viewcos)
         - FixedMul(yintercept - viewy, viewsin);
     if(z < mindist) z = mindist;
-    return (heightnumerator / (z >> 8));
+    int height = heightnumerator / (z >> 8);
+    if(height < min_wallheight) min_wallheight = height;
+    return height;
 }
 
 //==========================================================================
@@ -775,6 +778,106 @@ void DrawParallax(int startpage)
 
 #endif
 
+#ifdef USE_FLOORCEILINGTEX
+
+// Textured Floor and Ceiling by DarkOne
+// With multi-textured floors and ceilings stored in lower and upper bytes of
+// according tile in third mapplane, respectively.
+void DrawFlats()
+{
+    int y0, halfheight;
+    unsigned top_offset0, bot_offset0;
+    fixed dist;                                // distance to row projection
+    fixed tex_step;                            // global step per one screen pixel
+    fixed gu, gv, du, dv;                      // global texture coordinates
+    int u, v;                                  // local texture coordinates
+
+    byte *tex;
+    unsigned lasttex = 0xffffffff;
+
+    // ------ * prepare * --------
+    halfheight = viewheight >> 1;
+    y0 = min_wallheight >> 3;                  // starting y value
+    if(y0 > halfheight)
+        return;                                // view obscured by walls
+    if(!y0)
+        y0 = 1;                                // don't let division by zero
+    top_offset0 = vbufPitch * (halfheight - y0 - 1);
+    bot_offset0 = vbufPitch * (halfheight + y0);
+
+    // draw horizontal lines
+    for(int y = y0, top_offset = top_offset0; y < halfheight; y++, top_offset -= vbufPitch)
+    {
+        dist = (heightnumerator / y) << 5;
+        gu =  viewx + FixedMul(dist, viewcos);
+        gv = -viewy + FixedMul(dist, viewsin);
+        tex_step = (dist << 8) / viewwidth / 175;
+        du =  FixedMul(tex_step, viewsin);
+        dv = -FixedMul(tex_step, viewcos);
+        gu -= (viewwidth >> 1)*du;
+        gv -= (viewwidth >> 1)*dv;          // starting point (leftmost)
+        for(int x = 0, top_add = top_offset; x < viewwidth; x++, top_add++)
+        {
+            if(wallheight[x] >> 3 <= y)
+            {
+                int curx = (gu >> TILESHIFT) & (MAPSIZE - 1);
+                int cury = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
+                unsigned curtex = MAPSPOT(curx, cury, 2) >> 8;
+                if(curtex)
+                {
+                    if (curtex != lasttex)
+                    {
+                        lasttex = curtex;
+                        tex = PM_GetTexture(curtex);
+                    }
+                    u = (gu >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
+                    v = (gv >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
+                    vbuf[top_add] = tex[(((TEXTURESIZE - 1) - u) << TEXTURESHIFT)
+                        + (TEXTURESIZE - 1) - v];
+                }
+            }
+            gu += du;
+            gv += dv;
+        }
+    }
+
+    for(int y = y0, bot_offset = bot_offset0; y < halfheight; y++, bot_offset += vbufPitch)
+    {
+        dist = (heightnumerator / y) << 5;
+        gu =  viewx + FixedMul(dist, viewcos);
+        gv = -viewy + FixedMul(dist, viewsin);
+        tex_step = (dist << 8) / viewwidth / 175;
+        du =  FixedMul(tex_step, viewsin);
+        dv = -FixedMul(tex_step, viewcos);
+        gu -= (viewwidth >> 1) * du;
+        gv -= (viewwidth >> 1) * dv; // starting point (leftmost)
+        for(int x = 0, bot_add = bot_offset; x < viewwidth; x++, bot_add++)
+        {
+            if(wallheight[x] >> 3 <= y)
+            {
+                int curx = (gu >> TILESHIFT) & (MAPSIZE - 1);
+                int cury = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
+                unsigned curtex = MAPSPOT(curx, cury, 2) & 0x00ff;
+                if(curtex)
+                {
+                    if (curtex != lasttex)
+                    {
+                        lasttex = curtex;
+                        tex = PM_GetTexture(curtex);
+                    }
+                    u = (gu >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
+                    v = (gv >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
+                    vbuf[bot_add] = tex[(u << TEXTURESHIFT) + (TEXTURESIZE - 1) - v];
+                }
+            }
+            gu += du;
+            gv += dv;
+        }
+    }
+}
+
+#endif
+
 //==========================================================================
 
 /*
@@ -785,9 +888,9 @@ void DrawParallax(int startpage)
 =====================
 */
 
-int     CalcRotate (objtype *ob)
+int CalcRotate (objtype *ob)
 {
-    int angle,viewangle;
+    int angle, viewangle;
 
     // this isn't exactly correct, as it should vary by a trig value,
     // but it is close enough with only eight rotations
@@ -814,7 +917,7 @@ int     CalcRotate (objtype *ob)
 
 void ScaleShape (int xcenter, int shapenum, unsigned height)
 {
-    t_compshape   *shape;
+    t_compshape *shape;
     unsigned scale,pixheight;
     unsigned starty,endy;
     word *cmdptr;
@@ -1585,6 +1688,7 @@ void WallRefresh (void)
     ypartialdown = viewy&(TILEGLOBAL-1);
     ypartialup = TILEGLOBAL-ypartialdown;
 
+    min_wallheight = viewheight;
     lastside = -1;                  // the first pixel is on a new wall
     AsmRefresh ();
     ScalePost ();                   // no more optimization on last post
@@ -1624,6 +1728,9 @@ void    ThreeDRefresh (void)
 #if defined(USE_FEATUREFLAGS) && defined(USE_PARALLAX)
     if(curFeatureFlags & FF_PARALLAX)
         DrawParallax(GetParallaxStartTexture());
+#endif
+#ifdef USE_FLOORCEILINGTEX
+    DrawFlats();
 #endif
 
 //

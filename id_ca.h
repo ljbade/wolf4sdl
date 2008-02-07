@@ -4,7 +4,11 @@
 //===========================================================================
 
 #define NUMMAPS         60
-#define MAPPLANES       2
+#ifdef USE_FLOORCEILINGTEX
+    #define MAPPLANES       3
+#else
+    #define MAPPLANES       2
+#endif
 
 #define UNCACHEGRCHUNK(chunk) {if(grsegs[chunk]) {free(grsegs[chunk]); grsegs[chunk]=NULL;}}
 #define UNCACHEAUDIOCHUNK(chunk) {if(audiosegs[chunk]) {free(audiosegs[chunk]); audiosegs[chunk]=NULL;}}
