@@ -1692,9 +1692,13 @@ void    ThreeDRefresh (void)
     STARTFEATUREFLAGS;
 
 //
-// follow the walls from there to the right, drawwing as we go
+// follow the walls from there to the right, drawing as we go
 //
     VGAClearScreen ();
+#if defined(USE_FEATUREFLAGS) && defined(USE_STARSKY)
+    if(curFeatureFlags & FF_STARSKY)
+        DrawStarSky(vbuf, vbufPitch);
+#endif
 
     WallRefresh ();
 
@@ -1714,6 +1718,16 @@ void    ThreeDRefresh (void)
 // draw all the scaled images
 //
     DrawScaleds();                  // draw scaled stuff
+
+#if defined(USE_FEATUREFLAGS) && defined(USE_RAIN)
+    if(curFeatureFlags & FF_RAIN)
+        DrawRain(vbuf, vbufPitch);
+#endif
+#if defined(USE_FEATUREFLAGS) && defined(USE_SNOW)
+    if(curFeatureFlags & FF_SNOW)
+        DrawSnow(vbuf, vbufPitch);
+#endif
+
     DrawPlayerWeapon ();    // draw player's hands
 
     if(Keyboard[sc_Tab] && viewsize == 20 && gamestate.weapon != -1)

@@ -696,6 +696,10 @@ void BuildTables (void)
     }
     sintable[ANGLEQUAD] = 65536;
     sintable[3*ANGLEQUAD] = -65536;
+
+#if defined(USE_STARSKY) || defined(USE_RAIN) || defined(USE_SNOW)
+    Init3DPoints();
+#endif
 }
 
 //===========================================================================

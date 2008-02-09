@@ -22,6 +22,9 @@
 //#define USE_FEATUREFLAGS    // Enables the level feature flags (see bottom of file)
 //#define USE_PARALLAX 16     // Enables parallax sky with 16 textures per sky (see bottom of file)
 //#define USE_CLOUDSKY        // Enables cloud sky support
+//#define USE_STARSKY         // Enables star sky support
+//#define USE_RAIN            // Enables rain support
+//#define USE_SNOW            // Enables snow support
 
 #define DEBUGKEYS           // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN
@@ -1383,8 +1386,11 @@ static inline longword READLONGWORD(byte *&ptr)
 
 #ifdef USE_FEATUREFLAGS
     // The currently available feature flags
+    #define FF_STARSKY      0x0001
     #define FF_PARALLAX     0x0002
     #define FF_CLOUDSKY     0x0004
+    #define FF_RAIN         0x0010
+    #define FF_SNOW         0x0020
 
     // The feature flags are stored as a wall in the upper right corner of each level
     static inline word GetFeatureFlags()
@@ -1452,6 +1458,22 @@ static inline longword READLONGWORD(byte *&ptr)
     extern cloudsky_t *curSky;
     extern colormap_t colorMaps[];
     extern const int numColorMaps;
+#endif
+
+#if defined(USE_STARSKY) || defined(USE_RAIN) || defined(USE_SNOW)
+    void Init3DPoints();
+#endif
+
+#ifdef USE_STARSKY
+    void DrawStarSky(byte *vbuf, uint32_t vbufPitch);
+#endif
+
+#ifdef USE_RAIN
+    void DrawRain(byte *vbuf, uint32_t vbufPitch);
+#endif
+
+#ifdef USE_SNOW
+    void DrawSnow(byte *vbuf, uint32_t vbufPitch);
 #endif
 
 #endif

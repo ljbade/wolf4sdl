@@ -233,6 +233,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wl_atmos.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\wl_cloudsky.cpp"
 				>
 			</File>
