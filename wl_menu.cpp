@@ -3947,11 +3947,10 @@ CheckForEpisodes (void)
 #else
     if(!stat("vswap.wj6", &statbuf))
     {
-        strcpy (extension, "WJ6");
+        strcpy (extension, "wj6");
 #endif
         strcat (configname, extension);
         strcat (SaveName, extension);
-        strcat (PageFileName, extension);
         strcat (demoname, extension);
         EpisodeSelect[1] =
             EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] = EpisodeSelect[5] = 1;
@@ -4006,14 +4005,14 @@ CheckForEpisodes (void)
 #ifndef SPEARDEMO
     if(!stat("vswap.sod", &statbuf))
     {
-        strcpy (extension, "SOD");
+        strcpy (extension, "sod");
     }
     else
         Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
 #else
     if(!stat("vswap.sdm", &statbuf))
     {
-        strcpy (extension, "SDM");
+        strcpy (extension, "sdm");
     }
     else
         Quit ("NO SPEAR OF DESTINY DEMO DATA FILES TO BE FOUND!");
@@ -4022,7 +4021,6 @@ CheckForEpisodes (void)
 
     strcat (configname, extension);
     strcat (SaveName, extension);
-//      strcat(PageFileName,extension);
     strcat (demoname, extension);
 
 #ifdef ABCAUS
