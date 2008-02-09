@@ -349,7 +349,13 @@ IN_Startup(void)
         SDL_WM_GrabInput(SDL_GRAB_ON);
     }
 
+    // I didn't find a way to ask libSDL whether a mouse is present, yet...
+#if defined(GP2x) || defined(_arch_dreamcast)
+    MousePresent = false;
+#else
     MousePresent = true;
+#endif
+
     IN_Started = true;
 }
 
