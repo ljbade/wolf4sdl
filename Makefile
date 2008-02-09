@@ -51,6 +51,7 @@ SRCS += signon.cpp
 SRCS += wl_act1.cpp
 SRCS += wl_act2.cpp
 SRCS += wl_agent.cpp
+SRCS += wl_cloudsky.cpp
 SRCS += wl_debug.cpp
 SRCS += wl_draw.cpp
 SRCS += wl_game.cpp

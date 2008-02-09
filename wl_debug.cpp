@@ -745,6 +745,46 @@ again:
         IN_Ack ();
         return 1;
     }
+#ifdef USE_CLOUDSKY
+    else if(Keyboard[sc_Z])
+    {
+        char defstr[15];
+
+        CenterWindow(34,4);
+        PrintY+=6;
+        US_Print("  Recalculate sky with seek: ");
+        int seekpx = px, seekpy = py;
+        US_PrintUnsigned(curSky->seed);
+        US_Print("\n  Use color map (0-");
+        US_PrintUnsigned(numColorMaps - 1);
+        US_Print("): ");
+        int mappx = px, mappy = py;
+        US_PrintUnsigned(curSky->colorMapIndex);
+        VW_UpdateScreen();
+
+        sprintf(defstr, "%u", curSky->seed);
+        esc = !US_LineInput(seekpx, seekpy, str, defstr, true, 10, 0);
+        if(esc) return 0;
+        curSky->seed = (uint32_t) atoi(str);
+
+        sprintf(defstr, "%u", curSky->colorMapIndex);
+        esc = !US_LineInput(mappx, mappy, str, defstr, true, 10, 0);
+        if(esc) return 0;
+        uint32_t newInd = (uint32_t) atoi(str);
+        if(newInd < numColorMaps)
+        {
+            curSky->colorMapIndex = newInd;
+            InitSky();
+        }
+        else
+        {
+            CenterWindow (18,3);
+            US_PrintCentered ("Illegal color map!");
+            VW_UpdateScreen();
+            IN_Ack ();
+        }
+    }
+#endif
 
     return 0;
 }

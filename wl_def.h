@@ -21,6 +21,7 @@
 //#define USE_HIRES           // Enables high resolution textures/sprites (128x128)
 //#define USE_FEATUREFLAGS    // Enables the level feature flags (see bottom of file)
 //#define USE_PARALLAX 16     // Enables parallax sky with 16 textures per sky (see bottom of file)
+//#define USE_CLOUDSKY        // Enables cloud sky support
 
 #define DEBUGKEYS           // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN
@@ -1383,6 +1384,7 @@ static inline longword READLONGWORD(byte *&ptr)
 #ifdef USE_FEATUREFLAGS
     // The currently available feature flags
     #define FF_PARALLAX     0x0002
+    #define FF_CLOUDSKY     0x0004
 
     // The feature flags are stored as a wall in the upper right corner of each level
     static inline word GetFeatureFlags()
@@ -1402,6 +1404,54 @@ static inline longword READLONGWORD(byte *&ptr)
     {
         return MAPSPOT(0, MAPSIZE - 1, 0) - 1000;
     }
+#endif
+
+#ifdef USE_CLOUDSKY
+    typedef struct
+    {
+        int length;
+        int startAndDir;
+    } colormapentry_t;
+
+    typedef struct
+    {
+        int numColors;
+        colormapentry_t *entries;
+    } colormap_t;
+
+    typedef struct
+    {
+        // The seed defines the look of the sky and every value (0-4294967295)
+        // describes an unique sky. You can play around with these inside the game
+        // when pressing <TAB>+Z in debug mode. There you'll be able to change the
+        // active seed to find out a value, which is suitable for your needs.
+        uint32_t seed;
+
+        // The speed defines how fast the clouds will move (0-65535)
+        uint32_t speed;
+
+        // The angle defines the move direction (0-359)
+        uint32_t angle;
+
+        // An index selecting the color map to be used for this sky definition.
+        // This value can also be chosen with <TAB>+Z
+        uint32_t colorMapIndex;
+    } cloudsky_t;
+
+
+    // The lower left tile of every map determines the used cloud sky definition.
+    // It must be set to 1000+cloudskyindex to avoid being recognized as e.g. a door.
+    static inline word GetCloudSkyDefID()
+    {
+        return MAPSPOT(0, MAPSIZE - 1, 0) - 1000;
+    }
+
+    void InitSky();
+    void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight);
+
+    extern cloudsky_t *curSky;
+    extern colormap_t colorMaps[];
+    extern const int numColorMaps;
 #endif
 
 #endif

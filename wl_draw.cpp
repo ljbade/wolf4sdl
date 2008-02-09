@@ -783,65 +783,26 @@ void DrawParallax(int startpage)
 // Textured Floor and Ceiling by DarkOne
 // With multi-textured floors and ceilings stored in lower and upper bytes of
 // according tile in third mapplane, respectively.
-void DrawFlats()
+void DrawFloorAndCeiling()
 {
-    int y0, halfheight;
-    unsigned top_offset0, bot_offset0;
     fixed dist;                                // distance to row projection
     fixed tex_step;                            // global step per one screen pixel
     fixed gu, gv, du, dv;                      // global texture coordinates
     int u, v;                                  // local texture coordinates
+    byte *toptex, *bottex;
+    unsigned lasttoptex = 0xffffffff, lastbottex = 0xffffffff;
 
-    byte *tex;
-    unsigned lasttex = 0xffffffff;
-
-    // ------ * prepare * --------
-    halfheight = viewheight >> 1;
-    y0 = min_wallheight >> 3;                  // starting y value
+    int halfheight = viewheight >> 1;
+    int y0 = min_wallheight >> 3;              // starting y value
     if(y0 > halfheight)
         return;                                // view obscured by walls
-    if(!y0)
-        y0 = 1;                                // don't let division by zero
-    top_offset0 = vbufPitch * (halfheight - y0 - 1);
-    bot_offset0 = vbufPitch * (halfheight + y0);
+    if(!y0) y0 = 1;                            // don't let division by zero
+    unsigned bot_offset0 = vbufPitch * (halfheight + y0);
+    unsigned top_offset0 = vbufPitch * (halfheight - y0 - 1);
 
     // draw horizontal lines
-    for(int y = y0, top_offset = top_offset0; y < halfheight; y++, top_offset -= vbufPitch)
-    {
-        dist = (heightnumerator / y) << 5;
-        gu =  viewx + FixedMul(dist, viewcos);
-        gv = -viewy + FixedMul(dist, viewsin);
-        tex_step = (dist << 8) / viewwidth / 175;
-        du =  FixedMul(tex_step, viewsin);
-        dv = -FixedMul(tex_step, viewcos);
-        gu -= (viewwidth >> 1)*du;
-        gv -= (viewwidth >> 1)*dv;          // starting point (leftmost)
-        for(int x = 0, top_add = top_offset; x < viewwidth; x++, top_add++)
-        {
-            if(wallheight[x] >> 3 <= y)
-            {
-                int curx = (gu >> TILESHIFT) & (MAPSIZE - 1);
-                int cury = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
-                unsigned curtex = MAPSPOT(curx, cury, 2) >> 8;
-                if(curtex)
-                {
-                    if (curtex != lasttex)
-                    {
-                        lasttex = curtex;
-                        tex = PM_GetTexture(curtex);
-                    }
-                    u = (gu >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
-                    v = (gv >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
-                    vbuf[top_add] = tex[(((TEXTURESIZE - 1) - u) << TEXTURESHIFT)
-                        + (TEXTURESIZE - 1) - v];
-                }
-            }
-            gu += du;
-            gv += dv;
-        }
-    }
-
-    for(int y = y0, bot_offset = bot_offset0; y < halfheight; y++, bot_offset += vbufPitch)
+    for(int y = y0, bot_offset = bot_offset0, top_offset = top_offset0;
+        y < halfheight; y++, bot_offset += vbufPitch, top_offset -= vbufPitch)
     {
         dist = (heightnumerator / y) << 5;
         gu =  viewx + FixedMul(dist, viewcos);
@@ -851,23 +812,35 @@ void DrawFlats()
         dv = -FixedMul(tex_step, viewcos);
         gu -= (viewwidth >> 1) * du;
         gv -= (viewwidth >> 1) * dv; // starting point (leftmost)
-        for(int x = 0, bot_add = bot_offset; x < viewwidth; x++, bot_add++)
+        for(int x = 0, bot_add = bot_offset, top_add = top_offset;
+            x < viewwidth; x++, bot_add++, top_add++)
         {
             if(wallheight[x] >> 3 <= y)
             {
                 int curx = (gu >> TILESHIFT) & (MAPSIZE - 1);
                 int cury = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
-                unsigned curtex = MAPSPOT(curx, cury, 2) & 0x00ff;
+                unsigned curtex = MAPSPOT(curx, cury, 2);
                 if(curtex)
                 {
-                    if (curtex != lasttex)
+                    unsigned curtoptex = curtex >> 8;
+                    if (curtoptex != lasttoptex)
                     {
-                        lasttex = curtex;
-                        tex = PM_GetTexture(curtex);
+                        lasttoptex = curtoptex;
+                        toptex = PM_GetTexture(curtoptex);
+                    }
+                    unsigned curbottex = curtex & 0xff;
+                    if (curbottex != lastbottex)
+                    {
+                        lastbottex = curbottex;
+                        bottex = PM_GetTexture(curbottex);
                     }
                     u = (gu >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
                     v = (gv >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
-                    vbuf[bot_add] = tex[(u << TEXTURESHIFT) + (TEXTURESIZE - 1) - v];
+                    unsigned texoffs = (u << TEXTURESHIFT) + (TEXTURESIZE - 1) - v;
+                    if(curtoptex)
+                        vbuf[top_add] = toptex[texoffs];
+                    if(curbottex)
+                        vbuf[bot_add] = bottex[texoffs];
                 }
             }
             gu += du;
@@ -1729,8 +1702,12 @@ void    ThreeDRefresh (void)
     if(curFeatureFlags & FF_PARALLAX)
         DrawParallax(GetParallaxStartTexture());
 #endif
+#if defined(USE_FEATUREFLAGS) && defined(USE_CLOUDSKY)
+    if(curFeatureFlags & FF_CLOUDSKY)
+        DrawClouds(vbuf, vbufPitch, min_wallheight);
+#endif
 #ifdef USE_FLOORCEILINGTEX
-    DrawFlats();
+    DrawFloorAndCeiling();
 #endif
 
 //
