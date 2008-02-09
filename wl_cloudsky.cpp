@@ -2,8 +2,6 @@
 
 #ifdef USE_CLOUDSKY
 
-#include <stdlib.h>
-
 // Each colormap defines a number of colors which should be mapped from
 // the skytable. The according colormapentry_t array defines how these colors should
 // be mapped to the wolfenstein palette. The first int of each entry defines
