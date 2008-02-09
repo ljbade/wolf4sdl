@@ -41,12 +41,14 @@ typedef enum {
     // Lump Start
     HIGHSCORESPIC,                       // 29
     C_WONSPEARPIC,                       // 30
+#ifndef SPEARDEMO
     // Lump Start
     BJCOLLAPSE1PIC,                      // 31
     BJCOLLAPSE2PIC,                      // 32
     BJCOLLAPSE3PIC,                      // 33
     BJCOLLAPSE4PIC,                      // 34
     ENDPICPIC,                           // 35
+#endif
     // Lump Start
     L_GUYPIC,                            // 36
     L_COLONPIC,                          // 37
@@ -94,6 +96,7 @@ typedef enum {
     // Lump Start
     TITLE1PIC,                           // 79
     TITLE2PIC,                           // 80
+#ifndef SPEARDEMO
     // Lump Start
     ENDSCREEN11PIC,                      // 81
     // Lump Start
@@ -105,9 +108,11 @@ typedef enum {
     ENDSCREEN7PIC,                       // 87
     ENDSCREEN8PIC,                       // 88
     ENDSCREEN9PIC,                       // 89
+#endif
     STATUSBARPIC,                        // 90
     PG13PIC,                             // 91
     CREDITSPIC,                          // 92
+#ifndef SPEARDEMO
     // Lump Start
     IDGUYS1PIC,                          // 93
     IDGUYS2PIC,                          // 94
@@ -118,6 +123,7 @@ typedef enum {
     BOSSPIC2PIC,                         // 98
     BOSSPIC3PIC,                         // 99
     BOSSPIC4PIC,                         // 100
+#endif
     // Lump Start
     KNIFEPIC,                            // 101
     GUNPIC,                              // 102
@@ -169,11 +175,12 @@ typedef enum {
     PAUSEDPIC,                           // 148
     GETPSYCHEDPIC,                       // 149
 
+    TILE8,                               // 150
 
-
-    ORDERSCREEN=151,
+    ORDERSCREEN,                         // 151
     ERRORSCREEN,                         // 152
     TITLEPALETTE,                        // 153
+#ifndef SPEARDEMO
     END1PALETTE,                         // 154
     END2PALETTE,                         // 155
     END3PALETTE,                         // 156
@@ -184,11 +191,14 @@ typedef enum {
     END8PALETTE,                         // 161
     END9PALETTE,                         // 162
     IDGUYSPALETTE,                       // 163
+#endif
     T_DEMO0,                             // 164
+#ifndef SPEARDEMO
     T_DEMO1,                             // 165
     T_DEMO2,                             // 166
     T_DEMO3,                             // 167
     T_ENDART1,                           // 168
+#endif
     ENUMEND
 } graphicnums;
 
@@ -219,35 +229,35 @@ typedef enum {
 #define ENDGAME_LUMP_START		31
 #define ENDGAME_LUMP_END		35
 
-#define LEVELEND_LUMP_START		36
-#define LEVELEND_LUMP_END		78
+#define LEVELEND_LUMP_START		L_GUYPIC
+#define LEVELEND_LUMP_END		L_BJWINSPIC
 
-#define TITLESCREEN_LUMP_START	79
-#define TITLESCREEN_LUMP_END	80
+#define TITLESCREEN_LUMP_START	TITLE1PIC
+#define TITLESCREEN_LUMP_END	TITLE2PIC
 
-#define ENDGAME1_LUMP_START		81
-#define ENDGAME1_LUMP_END		81
+#define ENDGAME1_LUMP_START		ENDSCREEN11PIC
+#define ENDGAME1_LUMP_END		ENDSCREEN11PIC
 
-#define ENDGAME2_LUMP_START		82
-#define ENDGAME2_LUMP_END		82
+#define ENDGAME2_LUMP_START		ENDSCREEN12PIC
+#define ENDGAME2_LUMP_END		ENDSCREEN12PIC
 
-#define EASTEREGG_LUMP_START	93
-#define EASTEREGG_LUMP_END		94
+#define EASTEREGG_LUMP_START	IDGUYS1PIC
+#define EASTEREGG_LUMP_END		IDGUYS2PIC
 
-#define COPYPROT_LUMP_START		95
-#define COPYPROT_LUMP_END		100
+#define COPYPROT_LUMP_START		COPYPROTTOPPIC
+#define COPYPROT_LUMP_END		BOSSPIC4PIC
 
-#define LATCHPICS_LUMP_START    101
-#define LATCHPICS_LUMP_END		149
+#define LATCHPICS_LUMP_START    KNIFEPIC
+#define LATCHPICS_LUMP_END		GETPSYCHEDPIC
 
 
 //
 // Amount of each data item
 //
-#define NUMCHUNKS    169
+#define NUMCHUNKS    ENUMEND
 #define NUMFONT      2
 #define NUMFONTM     0
-#define NUMPICS      147
+#define NUMPICS      (GETPSYCHEDPIC - NUMFONT)
 #define NUMPICM      0
 #define NUMSPRITES   0
 #define NUMTILE8     72
@@ -265,15 +275,15 @@ typedef enum {
 #define STARTFONT    1
 #define STARTFONTM   3
 #define STARTPICS    3
-#define STARTPICM    150
-#define STARTSPRITES 150
-#define STARTTILE8   150
-#define STARTTILE8M  151
-#define STARTTILE16  151
-#define STARTTILE16M 151
-#define STARTTILE32  151
-#define STARTTILE32M 151
-#define STARTEXTERNS 151
+#define STARTPICM    TILE8
+#define STARTSPRITES TILE8
+#define STARTTILE8   TILE8
+#define STARTTILE8M  ORDERSCREEN
+#define STARTTILE16  ORDERSCREEN
+#define STARTTILE16M ORDERSCREEN
+#define STARTTILE32  ORDERSCREEN
+#define STARTTILE32M ORDERSCREEN
+#define STARTEXTERNS ORDERSCREEN
 
 //
 // Thank you for using IGRAB!

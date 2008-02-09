@@ -3,6 +3,7 @@
 /* Defines used for different versions */
 
 //#define SPEAR
+//#define SPEARDEMO
 //#define UPLOAD
 #define GOODTIMES
 
@@ -11,8 +12,9 @@
     Wolf3d Shareware v1.4                     - define UPLOAD
     Wolf3d Full v1.4 Apogee (with ReadThis)   - define none
     Spear of Destiny Full                     - define SPEAR (and GOODTIMES for no FormGen quiz)
+    Spear of Destiny Demo                     - define SPEAR and SPEARDEMO
 
-    Spear Demo, Wolf3d Full v1.1 and Shareware v1.0-1.1    - can be added by the user
+    Wolf3d Full v1.1 and Shareware v1.0-1.1   - can be added by the user
 */
 
 //#define USE_FLOORCEILINGTEX // Enables floor and ceiling textures stored in the third mapplane
