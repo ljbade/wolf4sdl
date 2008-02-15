@@ -5,8 +5,13 @@
 #pragma hdrstop
 
 boolean fullscreen = true;
+#ifdef _arch_dreamcast
+unsigned screenWidth = 320;
+unsigned screenHeight = 200;
+#else
 unsigned screenWidth = 640;
 unsigned screenHeight = 400;
+#endif
 
 SDL_Surface *screen = NULL;
 unsigned screenPitch;
@@ -67,8 +72,8 @@ void	VL_Shutdown (void)
 void	VL_SetVGAPlaneMode (void)
 {
 #ifdef _arch_dreamcast
-    SDL_DC_ShowAskHz(SDL_FALSE);
-    SDL_DC_Default60Hz(SDL_TRUE);
+    //SDL_DC_ShowAskHz(SDL_FALSE);
+    //SDL_DC_Default60Hz(SDL_TRUE);
 #else
     SDL_WM_SetCaption("Wolfenstein 3D", NULL);
 #endif

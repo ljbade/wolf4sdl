@@ -1338,7 +1338,7 @@ void PlayLoop (void)
         if (funnyticount > 30l * 70)
         {
             funnyticount = 0;
-            LatchDrawPic (17, 4, BJWAITING1PIC + (US_RndT () & 1));
+            StatusDrawFace(BJWAITING1PIC + (US_RndT () & 1));
             facecount = 0;
         }
 #endif

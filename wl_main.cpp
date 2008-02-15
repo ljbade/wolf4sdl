@@ -82,15 +82,17 @@ boolean param_nowait = false;
 int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
 int     param_joystickindex = 0;
-int     param_joystickhat = -1;
 
 #ifdef _arch_dreamcast
+int     param_joystickhat = 0;
 int     param_samplerate = 22050;       // higher samplerates result in "out of memory"
+int     param_audiobuffer = 4096 / (44100 / param_samplerate);
 #else
+int     param_joystickhat = -1;
 int     param_samplerate = 44100;
+int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 #endif
 
-int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 boolean param_goodtimes = false;
 
 /*
@@ -211,9 +213,15 @@ noconfig:
         if (MousePresent)
             mouseenabled = true;
 
+#ifdef _arch_dreamcast
+        joystickenabled = true;
+        joypadenabled = true;
+        joystickport = 1;          // actually joystickport is not implemented, yet, so there is no difference
+#else
         joystickenabled = false;
         joypadenabled = false;
         joystickport = 0;
+#endif
 
         viewsize = 19;                          // start with a good size
         mouseadjustment=5;
@@ -1740,7 +1748,11 @@ void CheckParameters(int argc, char *argv[])
     }
 
     if(sampleRateGiven && !audioBufferGiven)
+#ifdef _arch_dreamcast
+        param_audiobuffer = 4096 / (44100 / param_samplerate);
+#else
         param_audiobuffer = 2048 / (44100 / param_samplerate);
+#endif
 }
 
 /*

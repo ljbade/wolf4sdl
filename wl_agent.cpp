@@ -241,6 +241,12 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
         screenHeight-scaleFactor*(STATUSLINES-y),picnum);
 }
 
+void StatusDrawFace(unsigned picnum)
+{
+    StatusDrawPic(17, 4, picnum);
+    StatusDrawLCD(picnum);
+}
+
 
 /*
 ==================
@@ -254,24 +260,24 @@ void DrawFace (void)
 {
     if(viewsize == 20 && ingame) return;
     if (SD_SoundPlaying() == GETGATLINGSND)
-        StatusDrawPic (17,4,GOTGATLINGPIC);
+        StatusDrawFace(GOTGATLINGPIC);
     else if (gamestate.health)
     {
 #ifdef SPEAR
         if (godmode)
-            StatusDrawPic (17,4,GODMODEFACE1PIC+gamestate.faceframe);
+            StatusDrawFace(GODMODEFACE1PIC+gamestate.faceframe);
         else
 #endif
-            StatusDrawPic (17,4,FACE1APIC+3*((100-gamestate.health)/16)+gamestate.faceframe);
+            StatusDrawFace(FACE1APIC+3*((100-gamestate.health)/16)+gamestate.faceframe);
     }
     else
     {
 #ifndef SPEAR
         if (LastAttacker->obclass == needleobj)
-            StatusDrawPic (17,4,MUTANTBJPIC);
+            StatusDrawFace(MUTANTBJPIC);
         else
 #endif
-            StatusDrawPic (17,4,FACE8APIC);
+            StatusDrawFace(FACE8APIC);
     }
 }
 
@@ -399,7 +405,7 @@ void TakeDamage (int points,objtype *attacker)
 #ifdef SPEAR
     if (points > 30 && gamestate.health!=0 && !godmode)
     {
-        StatusDrawPic (17,4,BJOUCHPIC);
+        StatusDrawFace(BJOUCHPIC);
         facecount = 0;
     }
 #endif

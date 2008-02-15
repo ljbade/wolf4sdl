@@ -177,6 +177,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\dc_vmu.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\fmopl.cpp"
 				>
 			</File>
@@ -292,6 +296,10 @@
 			</File>
 			<File
 				RelativePath=".\audiowl6.h"
+				>
+			</File>
+			<File
+				RelativePath=".\dc_vmu.h"
 				>
 			</File>
 			<File

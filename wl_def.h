@@ -39,7 +39,7 @@
 #if defined(_arch_dreamcast)
     #include <kos.h>
     #include <SDL.h>
-    #include <SDL_dreamcast.h>
+    //#include <SDL_dreamcast.h>
 #elif !defined(_WIN32)
 	#include <stdint.h>
     #include <string.h>
@@ -1165,6 +1165,7 @@ void    GiveKey (int key);
 // player state info
 //
 
+void    StatusDrawFace(unsigned picnum);
 void    DrawFace (void);
 void    DrawHealth (void);
 void    HealSelf (int points);
@@ -1320,6 +1321,26 @@ extern  char    helpfilename[],endfilename[];
 extern  void    HelpScreens(void);
 extern  void    EndText(void);
 
+
+/*
+=============================================================================
+
+                            DREAMCAST DEFINITIONS
+
+=============================================================================
+*/
+
+#ifdef _arch_dreamcast
+
+// defined in dc_vmu.cpp
+void StatusDrawLCD(int lcd_index);
+
+#else
+
+// ignore calls to this function
+#define StatusDrawLCD(x)
+
+#endif
 
 /*
 =============================================================================
