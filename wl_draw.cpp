@@ -1640,9 +1640,19 @@ passhoriz:
 
 void WallRefresh (void)
 {
-//
-// set up variables for this view
-//
+    xpartialdown = viewx&(TILEGLOBAL-1);
+    xpartialup = TILEGLOBAL-xpartialdown;
+    ypartialdown = viewy&(TILEGLOBAL-1);
+    ypartialup = TILEGLOBAL-ypartialdown;
+
+    min_wallheight = viewheight;
+    lastside = -1;                  // the first pixel is on a new wall
+    AsmRefresh ();
+    ScalePost ();                   // no more optimization on last post
+}
+
+void CalcViewVariables()
+{
     viewangle = player->angle;
     midangle = viewangle*(FINEANGLES/ANGLES);
     viewsin = sintable[viewangle];
@@ -1655,16 +1665,6 @@ void WallRefresh (void)
 
     viewtx = (short)(player->x >> TILESHIFT);
     viewty = (short)(player->y >> TILESHIFT);
-
-    xpartialdown = viewx&(TILEGLOBAL-1);
-    xpartialup = TILEGLOBAL-xpartialdown;
-    ypartialdown = viewy&(TILEGLOBAL-1);
-    ypartialup = TILEGLOBAL-ypartialdown;
-
-    min_wallheight = viewheight;
-    lastside = -1;                  // the first pixel is on a new wall
-    AsmRefresh ();
-    ScalePost ();                   // no more optimization on last post
 }
 
 //==========================================================================
@@ -1689,25 +1689,25 @@ void    ThreeDRefresh (void)
     vbuf+=screenofs;
     vbufPitch = bufferPitch;
 
-    STARTFEATUREFLAGS;
+    CalcViewVariables();
 
 //
 // follow the walls from there to the right, drawing as we go
 //
     VGAClearScreen ();
 #if defined(USE_FEATUREFLAGS) && defined(USE_STARSKY)
-    if(curFeatureFlags & FF_STARSKY)
+    if(GetFeatureFlags() & FF_STARSKY)
         DrawStarSky(vbuf, vbufPitch);
 #endif
 
     WallRefresh ();
 
 #if defined(USE_FEATUREFLAGS) && defined(USE_PARALLAX)
-    if(curFeatureFlags & FF_PARALLAX)
+    if(GetFeatureFlags() & FF_PARALLAXSKY)
         DrawParallax(GetParallaxStartTexture());
 #endif
 #if defined(USE_FEATUREFLAGS) && defined(USE_CLOUDSKY)
-    if(curFeatureFlags & FF_CLOUDSKY)
+    if(GetFeatureFlags() & FF_CLOUDSKY)
         DrawClouds(vbuf, vbufPitch, min_wallheight);
 #endif
 #ifdef USE_FLOORCEILINGTEX
@@ -1720,11 +1720,11 @@ void    ThreeDRefresh (void)
     DrawScaleds();                  // draw scaled stuff
 
 #if defined(USE_FEATUREFLAGS) && defined(USE_RAIN)
-    if(curFeatureFlags & FF_RAIN)
+    if(GetFeatureFlags() & FF_RAIN)
         DrawRain(vbuf, vbufPitch);
 #endif
 #if defined(USE_FEATUREFLAGS) && defined(USE_SNOW)
-    if(curFeatureFlags & FF_SNOW)
+    if(GetFeatureFlags() & FF_SNOW)
         DrawSnow(vbuf, vbufPitch);
 #endif
 

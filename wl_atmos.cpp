@@ -27,6 +27,7 @@ byte moon[100]={
 
 void Init3DPoints()
 {
+    int hvheight = viewheight >> 1;
     for(int i = 0; i < MAXPOINTS; i++)
     {
         point3d_t *pt = &points[i];
@@ -39,7 +40,7 @@ void Init3DPoints()
             pt->y = 1024 + (rand() & 8191);
             j--;
         }
-        while(j > 0 && (float)pt->y * 256.F / len >= 100.F);
+        while(j > 0 && (float)pt->y * 256.F / len >= hvheight);
     }
 }
 

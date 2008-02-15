@@ -1387,28 +1387,32 @@ static inline longword READLONGWORD(byte *&ptr)
 #ifdef USE_FEATUREFLAGS
     // The currently available feature flags
     #define FF_STARSKY      0x0001
-    #define FF_PARALLAX     0x0002
+    #define FF_PARALLAXSKY  0x0002
     #define FF_CLOUDSKY     0x0004
     #define FF_RAIN         0x0010
     #define FF_SNOW         0x0020
 
+    // The ffData... variables contain the 16-bit values of the according corners of the current level.
+    // The corners are overwritten with adjacent tiles after initialization in SetupGameLevel
+    // to avoid interpretation as e.g. doors.
+    extern int ffDataTopLeft, ffDataTopRight, ffDataBottomLeft, ffDataBottomRight;
+
     // The feature flags are stored as a wall in the upper right corner of each level
     static inline word GetFeatureFlags()
     {
-        return MAPSPOT(MAPSIZE - 1, 0, 0);
+        return ffDataTopRight;
     }
-
-    #define STARTFEATUREFLAGS word curFeatureFlags = GetFeatureFlags()
-#else
-    #define STARTFEATUREFLAGS
 #endif
 
 #ifdef USE_PARALLAX
     // The lower left tile of every map determines the start texture of the parallax sky.
-    // It must be set to 1000+wallpic to avoid being recognized as e.g. a door.
     static inline word GetParallaxStartTexture()
     {
-        return MAPSPOT(0, MAPSIZE - 1, 0) - 1000;
+#ifdef USE_FEATUREFLAGS
+        return ffDataBottomLeft;
+#else
+        return 0;       // you have to provide your own way to get it
+#endif
     }
 #endif
 
@@ -1445,11 +1449,15 @@ static inline longword READLONGWORD(byte *&ptr)
     } cloudsky_t;
 
 
-    // The lower left tile of every map determines the used cloud sky definition.
-    // It must be set to 1000+cloudskyindex to avoid being recognized as e.g. a door.
+    // The lower left tile of every map determines the used cloud sky definition,
+    // which are defined in wl_cloudsky.cpp
     static inline word GetCloudSkyDefID()
     {
-        return MAPSPOT(0, MAPSIZE - 1, 0) - 1000;
+#ifdef USE_FEATUREFLAGS
+        return ffDataBottomLeft;
+#else
+        return 0;       // you have to provide your own way to get it
+#endif
     }
 
     void InitSky();
