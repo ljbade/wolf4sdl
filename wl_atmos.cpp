@@ -1,10 +1,12 @@
+#include "version.h"
+
+#if defined(USE_STARSKY) || defined(USE_RAIN) || defined(USE_SNOW)
+
 #include "wl_def.h"
 
 #if defined(USE_RAIN) || defined(USE_SNOW)
     uint32_t rainpos = 0;
 #endif
-
-#if defined(USE_STARSKY) || defined(USE_RAIN) || defined(USE_SNOW)
 
 typedef struct {
     int32_t x, y, z;

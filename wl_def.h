@@ -1,36 +1,10 @@
 #ifndef WL_DEF_H
 #define WL_DEF_H
-/* Defines used for different versions */
 
-//#define SPEAR
-//#define SPEARDEMO
-//#define UPLOAD
-#define GOODTIMES
+// Defines which version shall be build and configures supported extra features
+#include "version.h"
 
-/*
-    Wolf3d Full v1.4 GT/ID/Activision         - define GOODTIMES
-    Wolf3d Shareware v1.4                     - define UPLOAD
-    Wolf3d Full v1.4 Apogee (with ReadThis)   - define none
-    Spear of Destiny Full                     - define SPEAR (and GOODTIMES for no FormGen quiz)
-    Spear of Destiny Demo                     - define SPEAR and SPEARDEMO
-
-    Wolf3d Full v1.1 and Shareware v1.0-1.1   - can be added by the user
-*/
-
-//#define USE_FLOORCEILINGTEX // Enables floor and ceiling textures stored in the third mapplane
-//#define USE_HIRES           // Enables high resolution textures/sprites (128x128)
-//#define USE_FEATUREFLAGS    // Enables the level feature flags (see bottom of file)
-//#define USE_PARALLAX 16     // Enables parallax sky with 16 textures per sky (see bottom of file)
-//#define USE_CLOUDSKY        // Enables cloud sky support
-//#define USE_STARSKY         // Enables star sky support
-//#define USE_RAIN            // Enables rain support
-//#define USE_SNOW            // Enables snow support
-
-#define DEBUGKEYS           // Comment this out to compile without the Tab debug keys
-#define ARTSEXTERN
-#define DEMOSEXTERN
-#define CARMACIZED
-
+#include <assert.h>
 #include <fcntl.h>
 #include <math.h>
 #include <ctype.h>
@@ -121,8 +95,6 @@ void Quit(const char *errorStr, ...);
 
 #define abs(x) ABS(x)
 
-#define LENGTHOF(x)     (sizeof(x)/sizeof(x[0]))
-
 /*
 =============================================================================
 
@@ -207,7 +179,6 @@ void Quit(const char *errorStr, ...);
 #define VANG360         (VANG90*4)
 
 #define MINDIST         (0x5800l)
-#define mindist         MINDIST
 
 #define mapshift        6
 #define MAPSIZE         (1<<mapshift)
@@ -258,14 +229,18 @@ void Quit(const char *errorStr, ...);
 
 // object flag values
 
-#define FL_SHOOTABLE    1
-#define FL_BONUS        2
-#define FL_NEVERMARK    4
-#define FL_VISABLE      8
-#define FL_ATTACKMODE   16
-#define FL_FIRSTATTACK  32
-#define FL_AMBUSH       64
-#define FL_NONMARK      128
+typedef enum
+{
+    FL_SHOOTABLE        = 0x00000001,
+    FL_BONUS            = 0x00000002,
+    FL_NEVERMARK        = 0x00000004,
+    FL_VISABLE          = 0x00000008,
+    FL_ATTACKMODE       = 0x00000010,
+    FL_FIRSTATTACK      = 0x00000020,
+    FL_AMBUSH           = 0x00000040,
+    FL_NONMARK          = 0x00000080,
+    FL_FULLBRIGHT       = 0x00000100,
+} objflag_t;
 
 
 //
@@ -651,7 +626,7 @@ typedef enum {
 } classtype;
 
 typedef enum {
-    dressing,
+    none,
     block,
     bo_gibs,
     bo_alpo,
@@ -733,11 +708,11 @@ typedef struct statestruct
 
 typedef struct statstruct
 {
-    byte    tilex,tiley;
-    byte    *visspot;
-    short   shapenum;           // if shapenum == -1 the obj has been removed
-    byte    flags;
-    byte    itemnumber;
+    byte      tilex,tiley;
+    short     shapenum;           // if shapenum == -1 the obj has been removed
+    byte      *visspot;
+    uint32_t  flags;
+    byte      itemnumber;
 } statobj_t;
 
 
@@ -775,7 +750,7 @@ typedef struct objstruct
     classtype   obclass;
     statetype   *state;
 
-    byte        flags;              //      FL_SHOOTABLE, etc
+    uint32_t    flags;              // FL_SHOOTABLE, etc
 
     int32_t     distance;           // if negative, wait for that door to open
     dirtype     dir;
@@ -1418,91 +1393,28 @@ static inline longword READLONGWORD(byte *&ptr)
     // to avoid interpretation as e.g. doors.
     extern int ffDataTopLeft, ffDataTopRight, ffDataBottomLeft, ffDataBottomRight;
 
+    /*************************************************************
+     * Current usage of ffData... variables:
+     * ffDataTopLeft:     lower 8-bit: ShadeDefID
+     * ffDataTopRight:    FeatureFlags
+     * ffDataBottomLeft:  CloudSkyDefID or ParallaxStartTexture
+     * ffDataBottomRight: unused
+     *************************************************************/
+
     // The feature flags are stored as a wall in the upper right corner of each level
     static inline word GetFeatureFlags()
     {
         return ffDataTopRight;
     }
+
+#endif
+
+#ifdef USE_FLOORCEILINGTEX
+    void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight);
 #endif
 
 #ifdef USE_PARALLAX
-    // The lower left tile of every map determines the start texture of the parallax sky.
-    static inline word GetParallaxStartTexture()
-    {
-#ifdef USE_FEATUREFLAGS
-        return ffDataBottomLeft;
-#else
-        return 0;       // you have to provide your own way to get it
-#endif
-    }
-#endif
-
-#ifdef USE_CLOUDSKY
-    typedef struct
-    {
-        int length;
-        int startAndDir;
-    } colormapentry_t;
-
-    typedef struct
-    {
-        int numColors;
-        colormapentry_t *entries;
-    } colormap_t;
-
-    typedef struct
-    {
-        // The seed defines the look of the sky and every value (0-4294967295)
-        // describes an unique sky. You can play around with these inside the game
-        // when pressing <TAB>+Z in debug mode. There you'll be able to change the
-        // active seed to find out a value, which is suitable for your needs.
-        uint32_t seed;
-
-        // The speed defines how fast the clouds will move (0-65535)
-        uint32_t speed;
-
-        // The angle defines the move direction (0-359)
-        uint32_t angle;
-
-        // An index selecting the color map to be used for this sky definition.
-        // This value can also be chosen with <TAB>+Z
-        uint32_t colorMapIndex;
-    } cloudsky_t;
-
-
-    // The lower left tile of every map determines the used cloud sky definition,
-    // which are defined in wl_cloudsky.cpp
-    static inline word GetCloudSkyDefID()
-    {
-#ifdef USE_FEATUREFLAGS
-        return ffDataBottomLeft;
-#else
-        return 0;       // you have to provide your own way to get it
-#endif
-    }
-
-    void InitSky();
-    void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight);
-
-    extern cloudsky_t *curSky;
-    extern colormap_t colorMaps[];
-    extern const int numColorMaps;
-#endif
-
-#if defined(USE_STARSKY) || defined(USE_RAIN) || defined(USE_SNOW)
-    void Init3DPoints();
-#endif
-
-#ifdef USE_STARSKY
-    void DrawStarSky(byte *vbuf, uint32_t vbufPitch);
-#endif
-
-#ifdef USE_RAIN
-    void DrawRain(byte *vbuf, uint32_t vbufPitch);
-#endif
-
-#ifdef USE_SNOW
-    void DrawSnow(byte *vbuf, uint32_t vbufPitch);
+    void DrawParallax(byte *vbuf, unsigned vbufPitch);
 #endif
 
 #endif

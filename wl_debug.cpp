@@ -9,6 +9,10 @@
 #include "wl_def.h"
 #pragma hdrstop
 
+#ifdef USE_CLOUDSKY
+#include "wl_cloudsky.h"
+#endif
+
 /*
 =============================================================================
 
@@ -771,7 +775,7 @@ again:
         esc = !US_LineInput(mappx, mappy, str, defstr, true, 10, 0);
         if(esc) return 0;
         uint32_t newInd = (uint32_t) atoi(str);
-        if(newInd < numColorMaps)
+        if(newInd < (uint32_t) numColorMaps)
         {
             curSky->colorMapIndex = newInd;
             InitSky();

@@ -253,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wl_floorceiling.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\wl_game.cpp"
 				>
 			</File>
@@ -269,7 +273,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wl_parallax.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\wl_play.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\wl_shade.cpp"
 				>
 			</File>
 			<File
@@ -355,11 +367,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\version.h"
+				>
+			</File>
+			<File
+				RelativePath=".\wl_atmos.h"
+				>
+			</File>
+			<File
+				RelativePath=".\wl_cloudsky.h"
+				>
+			</File>
+			<File
 				RelativePath=".\wl_def.h"
 				>
 			</File>
 			<File
 				RelativePath=".\wl_menu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\wl_shade.h"
 				>
 			</File>
 		</Filter>

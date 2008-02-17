@@ -14,7 +14,6 @@ loaded into the data segment
 =============================================================================
 */
 
-#include <assert.h>
 #include <sys/types.h>
 #if defined _WIN32
 	#include <io.h>
