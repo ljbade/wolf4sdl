@@ -1080,7 +1080,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 =====================
 */
 
-#define MAXVISABLE 50
+#define MAXVISABLE 250
 
 typedef struct
 {
