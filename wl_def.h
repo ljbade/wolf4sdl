@@ -771,7 +771,7 @@ typedef struct objstruct
     struct objstruct *next,*prev;
 } objtype;
 
-#define NUMBUTTONS      8
+#define NUMBUTTONS      14
 enum
 {
     bt_nobutton=-1,
@@ -782,7 +782,13 @@ enum
     bt_readyknife,
     bt_readypistol,
     bt_readymachinegun,
-    bt_readychaingun
+    bt_readychaingun,
+    bt_nextweapon,
+    bt_prevweapon,
+    bt_esc,
+    bt_pause,
+    bt_strafeleft,
+    bt_straferight
 };
 
 
@@ -950,19 +956,26 @@ void UpdateSoundLoc(void);
 =============================================================================
 */
 
+#define BASEMOVE                35
+#define RUNMOVE                 70
+#define BASETURN                35
+#define RUNTURN                 70
+
+#define JOYSCALE                2
+
 extern  byte            tilemap[MAPSIZE][MAPSIZE];      // wall values only
 extern  byte            spotvis[MAPSIZE][MAPSIZE];
 extern  objtype         *actorat[MAPSIZE][MAPSIZE];
 
 extern  objtype         *player;
 
-extern unsigned tics;
-extern  int                     viewsize;
+extern  unsigned        tics;
+extern  int             viewsize;
 
-extern int lastgamemusicoffset;
+extern  int             lastgamemusicoffset;
 
 //
-// curent user input
+// current user input
 //
 extern  int         controlx,controly;              // range from -100 to 100
 extern  boolean     buttonstate[NUMBUTTONS];
@@ -989,7 +1002,7 @@ extern  int         joystickport;
 extern  int         dirscan[4];
 extern  int         buttonscan[NUMBUTTONS];
 extern  int         buttonmouse[4];
-extern  int         buttonjoy[4];
+extern  int         buttonjoy[32];
 
 void    InitActorList (void);
 void    GetNewActor (void);
@@ -1119,8 +1132,6 @@ boolean CheckSight (objtype *ob);
 
 =============================================================================
 */
-
-extern  boolean running;
 
 extern  short   anglefrac;
 extern  int     facecount;

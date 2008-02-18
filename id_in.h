@@ -136,11 +136,12 @@ typedef	struct		{
 									joyMultXH,joyMultYH;
 					} JoystickDef;
 // Global variables
-extern	volatile boolean	Keyboard[];
-extern	         boolean	MousePresent;
-extern	volatile boolean	Paused;
-extern	volatile char		LastASCII;
-extern	volatile ScanCode	LastScan;
+extern  volatile boolean    Keyboard[];
+extern           boolean    MousePresent;
+extern  volatile boolean    Paused;
+extern  volatile char       LastASCII;
+extern  volatile ScanCode   LastScan;
+extern           int        JoyNumButtons;
 
 
 // Function prototypes

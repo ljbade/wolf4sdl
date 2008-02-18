@@ -127,7 +127,7 @@ void ReadConfig(void)
         //
         word tmp;
         read(file,&tmp,sizeof(tmp));
-        if(tmp!=0xfefc)
+        if(tmp!=0xfefb)
         {
             close(file);
             goto noconfig;
@@ -247,7 +247,7 @@ void WriteConfig(void)
     const int file = open(configname, O_CREAT | O_WRONLY, 0644);
     if (file != -1)
     {
-        word tmp=0xfefc;
+        word tmp=0xfefb;
         write(file,&tmp,sizeof(tmp));
         write(file,Scores,sizeof(HighScore) * MaxScores);
 

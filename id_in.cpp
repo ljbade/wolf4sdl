@@ -56,7 +56,7 @@ static KeyboardDef KbdDefs = {
 };
 
 static SDL_Joystick *Joystick;
-static int JoyNumButtons;
+int JoyNumButtons;
 static int JoyNumHats;
 
 static bool GrabInput = false;
@@ -335,6 +335,7 @@ IN_Startup(void)
         if(Joystick)
         {
             JoyNumButtons = SDL_JoystickNumButtons(Joystick);
+            if(JoyNumButtons > 32) JoyNumButtons = 32;      // only up to 32 buttons are supported
             JoyNumHats = SDL_JoystickNumHats(Joystick);
             if(param_joystickhat < -1 || param_joystickhat >= JoyNumHats)
                 Quit("The joystickhat param must be between 0 and %i!", JoyNumHats - 1);
@@ -488,55 +489,64 @@ IN_WaitForASCII(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 
-boolean	btnstate[8];
+boolean	btnstate[NUMBUTTONS];
 
 void IN_StartAck(void)
 {
-	int i, buttons = 0;
-
     IN_ProcessEvents();
 //
 // get initial state of everything
 //
 	IN_ClearKeysDown();
-	memset (btnstate,0,sizeof(btnstate));
+	memset(btnstate, 0, sizeof(btnstate));
 
-	buttons = IN_JoyButtons () << 4;
+	int buttons = IN_JoyButtons() << 4;
 
-	if (MousePresent)
-		buttons |= IN_MouseButtons ();
+	if(MousePresent)
+		buttons |= IN_MouseButtons();
 
-	for (i=0;i<8;i++,buttons>>=1)
-		if (buttons&1)
+	for(int i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
+		if(buttons & 1)
 			btnstate[i] = true;
 }
 
 
 boolean IN_CheckAck (void)
 {
-	int i, buttons = 0;
-
     IN_ProcessEvents();
 //
 // see if something has been pressed
 //
-	if (LastScan)
+	if(LastScan)
 		return true;
 
-	buttons = IN_JoyButtons () << 4;
+	int buttons = IN_JoyButtons() << 4;
 
-	if (MousePresent)
-		buttons |= IN_MouseButtons ();
+	if(MousePresent)
+		buttons |= IN_MouseButtons();
 
-	for (i=0;i<8;i++,buttons>>=1)
+	for(int i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
 	{
-		if ( buttons&1 )
+		if(buttons & 1)
 		{
-			if (!btnstate[i])
+			if(!btnstate[i])
+            {
+                // Wait until button has been released
+                do
+                {
+                    IN_WaitAndProcessEvents();
+                    buttons = IN_JoyButtons() << 4;
+
+                    if(MousePresent)
+                        buttons |= IN_MouseButtons();
+                }
+                while(buttons & (1 << i));
+
 				return true;
+            }
 		}
 		else
-			btnstate[i]=false;
+			btnstate[i] = false;
 	}
 
 	return false;

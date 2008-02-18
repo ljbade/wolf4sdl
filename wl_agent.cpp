@@ -31,7 +31,6 @@
 //
 // player state info
 //
-boolean         running;
 int32_t         thrustspeed;
 
 word            plux,pluy;          // player coordinates scaled to unsigned
@@ -55,9 +54,6 @@ void    T_Attack (objtype *ob);
 statetype   s_player = {false,0,0,(statefunc) T_Player,NULL,NULL};
 statetype   s_attack = {false,0,0,(statefunc) T_Attack,NULL,NULL};
 
-
-int32_t     playerxmove,playerymove;
-
 struct atkinf
 {
     int8_t    tics,attack,frame;              // attack is 1 for gun, 2 for knife
@@ -68,9 +64,6 @@ struct atkinf
     { {6,0,1},{6,1,2},{6,3,3},{6,-1,4} },
     { {6,0,1},{6,1,2},{6,4,3},{6,-1,4} },
 };
-
-
-short strafeangle[9] = {0,90,180,270,45,135,225,315,0};
 
 //===========================================================================
 
@@ -109,19 +102,37 @@ void ClipMove (objtype *ob, int32_t xmove, int32_t ymove);
 
 void CheckWeaponChange (void)
 {
-    int i;
+    int newWeapon = -1;
 
     if (!gamestate.ammo)            // must use knife with no ammo
         return;
 
-    for (i=wp_knife; i<=gamestate.bestweapon; i++)
+    if(buttonstate[bt_nextweapon] && !buttonheld[bt_nextweapon])
     {
-        if (buttonstate[bt_readyknife+i-wp_knife])
+        newWeapon = gamestate.weapon + 1;
+        if(newWeapon > gamestate.bestweapon) newWeapon = 0;
+    }
+    else if(buttonstate[bt_prevweapon] && !buttonheld[bt_prevweapon])
+    {
+        newWeapon = gamestate.weapon - 1;
+        if(newWeapon < 0) newWeapon = gamestate.bestweapon;
+    }
+    else
+    {
+        for(int i = wp_knife; i <= gamestate.bestweapon; i++)
         {
-            gamestate.weapon = gamestate.chosenweapon = (weapontype) i;
-            DrawWeapon ();
-            return;
+            if (buttonstate[bt_readyknife + i - wp_knife])
+            {
+                newWeapon = i;
+                break;
+            }
         }
+    }
+
+    if(newWeapon != -1)
+    {
+        gamestate.weapon = gamestate.chosenweapon = (weapontype) newWeapon;
+        DrawWeapon();
     }
 }
 
@@ -151,6 +162,28 @@ void ControlMovement (objtype *ob)
 
     oldx = player->x;
     oldy = player->y;
+
+    if(buttonstate[bt_strafeleft])
+    {
+        angle = ob->angle + ANGLES/4;
+        if(angle >= ANGLES)
+            angle -= ANGLES;
+        if(buttonstate[bt_run])
+            Thrust(angle, RUNMOVE * MOVESCALE * tics);
+        else
+            Thrust(angle, BASEMOVE * MOVESCALE * tics);
+    }
+
+    if(buttonstate[bt_straferight])
+    {
+        angle = ob->angle - ANGLES/4;
+        if(angle < 0)
+            angle += ANGLES;
+        if(buttonstate[bt_run])
+            Thrust(angle, RUNMOVE * MOVESCALE * tics );
+        else
+            Thrust(angle, BASEMOVE * MOVESCALE * tics);
+    }
 
     //
     // side to side move
@@ -210,12 +243,6 @@ void ControlMovement (objtype *ob)
 
     if (gamestate.victoryflag)              // watching the BJ actor
         return;
-
-    //
-    // calculate total move
-    //
-    playerxmove = player->x - oldx;
-    playerymove = player->y - oldy;
 }
 
 /*

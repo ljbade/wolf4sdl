@@ -56,7 +56,12 @@ int joystickport;
 int dirscan[4] = { sc_UpArrow, sc_RightArrow, sc_DownArrow, sc_LeftArrow };
 int buttonscan[NUMBUTTONS] = { sc_Control, sc_Alt, sc_LShift, sc_Space, sc_1, sc_2, sc_3, sc_4 };
 int buttonmouse[4] = { bt_attack, bt_strafe, bt_use, bt_nobutton };
-int buttonjoy[4] = { bt_attack, bt_strafe, bt_use, bt_run };
+int buttonjoy[32] = {
+    bt_attack, bt_strafe, bt_use, bt_run, bt_strafeleft, bt_straferight, bt_esc, bt_pause,
+    bt_prevweapon, bt_nextweapon, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
+    bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton,
+    bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton, bt_nobutton
+};
 
 int viewsize;
 
@@ -67,7 +72,7 @@ int8_t *demoptr, *lastdemoptr;
 memptr demobuffer;
 
 //
-// curent user input
+// current user input
 //
 int controlx, controly;         // range from -100 to 100 per tic
 boolean buttonstate[NUMBUTTONS];
@@ -232,18 +237,10 @@ int songs[] = {
 /*
 =============================================================================
 
-                                                  USER CONTROL
+                               USER CONTROL
 
 =============================================================================
 */
-
-
-#define BASEMOVE                35
-#define RUNMOVE                 70
-#define BASETURN                35
-#define RUNTURN                 70
-
-#define JOYSCALE                2
 
 /*
 ===================
@@ -299,14 +296,11 @@ void PollJoystickButtons (void)
 {
     int buttons = IN_JoyButtons();
 
-    if (buttons & 1)
-        buttonstate[buttonjoy[0]] = true;
-    if (buttons & 2)
-        buttonstate[buttonjoy[1]] = true;
-    if (buttons & 4)
-        buttonstate[buttonjoy[2]] = true;
-    if (buttons & 8)
-        buttonstate[buttonjoy[3]] = true;
+    for(int i = 0, val = 1; i < JoyNumButtons; i++, val <<= 1)
+    {
+        if(buttons & val)
+            buttonstate[buttonjoy[i]] = true;
+    }
 }
 
 
@@ -527,6 +521,7 @@ void PollControls (void)
 
         buttonbits = 0;
 
+        // TODO: Support 32-bit buttonbits
         for (i = NUMBUTTONS - 1; i >= 0; i--)
         {
             buttonbits <<= 1;
@@ -693,7 +688,8 @@ void CheckKeys (void)
 //
 // pause key weirdness can't be checked as a scan code
 //
-    if (Paused)
+    if(buttonstate[bt_pause]) Paused = true;
+    if(Paused)
     {
         int lastoffs = StopMusic();
         LatchDrawPic (20 - 4, 80 - 2 * 8, PAUSEDPIC);
@@ -729,13 +725,13 @@ void CheckKeys (void)
         return;
     }
 
-    if ((scan >= sc_F1 && scan <= sc_F9) || scan == sc_Escape)
+    if ((scan >= sc_F1 && scan <= sc_F9) || scan == sc_Escape || buttonstate[bt_esc])
     {
         int lastoffs = StopMusic ();
         ClearMemory ();
         VW_FadeOut ();
 
-        US_ControlPanel (scan);
+        US_ControlPanel (buttonstate[bt_esc] ? sc_Escape : scan);
 
         SETFONTCOLOR (0, 15);
         IN_ClearKeysDown ();
@@ -1302,7 +1298,6 @@ void PlayLoop (void)
     playstate = ex_stillplaying;
     lasttimecount = GetTimeCount();
     frameon = 0;
-    running = false;
     anglefrac = 0;
     facecount = 0;
     funnyticount = 0;
