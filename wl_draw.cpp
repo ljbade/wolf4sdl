@@ -5,6 +5,7 @@
 
 #include "wl_cloudsky.h"
 #include "wl_atmos.h"
+#include "wl_shade.h"
 
 /*
 =============================================================================
@@ -276,49 +277,62 @@ int postwidth;
 
 void ScalePost()
 {
-   int ywcount, yoffs, yw, yd, yendoffs;
-   byte col;
+    int ywcount, yoffs, yw, yd, yendoffs;
+    byte col;
 
-   ywcount = yd = wallheight[postx] >> 3;
-   if(yd <= 0) yd = 100;
+#ifdef USE_SHADING
+    byte *curshades = shadetable[GetShade(wallheight[postx])];
+#endif
 
-   yoffs = (viewheight / 2 - ywcount) * vbufPitch;
-   if(yoffs < 0) yoffs = 0;
-   yoffs += postx;
+    ywcount = yd = wallheight[postx] >> 3;
+    if(yd <= 0) yd = 100;
 
-   yendoffs = viewheight / 2 + ywcount - 1;
-   yw=TEXTURESIZE-1;
+    yoffs = (viewheight / 2 - ywcount) * vbufPitch;
+    if(yoffs < 0) yoffs = 0;
+    yoffs += postx;
 
-   while(yendoffs >= viewheight)
-   {
-      ywcount -= TEXTURESIZE/2;
-      while(ywcount <= 0)
-      {
-         ywcount += yd;
-         yw--;
-      }
-      yendoffs--;
-   }
-   if(yw < 0) return;
-   col = ((byte *) postsource)[yw];
-   yendoffs = yendoffs * vbufPitch + postx;
-   while(yoffs <= yendoffs)
-   {
-      vbuf[yendoffs] = col;
-      ywcount -= TEXTURESIZE/2;
-      if(ywcount <= 0)
-      {
-         do
-         {
+    yendoffs = viewheight / 2 + ywcount - 1;
+    yw=TEXTURESIZE-1;
+
+    while(yendoffs >= viewheight)
+    {
+        ywcount -= TEXTURESIZE/2;
+        while(ywcount <= 0)
+        {
             ywcount += yd;
             yw--;
-         }
-         while(ywcount <= 0);
-         if(yw < 0) break;
-         col = postsource[yw];
-      }
-      yendoffs -= vbufPitch;
-   }
+        }
+        yendoffs--;
+    }
+    if(yw < 0) return;
+
+#ifdef USE_SHADING
+    col = curshades[postsource[yw]];
+#else
+    col = postsource[yw];
+#endif
+    yendoffs = yendoffs * vbufPitch + postx;
+    while(yoffs <= yendoffs)
+    {
+        vbuf[yendoffs] = col;
+        ywcount -= TEXTURESIZE/2;
+        if(ywcount <= 0)
+        {
+            do
+            {
+                ywcount += yd;
+                yw--;
+            }
+            while(ywcount <= 0);
+            if(yw < 0) break;
+#ifdef USE_SHADING
+            col = curshades[postsource[yw]];
+#else
+            col = postsource[yw];
+#endif
+        }
+        yendoffs -= vbufPitch;
+    }
 }
 
 void GlobalScalePost(byte *vidbuf, unsigned pitch)
@@ -710,19 +724,19 @@ void HitVertPWall (void)
 
 //==========================================================================
 
-unsigned vgaCeiling[]=
+byte vgaCeiling[]=
 {
 #ifndef SPEAR
- 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xbfbf,
- 0x4e4e,0x4e4e,0x4e4e,0x1d1d,0x8d8d,0x4e4e,0x1d1d,0x2d2d,0x1d1d,0x8d8d,
- 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x2d2d,0xdddd,0x1d1d,0x1d1d,0x9898,
+ 0x1d,0x1d,0x1d,0x1d,0x1d,0x1d,0x1d,0x1d,0x1d,0xbf,
+ 0x4e,0x4e,0x4e,0x1d,0x8d,0x4e,0x1d,0x2d,0x1d,0x8d,
+ 0x1d,0x1d,0x1d,0x1d,0x1d,0x2d,0xdd,0x1d,0x1d,0x98,
 
- 0x1d1d,0x9d9d,0x2d2d,0xdddd,0xdddd,0x9d9d,0x2d2d,0x4d4d,0x1d1d,0xdddd,
- 0x7d7d,0x1d1d,0x2d2d,0x2d2d,0xdddd,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x2d2d,
- 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xdddd,0xdddd,0x7d7d,0xdddd,0xdddd,0xdddd
+ 0x1d,0x9d,0x2d,0xdd,0xdd,0x9d,0x2d,0x4d,0x1d,0xdd,
+ 0x7d,0x1d,0x2d,0x2d,0xdd,0xd7,0x1d,0x1d,0x1d,0x2d,
+ 0x1d,0x1d,0x1d,0x1d,0xdd,0xdd,0x7d,0xdd,0xdd,0xdd
 #else
- 0x6f6f,0x4f4f,0x1d1d,0xdede,0xdfdf,0x2e2e,0x7f7f,0x9e9e,0xaeae,0x7f7f,
- 0x1d1d,0xdede,0xdfdf,0xdede,0xdfdf,0xdede,0xe1e1,0xdcdc,0x2e2e,0x1d1d,0xdcdc
+ 0x6f,0x4f,0x1d,0xde,0xdf,0x2e,0x7f,0x9e,0xae,0x7f,
+ 0x1d,0xde,0xdf,0xde,0xdf,0xde,0xe1,0xdc,0x2e,0x1d,0xdc
 #endif
 };
 
@@ -736,15 +750,21 @@ unsigned vgaCeiling[]=
 
 void VGAClearScreen (void)
 {
-    unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
-    ceiling|=ceiling<<16;
+    byte ceiling=vgaCeiling[gamestate.episode*10+mapon];
 
     int y;
     byte *ptr = vbuf;
+#ifdef USE_SHADING
+    for(y = 0; y < viewheight / 2; y++, ptr += vbufPitch)
+        memset(ptr, shadetable[GetShade((viewheight / 2 - y) << 3)][ceiling], viewwidth);
+    for(; y < viewheight; y++, ptr += vbufPitch)
+        memset(ptr, shadetable[GetShade((y - viewheight / 2) << 3)][0x19], viewwidth);
+#else
     for(y = 0; y < viewheight / 2; y++, ptr += vbufPitch)
         memset(ptr, ceiling, viewwidth);
     for(; y < viewheight; y++, ptr += vbufPitch)
         memset(ptr, 0x19, viewwidth);
+#endif
 }
 
 //==========================================================================
@@ -783,8 +803,7 @@ int CalcRotate (objtype *ob)
     return angle/(ANGLES/8);
 }
 
-
-void ScaleShape (int xcenter, int shapenum, unsigned height)
+void ScaleShape (int xcenter, int shapenum, unsigned height, uint32_t flags)
 {
     t_compshape *shape;
     unsigned scale,pixheight;
@@ -798,34 +817,19 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
     int scrstarty,screndy,lpix,rpix,pixcnt,ycnt;
     unsigned j;
     byte col;
-#ifdef SHADE_COUNT
-    byte shade;
+
+#ifdef USE_SHADING
     byte *curshades;
+    if(flags & FL_FULLBRIGHT)
+        curshades = shadetable[0];
+    else
+        curshades = shadetable[GetShade(height)];
 #endif
 
     shape = (t_compshape *) PM_GetSprite(shapenum);
 
     scale=height>>3;                 // low three bits are fractional
     if(!scale) return;   // too close or far away
-
-#ifdef SHADE_COUNT
-    switch(shapenum)
-    {
-        case 5:
-        case 6:
-        case 16:
-        case 437:
-            shade=0;   // let lamps "shine" in the dark
-            break;
-        default:
-            shade=(scale<<2)/((maxscaleshl2>>8)+1+LSHADE_flag);
-            if(shade>32) shade=32;
-            else if(shade<1) shade=1;
-            shade=32-shade;
-            break;
-    }
-    curshades=shadetable[shade];
-#endif
 
     pixheight=scale*SPRITESCALEFACTOR;
     actx=xcenter-scale;
@@ -866,7 +870,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
                             screndy=(ycnt>>6)+upperedge;
                             if(scrstarty!=screndy && screndy>0)
                             {
-#ifdef SHADE_COUNT
+#ifdef USE_SHADING
                                 col=curshades[((byte *)shape)[newstart+j]];
 #else
                                 col=((byte *)shape)[newstart+j];
@@ -907,9 +911,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 
     shape = (t_compshape *) PM_GetSprite(shapenum);
 
-    scale=height>>1;                 // low three bits are fractional
-    if(!scale/* || scale>maxscale*/) return;   // too close or far away
-
+    scale=height>>1;
     pixheight=scale*SPRITESCALEFACTOR;
     actx=xcenter-scale;
     upperedge=viewheight/2-scale;
@@ -982,7 +984,8 @@ typedef struct
 {
     short   viewx,
             viewheight,
-            shapenum;
+            shapenum,
+            flags;          // this must be changed to uint32_t when you need more than 16-flags for drawing
 } visobj_t;
 
 visobj_t vislist[MAXVISABLE];
@@ -1021,7 +1024,10 @@ void DrawScaleds (void)
             continue;                                               // to close to the object
 
         if (visptr < &vislist[MAXVISABLE-1])    // don't let it overflow
+        {
+            visptr->flags = (short) statptr->flags;
             visptr++;
+        }
     }
 
 //
@@ -1063,7 +1069,10 @@ void DrawScaleds (void)
                 visptr->shapenum += CalcRotate (obj);
 
             if (visptr < &vislist[MAXVISABLE-1])    // don't let it overflow
+            {
+                visptr->flags = (short) obj->flags;
                 visptr++;
+            }
             obj->flags |= FL_VISABLE;
         }
         else
@@ -1093,7 +1102,7 @@ void DrawScaleds (void)
         //
         // draw farthest
         //
-        ScaleShape(farthest->viewx,farthest->shapenum,farthest->viewheight);
+        ScaleShape(farthest->viewx, farthest->shapenum, farthest->viewheight, farthest->flags);
 
         farthest->viewheight = 32000;
     }

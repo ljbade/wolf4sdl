@@ -1722,7 +1722,9 @@ void CheckParameters(int argc, char *argv[])
     }
     if(hasError)
     {
-        printf("Wolf4SDL v1.3 ($Revision$) by Chaos-Software\n"
+        printf(
+            "Wolf4SDL v1.3 ($Revision$)\n"
+            "Ported by Chaos-Software (http://www.chaos-software.de.vu)\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"
@@ -1739,7 +1741,11 @@ void CheckParameters(int argc, char *argv[])
             " --joystickhat <index>  Enables movement with the given coolie hat\n"
             " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"
             " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
+#ifdef _arch_dreamcast
+            "                        (given in bytes, default: 4096 / (44100 / samplerate))\n"
+#else
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
+#endif
 #ifdef SPEAR
             " --goodtimes            Disable copy protection quiz\n"
 #endif

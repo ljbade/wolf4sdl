@@ -3,6 +3,7 @@
 #ifdef USE_FLOORCEILINGTEX
 
 #include "wl_def.h"
+#include "wl_shade.h"
 
 // Textured Floor and Ceiling by DarkOne
 // With multi-textured floors and ceilings stored in lower and upper bytes of
@@ -36,6 +37,9 @@ void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight)
         dv = -FixedMul(tex_step, viewcos);
         gu -= (viewwidth >> 1) * du;
         gv -= (viewwidth >> 1) * dv; // starting point (leftmost)
+#ifdef USE_SHADING
+        byte *curshades = shadetable[GetShade(y << 3)];
+#endif
         for(int x = 0, bot_add = bot_offset, top_add = top_offset;
             x < viewwidth; x++, bot_add++, top_add++)
         {
@@ -61,10 +65,17 @@ void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight)
                     u = (gu >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
                     v = (gv >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
                     unsigned texoffs = (u << TEXTURESHIFT) + (TEXTURESIZE - 1) - v;
+#ifdef USE_SHADING
+                    if(curtoptex)
+                        vbuf[top_add] = curshades[toptex[texoffs]];
+                    if(curbottex)
+                        vbuf[bot_add] = curshades[bottex[texoffs]];
+#else
                     if(curtoptex)
                         vbuf[top_add] = toptex[texoffs];
                     if(curbottex)
                         vbuf[bot_add] = bottex[texoffs];
+#endif
                 }
             }
             gu += du;
