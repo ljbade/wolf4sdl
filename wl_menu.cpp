@@ -1931,6 +1931,7 @@ MouseSensitivity (int)
     DrawMouseSens ();
     do
     {
+        SDL_Delay(5);
         ReadAnyControl (&ci);
         switch (ci.dir)
         {
@@ -2202,6 +2203,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
             redraw = 0;
         }
 
+        SDL_Delay(5);
         ReadAnyControl (&ci);
 
         if (type == MOUSE || type == JOYSTICK)
@@ -2373,7 +2375,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 while (!cust->allowed[which]);
                 redraw = 1;
                 SD_PlaySound (MOVEGUN1SND);
-                while (ReadAnyControl (&ci), ci.dir != dir_None);
+                while (ReadAnyControl (&ci), ci.dir != dir_None) SDL_Delay(5);
                 IN_ClearKeysDown ();
                 break;
 
@@ -2387,7 +2389,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 while (!cust->allowed[which]);
                 redraw = 1;
                 SD_PlaySound (MOVEGUN1SND);
-                while (ReadAnyControl (&ci), ci.dir != dir_None);
+                while (ReadAnyControl (&ci), ci.dir != dir_None) SDL_Delay(5);
                 IN_ClearKeysDown ();
                 break;
             case dir_North:
@@ -2813,6 +2815,7 @@ CP_ChangeView (int)
     do
     {
         CheckPause ();
+        SDL_Delay(5);
         ReadAnyControl (&ci);
         switch (ci.dir)
         {
@@ -3473,6 +3476,7 @@ TicDelay (int count)
     int32_t startTime = GetTimeCount ();
     do
     {
+        SDL_Delay(5);
         ReadAnyControl (&ci);
     }
     while ((int32_t) GetTimeCount () - startTime < count && ci.dir != dir_None);
