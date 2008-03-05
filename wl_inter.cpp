@@ -365,10 +365,12 @@ Write (int x, int y, const char *string)
                     nx += 8;
                     continue;
 
+#ifndef APOGEE_1_0
                 case '\'':
                     VWB_DrawPic (nx, ny, L_APOSTROPHEPIC);
                     nx += 8;
                     continue;
+#endif
 
                 case ' ':
                     break;
@@ -1021,20 +1023,19 @@ DrawHighScores (void)
     char buffer1[5];
 #endif
 #endif
-//      byte            temp,temp1,temp2,temp3;
     word i, w, h;
     HighScore *s;
 
-
-//      MM_SortMem ();
-
 #ifndef SPEAR
-//      CA_CacheGrChunk (C_CODEPIC);
     CA_CacheGrChunk (HIGHSCORESPIC);
     CA_CacheGrChunk (STARTFONT);
+#ifndef APOGEE_1_0
     CA_CacheGrChunk (C_LEVELPIC);
     CA_CacheGrChunk (C_SCOREPIC);
     CA_CacheGrChunk (C_NAMEPIC);
+#else
+    CA_CacheGrChunk (C_CODEPIC);
+#endif
 
     ClearMScreen ();
     DrawStripes (10);
@@ -1042,11 +1043,12 @@ DrawHighScores (void)
     VWB_DrawPic (48, 0, HIGHSCORESPIC);
     UNCACHEGRCHUNK (HIGHSCORESPIC);
 
+#ifndef APOGEE_1_0
     VWB_DrawPic (4 * 8, 68, C_NAMEPIC);
     VWB_DrawPic (20 * 8, 68, C_LEVELPIC);
     VWB_DrawPic (28 * 8, 68, C_SCOREPIC);
-#ifndef UPLOAD
-//      VWB_DrawPic(35*8,68,C_CODEPIC);
+#else
+    VWB_DrawPic(35*8,68,C_CODEPIC);
 #endif
     fontnumber = 0;
 
@@ -1130,18 +1132,18 @@ DrawHighScores (void)
 #endif
         US_Print (buffer);
 
-#if 0
-#ifndef UPLOAD
+#ifdef APOGEE_1_0
+//#ifndef UPLOAD
 #ifndef SPEAR
         //
         // verification #
         //
         if (!i)
         {
-            temp = (((s->score >> 28) & 0xf) ^ ((s->score >> 24) & 0xf)) + 'A';
-            temp1 = (((s->score >> 20) & 0xf) ^ ((s->score >> 16) & 0xf)) + 'A';
-            temp2 = (((s->score >> 12) & 0xf) ^ ((s->score >> 8) & 0xf)) + 'A';
-            temp3 = (((s->score >> 4) & 0xf) ^ ((s->score >> 0) & 0xf)) + 'A';
+            char temp = (((s->score >> 28) & 0xf) ^ ((s->score >> 24) & 0xf)) + 'A';
+            char temp1 = (((s->score >> 20) & 0xf) ^ ((s->score >> 16) & 0xf)) + 'A';
+            char temp2 = (((s->score >> 12) & 0xf) ^ ((s->score >> 8) & 0xf)) + 'A';
+            char temp3 = (((s->score >> 4) & 0xf) ^ ((s->score >> 0) & 0xf)) + 'A';
 
             SETFONTCOLOR (0x49, 0x29);
             PrintX = 35 * 8;
@@ -1154,7 +1156,7 @@ DrawHighScores (void)
             SETFONTCOLOR (15, 0x29);
         }
 #endif
-#endif
+//#endif
 #endif
     }
 

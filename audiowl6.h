@@ -5,9 +5,6 @@
 //
 /////////////////////////////////////////////////
 
-#define NUMSOUNDS		    87
-#define NUMSNDCHUNKS		288
-
 //
 // Sound names & indexes
 //
@@ -85,6 +82,7 @@ typedef enum {
 	MECHSTEPSND,             // 70
 	GOOBSSND,                // 71
 	YEAHSND,                 // 72
+#ifndef APOGEE_1_0
 	DEATHSCREAM4SND,         // 73
 	DEATHSCREAM5SND,         // 74
 	DEATHSCREAM6SND,         // 75
@@ -99,6 +97,7 @@ typedef enum {
 	ROSESND,                 // 84
 	MISSILEFIRESND,          // 85
 	MISSILEHITSND,           // 86
+#endif
 	LASTSOUND
 } soundnames;
 
@@ -106,9 +105,9 @@ typedef enum {
 // Base offsets
 //
 #define STARTPCSOUNDS		0
-#define STARTADLIBSOUNDS	87
-#define STARTDIGISOUNDS		174
-#define STARTMUSIC		    261
+#define STARTADLIBSOUNDS	LASTSOUND
+#define STARTDIGISOUNDS		(2*LASTSOUND)
+#define STARTMUSIC		    (3*LASTSOUND)
 
 //
 // Music names & indexes
@@ -143,6 +142,9 @@ typedef enum {
 	PACMAN_MUS,              // 26
 	LASTMUSIC
 } musicnames;
+
+#define NUMSOUNDS		    LASTSOUND
+#define NUMSNDCHUNKS		(STARTMUSIC + LASTMUSIC)
 
 /////////////////////////////////////////////////
 //

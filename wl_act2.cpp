@@ -328,6 +328,7 @@ void T_Projectile (objtype *ob)
 
     if (!ProjectileTryMove (ob))
     {
+#ifndef APOGEE_1_0          // actually the whole method is never reached in shareware 1.0
         if (ob->obclass == rocketobj)
         {
             PlaySoundLocActor(MISSILEHITSND,ob);
@@ -341,6 +342,7 @@ void T_Projectile (objtype *ob)
         }
 #endif
         else
+#endif
             ob->state = NULL;               // mark for removal
 
         return;
@@ -1091,11 +1093,13 @@ void A_DeathScream (objtype *ob)
             int sounds[9]={ DEATHSCREAM1SND,
                 DEATHSCREAM2SND,
                 DEATHSCREAM3SND,
+#ifndef APOGEE_1_0
                 DEATHSCREAM4SND,
                 DEATHSCREAM5SND,
                 DEATHSCREAM7SND,
                 DEATHSCREAM8SND,
                 DEATHSCREAM9SND
+#endif
             };
 
 #ifndef UPLOAD
@@ -1130,6 +1134,7 @@ void A_DeathScream (objtype *ob)
         case realhitlerobj:
             SD_PlaySound(EVASND);
             break;
+#ifndef APOGEE_1_0
         case gretelobj:
             SD_PlaySound(MEINSND);
             break;
@@ -1139,6 +1144,7 @@ void A_DeathScream (objtype *ob)
         case fatobj:
             SD_PlaySound(ROSESND);
             break;
+#endif
 #else
         case spectreobj:
             SD_PlaySound(GHOSTFADESND);
@@ -2351,7 +2357,9 @@ void T_GiftThrow (objtype *ob)
     newobj->flags = FL_NEVERMARK;
     newobj->active = ac_yes;
 
+#ifndef APOGEE_1_0          // T_GiftThrow will never be called in shareware v1.0
     PlaySoundLocActor (MISSILEFIRESND,newobj);
+#endif
 }
 
 
@@ -3490,10 +3498,12 @@ void T_Shoot (objtype *ob)
             PlaySoundLocActor(SSFIRESND,ob);
             break;
 #ifndef SPEAR
+#ifndef APOGEE_1_0
         case giftobj:
         case fatobj:
             PlaySoundLocActor(MISSILEFIRESND,ob);
             break;
+#endif
         case mechahitlerobj:
         case realhitlerobj:
         case bossobj:

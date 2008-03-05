@@ -7,15 +7,22 @@
 //#define SPEARDEMO
 //#define UPLOAD
 #define GOODTIMES
+#define CARMACIZED
+//#define APOGEE_1_0
+//#define APOGEE_1_1
+//#define APOGEE_1_2
 
 /*
-    Wolf3d Full v1.4 GT/ID/Activision         - define GOODTIMES
-    Wolf3d Shareware v1.4                     - define UPLOAD
-    Wolf3d Full v1.4 Apogee (with ReadThis)   - define none
-    Spear of Destiny Full                     - define SPEAR (and GOODTIMES for no FormGen quiz)
-    Spear of Destiny Demo                     - define SPEAR and SPEARDEMO
-
-    Wolf3d Full v1.1 and Shareware v1.0-1.1   - can be added by the user
+    Wolf3d Full v1.1 Apogee (with ReadThis)   - define CARMACIZED and APOGEE_1_1
+    Wolf3d Full v1.4 Apogee (with ReadThis)   - define CARMACIZED
+    Wolf3d Full v1.4 GT/ID/Activision         - define CARMACIZED and GOODTIMES
+    Wolf3d Shareware v1.0                     - define UPLOAD and APOGEE_1_0
+    Wolf3d Shareware v1.1                     - define CARMACIZED and UPLOAD and APOGEE_1_1
+    Wolf3d Shareware v1.2                     - define CARMACIZED and UPLOAD and APOGEE_1_2
+    Wolf3d Shareware v1.4                     - define CARMACIZED and UPLOAD
+    Spear of Destiny Full                     - define CARMACIZED and SPEAR
+                                                (and GOODTIMES for no FormGen quiz)
+    Spear of Destiny Demo                     - define CARMACIZED and SPEAR and SPEARDEMO
 */
 
 //#define USE_FEATUREFLAGS    // Enables the level feature flags (see bottom of wl_def.h)
@@ -31,6 +38,5 @@
 #define DEBUGKEYS           // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN
 #define DEMOSEXTERN
-#define CARMACIZED
 
 #endif

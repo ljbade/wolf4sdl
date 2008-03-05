@@ -250,7 +250,9 @@ typedef enum
 enum
 {
     SPR_DEMO,
+#ifndef APOGEE_1_0
     SPR_DEATHCAM,
+#endif
 //
 // static sprites
 //
@@ -485,7 +487,14 @@ enum
 //
 // bj
 //
-    SPR_BJ_W1,SPR_BJ_W2,SPR_BJ_W3,SPR_BJ_W4,
+#ifdef APOGEE_1_0
+    SPR_BJ_W1=360,
+#elif defined(APOGEE_1_1) && defined(UPLOAD)
+    SPR_BJ_W1=406,
+#else
+    SPR_BJ_W1,
+#endif
+    SPR_BJ_W2,SPR_BJ_W3,SPR_BJ_W4,
     SPR_BJ_JUMP1,SPR_BJ_JUMP2,SPR_BJ_JUMP3,SPR_BJ_JUMP4,
 #else
 //

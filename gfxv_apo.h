@@ -25,7 +25,9 @@ typedef enum {
     H_LEFTWINDOWPIC,             // 18
     H_RIGHTWINDOWPIC,            // 19
     H_BOTTOMINFOPIC,             // 20
+#if !defined(APOGEE_1_0) && !defined(APOGEE_1_1) && !defined(APOGEE_1_2)
     H_SPEARADPIC,                // 21
+#endif
     // Lump Start
     C_OPTIONSPIC,                // 22
     C_CURSOR1PIC,                // 23
@@ -54,12 +56,18 @@ typedef enum {
     C_EPISODE5PIC,               // 46
     C_EPISODE6PIC,               // 47
     C_CODEPIC,                   // 48
+#ifndef APOGEE_1_0
     C_TIMECODEPIC,               // 49
     C_LEVELPIC,                  // 50
     C_NAMEPIC,                   // 51
     C_SCOREPIC,                  // 52
+#if !defined(APOGEE_1_1) && !defined(APOGEE_1_2)
     C_JOY1PIC,                   // 53
     C_JOY2PIC,                   // 54
+#endif
+#else
+    C_TIMECODEPIC=C_CODEPIC,     // 47
+#endif
     // Lump Start
     L_GUYPIC,                    // 55
     L_COLONPIC,                  // 56
@@ -101,7 +109,9 @@ typedef enum {
     L_YPIC,                      // 92
     L_ZPIC,                      // 93
     L_EXPOINTPIC,                // 94
+#ifndef APOGEE_1_0
     L_APOSTROPHEPIC,             // 95
+#endif
     L_GUY2PIC,                   // 96
     L_BJWINSPIC,                 // 97
     STATUSBARPIC,                // 98
@@ -155,19 +165,26 @@ typedef enum {
     PAUSEDPIC,                   // 145
     GETPSYCHEDPIC,               // 146
 
-    ORDERSCREEN=148,
+    TILE8,                       // 147
+
+    ORDERSCREEN,                 // 148
     ERRORSCREEN,                 // 149
     T_HELPART,                   // 150
+#ifdef APOGEE_1_0
+    T_ENDART1,                   // 143
+#endif
     T_DEMO0,                     // 151
     T_DEMO1,                     // 152
     T_DEMO2,                     // 153
     T_DEMO3,                     // 154
+#ifndef APOGEE_1_0
     T_ENDART1,                   // 155
     T_ENDART2,                   // 156
     T_ENDART3,                   // 157
     T_ENDART4,                   // 158
     T_ENDART5,                   // 159
     T_ENDART6,                   // 160
+#endif
 
     ENUMEND
 } graphicnums;
@@ -175,26 +192,26 @@ typedef enum {
 //
 // Data LUMPs
 //
-#define README_LUMP_START       3
-#define README_LUMP_END         21
+#define README_LUMP_START       H_BJPIC
+#define README_LUMP_END         H_BOTTOMINFOPIC
 
-#define CONTROLS_LUMP_START     22
-#define CONTROLS_LUMP_END       54
+#define CONTROLS_LUMP_START     C_OPTIONSPIC
+#define CONTROLS_LUMP_END       (L_GUYPIC - 1)
 
-#define LEVELEND_LUMP_START     55
-#define LEVELEND_LUMP_END       97
+#define LEVELEND_LUMP_START     L_GUYPIC
+#define LEVELEND_LUMP_END       L_BJWINSPIC
 
-#define LATCHPICS_LUMP_START    103
-#define LATCHPICS_LUMP_END      146
+#define LATCHPICS_LUMP_START    KNIFEPIC
+#define LATCHPICS_LUMP_END      GETPSYCHEDPIC
 
 
 //
 // Amount of each data item
 //
-#define NUMCHUNKS    161
+#define NUMCHUNKS    ENUMEND
 #define NUMFONT      2
 #define NUMFONTM     0
-#define NUMPICS      144
+#define NUMPICS      (GETPSYCHEDPIC - NUMFONT)
 #define NUMPICM      0
 #define NUMSPRITES   0
 #define NUMTILE8     72
@@ -212,15 +229,15 @@ typedef enum {
 #define STARTFONT    1
 #define STARTFONTM   3
 #define STARTPICS    3
-#define STARTPICM    147
-#define STARTSPRITES 147
-#define STARTTILE8   147
-#define STARTTILE8M  148
-#define STARTTILE16  148
-#define STARTTILE16M 148
-#define STARTTILE32  148
-#define STARTTILE32M 148
-#define STARTEXTERNS 148
+#define STARTPICM    TILE8
+#define STARTSPRITES TILE8
+#define STARTTILE8   TILE8
+#define STARTTILE8M  ORDERSCREEN
+#define STARTTILE16  ORDERSCREEN
+#define STARTTILE16M ORDERSCREEN
+#define STARTTILE32  ORDERSCREEN
+#define STARTTILE32M ORDERSCREEN
+#define STARTEXTERNS ORDERSCREEN
 
 //
 // Thank you for using IGRAB!

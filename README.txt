@@ -20,6 +20,19 @@ hear, when a guard opens the door behind you ;)
 Higher screen resolutions (multiples of 320x200, default is 640x400) can be
 set using the --res parameter (start Wolf4SDL with --help to see usage).
 
+The following versions of Wolfenstein 3D data files are currently supported
+by the source code (choose the version by commenting/uncommenting lines in
+version.h as described in that file):
+
+ - Wolfenstein 3D v1.1 full Apogee
+ - Wolfenstein 3D v1.4 full Apogee
+ - Wolfenstein 3D v1.4 full GT/ID/Activision
+ - Wolfenstein 3D v1.0 shareware Apogee
+ - Wolfenstein 3D v1.1 shareware Apogee
+ - Wolfenstein 3D v1.2 shareware Apogee
+ - Wolfenstein 3D v1.4 shareware
+ - Spear of Destiny full
+ - Spear of Destiny demo
 
 How to play:
 
