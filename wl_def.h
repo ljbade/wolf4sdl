@@ -903,6 +903,7 @@ extern  int      param_joystickindex;
 extern  int      param_joystickhat;
 extern  int      param_samplerate;
 extern  int      param_audiobuffer;
+extern  int      param_mission;
 
 
 void            NewGame (int difficulty,int episode);

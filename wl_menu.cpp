@@ -4007,12 +4007,35 @@ CheckForEpisodes (void)
 
 #ifdef SPEAR
 #ifndef SPEARDEMO
-    if(!stat("vswap.sod", &statbuf))
+    if(param_mission == 1)
     {
-        strcpy (extension, "sod");
+        if(!stat("vswap.sod", &statbuf))
+        {
+            strcpy (extension, "sod");
+        }
+        else
+            Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
+    }
+    else if(param_mission == 2)
+    {
+        if(!stat("vswap.sd2", &statbuf))
+        {
+            strcpy (extension, "sd2");
+        }
+        else
+            Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
+    }
+    else if(param_mission == 3)
+    {
+        if(!stat("vswap.sd3", &statbuf))
+        {
+            strcpy (extension, "sd3");
+        }
+        else
+            Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else
-        Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
+        Quit ("UNSUPPORTED MISSION!");
 #else
     if(!stat("vswap.sdm", &statbuf))
     {

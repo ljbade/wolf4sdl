@@ -94,6 +94,7 @@ int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 #endif
 
+int     param_mission = 1;
 boolean param_goodtimes = false;
 
 /*
@@ -1716,6 +1717,15 @@ void CheckParameters(int argc, char *argv[])
             else param_audiobuffer = atoi(argv[i]);
             audioBufferGiven = true;
         }
+        else IFARG("--mission")
+        {
+            if(++i >= argc)
+            {
+                printf("The mission option is missing the mission argument!\n");
+                hasError = true;
+            }
+            else param_mission = atoi(argv[i]);
+        }
         else IFARG("--goodtimes")
             param_goodtimes = true;
         else hasError = true;
@@ -1746,7 +1756,8 @@ void CheckParameters(int argc, char *argv[])
 #else
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
 #endif
-#ifdef SPEAR
+#if defined(SPEAR) && !defined(SPEARDEMO)
+            " --mission              Mission number to play (1-3)\n"
             " --goodtimes            Disable copy protection quiz\n"
 #endif
             , defaultSampleRate

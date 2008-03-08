@@ -531,7 +531,16 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
     strcpy(fname,mheadname);
+#if defined(SPEAR) && !defined(SPEARDEMO)
+    if(param_mission == 1)
+        strcat(fname,extension);
+    else if(param_mission == 2)
+        strcat(fname,"sd2");
+    else if(param_mission == 3)
+        strcat(fname,"sd3");
+#else
     strcat(fname,extension);
+#endif
 
     handle = open(fname, O_RDONLY);
     if (handle == -1)
@@ -550,7 +559,16 @@ void CAL_SetupMapFile (void)
 //
 #ifdef CARMACIZED
     strcpy(fname, "gamemaps.");
+#if defined(SPEAR) && !defined(SPEARDEMO)
+    if(param_mission == 1)
+        strcat(fname,extension);
+    else if(param_mission == 2)
+        strcat(fname,"sd2");
+    else if(param_mission == 3)
+        strcat(fname,"sd3");
+#else
     strcat(fname,extension);
+#endif
 
     maphandle = open(fname, O_RDONLY);
     if (maphandle == -1)
