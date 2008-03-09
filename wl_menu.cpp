@@ -4020,7 +4020,7 @@ CheckForEpisodes (void)
     {
         if(!stat("vswap.sd2", &statbuf))
         {
-            strcpy (extension, "sd2");
+            strcpy (extension, "sod");
         }
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
@@ -4029,7 +4029,7 @@ CheckForEpisodes (void)
     {
         if(!stat("vswap.sd3", &statbuf))
         {
-            strcpy (extension, "sd3");
+            strcpy (extension, "sod");
         }
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
