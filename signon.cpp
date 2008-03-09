@@ -1,4 +1,4 @@
-#include "wl_def.h"
+#include "version.h"
 
 #ifndef SPEAR
 unsigned char signon[] = {

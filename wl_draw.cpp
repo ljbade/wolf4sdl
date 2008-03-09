@@ -982,10 +982,14 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 
 typedef struct
 {
-    short   viewx,
-            viewheight,
-            shapenum,
-            flags;          // this must be changed to uint32_t when you need more than 16-flags for drawing
+    short      viewx,
+               viewheight,
+               shapenum;
+    short      flags;          // this must be changed to uint32_t, when you
+                               // you need more than 16-flags for drawing
+#ifdef USE_DIR3DSPR
+    statobj_t *transsprite;
+#endif
 } visobj_t;
 
 visobj_t vislist[MAXVISABLE];
@@ -1022,6 +1026,13 @@ void DrawScaleds (void)
 
         if (!visptr->viewheight)
             continue;                                               // to close to the object
+
+#ifdef USE_DIR3DSPR
+        if(statptr->flags & FL_DIR_MASK)
+            visptr->transsprite=statptr;
+        else
+            visptr->transsprite=NULL;
+#endif
 
         if (visptr < &vislist[MAXVISABLE-1])    // don't let it overflow
         {
@@ -1071,6 +1082,9 @@ void DrawScaleds (void)
             if (visptr < &vislist[MAXVISABLE-1])    // don't let it overflow
             {
                 visptr->flags = (short) obj->flags;
+#ifdef USE_DIR3DSPR
+                visptr->transsprite = NULL;
+#endif
                 visptr++;
             }
             obj->flags |= FL_VISABLE;
@@ -1102,7 +1116,12 @@ void DrawScaleds (void)
         //
         // draw farthest
         //
-        ScaleShape(farthest->viewx, farthest->shapenum, farthest->viewheight, farthest->flags);
+#ifdef USE_DIR3DSPR
+        if(farthest->transsprite)
+            Scale3DShape(vbuf, vbufPitch, farthest->transsprite);
+        else
+#endif
+            ScaleShape(farthest->viewx, farthest->shapenum, farthest->viewheight, farthest->flags);
 
         farthest->viewheight = 32000;
     }

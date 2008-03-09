@@ -249,6 +249,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\wl_dir3dspr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\wl_draw.cpp"
 				>
 			</File>

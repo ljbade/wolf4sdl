@@ -300,8 +300,10 @@ static void ScanInfoPlane(void)
                 case 71:
                 case 72:
 #ifdef SPEAR
-                case 73:                                                // TRUCK AND SPEAR!
+                case 73:                        // TRUCK AND SPEAR!
                 case 74:
+#elif defined(USE_DIR3DSPR)                     // just for the example
+                case 73:
 #endif
                     SpawnStatic(x,y,tile-23);
                     break;
