@@ -1,3 +1,29 @@
+Wolf4SDL v1.4 (released 2008-03-10, revision 163)
+ - Added MinGW/MSYS compatibility
+ - Updated Code::Blocks project
+ - Updated Dev-C++ project and added a README-devcpp.txt
+ - Fixed some busy waiting situations
+ - Added directional 3D sprites support (USE_DIR3DSPR)
+ - Added support for Spear mission packs (by fackue)
+ - Added support for Wolf3D full v1.1 and shareware v1.0, v1.1 and v1.2
+ - Added shading support (USE_SHADING)
+ - Added object flags (see objflag_t enum in wl_def.h)
+ - Reintroduced version.h
+ - Increased MAXVISABLE from 50 to 250
+ - Added outside atmosphere features (USE_STARSKY, USE_RAIN, USE_SNOW)
+ - Added cloud sky support (USE_CLOUDSKY)
+ - Added support for SoD demo
+ - Fixed SoD on systems with case sensitive filenames
+ - Added DarkOne's/Adam's multi-textured floors/ceiling (USE_FLOORCEILINGTEX)
+ - Added parallax sky support (USE_PARALLAX define)
+ - Introduced level feature flags (USE_FEATUREFLAGS define)
+ - Added high resolution support (USE_HIRES define)
+ - Added support for music > 64 kB as supported by WDC
+ - Added --samplerate and --audiobuffer parameters
+ - Added support for GP2X (ARM processor, thanks to Pickle)
+ - Added support for Dreamcast (SH-4 processor, thanks to fackue)
+ - Added joystick support (up to 32 buttons)
+
 Wolf4SDL v1.3 (released 2008-01-20, revision 113)
  - Added parameter for SOD to disable copy protection quiz
  - F12 now also grabs the mouse (for keyboards without scrolllock)

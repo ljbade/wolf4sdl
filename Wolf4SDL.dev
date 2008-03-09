@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=-Dmain=SDL_main_@@_
 CppCompiler=
-Linker=-lmingw32 -lSDLmain -lSDL -lSDL_mixer_@@_
+Linker=-lmingw32 -lSDL -lSDL_mixer_@@_
 IsCpp=1
 Icon=
 ExeOutput=
@@ -409,6 +409,16 @@ AutoIncBuildNr=0
 
 [Unit24]
 FileName=signon.cpp
+CompileCpp=1
+Folder=Wolf4SDL
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit38]
+FileName=sdl_winmain.cpp
 CompileCpp=1
 Folder=Wolf4SDL
 Compile=1

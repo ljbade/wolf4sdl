@@ -1733,7 +1733,7 @@ void CheckParameters(int argc, char *argv[])
     if(hasError)
     {
         printf(
-            "Wolf4SDL v1.3 ($Revision$)\n"
+            "Wolf4SDL v1.4 ($Revision$)\n"
             "Ported by Chaos-Software (http://www.chaos-software.de.vu)\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
@@ -1789,7 +1789,7 @@ int main (int argc, char *argv[])
 
     CheckParameters(argc, argv);
 
-#if defined _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
     _fmode=O_BINARY;                // DON'T create save games in text mode!!
 #endif
 

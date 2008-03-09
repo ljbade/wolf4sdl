@@ -18,7 +18,6 @@
 		</Compiler>
 		<Linker>
 			<Add library="mingw32" />
-			<Add library="SDLmain" />
 			<Add library="SDL" />
 			<Add library="SDL_mixer" />
 		</Linker>
@@ -44,6 +43,7 @@
 		<Unit filename="id_vh.h" />
 		<Unit filename="id_vl.cpp" />
 		<Unit filename="id_vl.h" />
+		<Unit filename="sdl_winmain.cpp" />
 		<Unit filename="signon.cpp" />
 		<Unit filename="wl_act1.cpp" />
 		<Unit filename="wl_act2.cpp" />

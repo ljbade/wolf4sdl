@@ -10,7 +10,7 @@ Supported operating systems are at least:
  - Linux
  - BSD variants
 
-Only little endian platforms like x86 are supported, yet.
+Only little endian platforms like x86, ARM and SH-4 are supported, yet.
 
 This port includes the OPL2 emulator from MAME, so you can not only hear the
 Adlib sounds but also music without any Adlib-compatible soundcards!
@@ -50,11 +50,11 @@ Compiling from source:
 The current version of the source code is available in the svn repository at:
    svn://tron.homeunix.org:3690/wolf3d/trunk
 
-The following ways to compile the source code are supported:
- - Makefile (for Linux and BSD variants)
- - Visual Studio 2005 or above project (Wolf4SDL.sln and Wolf4SDL.vcproj)
- - Code::Blocks project (Wolf4SDL.cbp)
- - Dev-C++ project (Wolf4SDL.dev)
+The following ways of compiling the source code are supported:
+ - Makefile (for Linux, BSD variants and MinGW/MSYS)
+ - Visual Studio 2005 or above (Wolf4SDL.sln and Wolf4SDL.vcproj)
+ - Code::Blocks 8.02 (Wolf4SDL.cbp)
+ - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
 
 To compile the source code you need the development libraries of
  - SDL (http://www.libsdl.org/download-1.2.php) and
@@ -84,6 +84,8 @@ Credits:
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
+ - Thanks to Pickle for the GP2X support
+ - Thanks to fackue for the Dreamcast support
 
 
 Licenses:
