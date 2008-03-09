@@ -71,11 +71,12 @@ void	VL_Shutdown (void)
 
 void	VL_SetVGAPlaneMode (void)
 {
-#ifdef _arch_dreamcast
-    //SDL_DC_ShowAskHz(SDL_FALSE);
-    //SDL_DC_Default60Hz(SDL_TRUE);
+#ifndef _arch_dreamcast
+#ifdef SPEAR
+    SDL_WM_SetCaption("Spear of Destiny", NULL);
 #else
     SDL_WM_SetCaption("Wolfenstein 3D", NULL);
+#endif
 #endif
 
     screen = SDL_SetVideoMode(screenWidth, screenHeight, 8,
