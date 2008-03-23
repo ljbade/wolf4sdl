@@ -1,4 +1,9 @@
-Wolf4SDL v1.4 (released 2008-03-10, revision 163)
+Head (not released yet)
+ - Updated Code::Blocks search paths to ..\SDL-devel\
+ - Added version.h to Dev-C++ and Code::Blocks project file
+ - Fixed some files being read in text mode on MinGW
+
+Wolf4SDL v1.4 (released 2008-03-10, revision 164)
  - Added MinGW/MSYS compatibility
  - Updated Code::Blocks project
  - Updated Dev-C++ project and added a README-devcpp.txt

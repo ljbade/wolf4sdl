@@ -120,7 +120,7 @@ void ReadConfig(void)
     SMMode  sm;
     SDSMode sds;
 
-    const int file = open(configname, O_RDONLY);
+    const int file = open(configname, O_RDONLY | O_BINARY);
     if (file != -1)
     {
         //
@@ -234,7 +234,6 @@ noconfig:
     SD_SetDigiDevice (sds);
 }
 
-
 /*
 ====================
 =
@@ -245,7 +244,7 @@ noconfig:
 
 void WriteConfig(void)
 {
-    const int file = open(configname, O_CREAT | O_WRONLY, 0644);
+    const int file = open(configname, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (file != -1)
     {
         word tmp=0xfefb;
@@ -1788,10 +1787,6 @@ int main (int argc, char *argv[])
 #endif
 
     CheckParameters(argc, argv);
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-    _fmode=O_BINARY;                // DON'T create save games in text mode!!
-#endif
 
     CheckForEpisodes();
 

@@ -14,12 +14,13 @@
 		</Build>
 		<Compiler>
 			<Add option="-Dmain=SDL_main" />
-			<Add directory="C:\Dev-Cpp\include\SDL" />
+			<Add directory="..\SDL-devel\include\SDL" />
 		</Compiler>
 		<Linker>
 			<Add library="mingw32" />
 			<Add library="SDL" />
 			<Add library="SDL_mixer" />
+			<Add directory="..\SDL-devel\lib" />
 		</Linker>
 		<Unit filename="audiosod.h" />
 		<Unit filename="audiowl6.h" />
@@ -45,6 +46,7 @@
 		<Unit filename="id_vl.h" />
 		<Unit filename="sdl_winmain.cpp" />
 		<Unit filename="signon.cpp" />
+		<Unit filename="version.h" />
 		<Unit filename="wl_act1.cpp" />
 		<Unit filename="wl_act2.cpp" />
 		<Unit filename="wl_agent.cpp" />

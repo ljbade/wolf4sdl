@@ -150,7 +150,7 @@ void CAL_GetGrChunkLength (int chunk)
 
 boolean CA_WriteFile (const char *filename, void *ptr, int32_t length)
 {
-    const int handle = open(filename, O_CREAT | O_WRONLY);
+    const int handle = open(filename, O_CREAT | O_WRONLY | O_BINARY);
     if (handle == -1)
         return false;
 
@@ -179,7 +179,7 @@ boolean CA_LoadFile (const char *filename, memptr *ptr)
 {
     int32_t size;
 
-    const int handle = open(filename, O_RDONLY);
+    const int handle = open(filename, O_RDONLY | O_BINARY);
     if (handle == -1)
         return false;
 
@@ -457,7 +457,7 @@ void CAL_SetupGrFile (void)
     strcpy(fname,gdictname);
     strcat(fname,extension);
 
-    handle = open(fname, O_RDONLY);
+    handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
         CA_CannotOpen(fname);
 
@@ -468,7 +468,7 @@ void CAL_SetupGrFile (void)
     strcpy(fname,gheadname);
     strcat(fname,extension);
 
-    handle = open(fname, O_RDONLY);
+    handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
         CA_CannotOpen(fname);
 
@@ -491,7 +491,7 @@ void CAL_SetupGrFile (void)
     strcpy(fname,gfilename);
     strcat(fname,extension);
 
-    grhandle = open(fname, O_RDONLY);
+    grhandle = open(fname, O_RDONLY | O_BINARY);
     if (grhandle == -1)
         CA_CannotOpen(fname);
 
@@ -542,7 +542,7 @@ void CAL_SetupMapFile (void)
     strcat(fname,extension);
 #endif
 
-    handle = open(fname, O_RDONLY);
+    handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
         CA_CannotOpen(fname);
 
@@ -570,14 +570,14 @@ void CAL_SetupMapFile (void)
     strcat(fname,extension);
 #endif
 
-    maphandle = open(fname, O_RDONLY);
+    maphandle = open(fname, O_RDONLY | O_BINARY);
     if (maphandle == -1)
         CA_CannotOpen(fname);
 #else
     strcpy(fname,mfilename);
     strcat(fname,extension);
 
-    maphandle = open(fname, O_RDONLY);
+    maphandle = open(fname, O_RDONLY | O_BINARY);
     if (maphandle == -1)
         CA_CannotOpen(fname);
 #endif
@@ -642,7 +642,7 @@ void CAL_SetupAudioFile (void)
     strcpy(fname,afilename);
     strcat(fname,extension);
 
-    audiohandle = open(fname, O_RDONLY);
+    audiohandle = open(fname, O_RDONLY | O_BINARY);
     if (audiohandle == -1)
         CA_CannotOpen(fname);
 }

@@ -1,7 +1,7 @@
 [Project]
 FileName=Wolf4SDL.dev
 Name=Wolf4SDL
-UnitCount=38
+UnitCount=39
 Type=0
 Ver=1
 ObjFiles=
@@ -419,6 +419,16 @@ BuildCmd=
 
 [Unit38]
 FileName=sdl_winmain.cpp
+CompileCpp=1
+Folder=Wolf4SDL
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit39]
+FileName=version.h
 CompileCpp=1
 Folder=Wolf4SDL
 Compile=1

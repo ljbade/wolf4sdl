@@ -3131,7 +3131,7 @@ SetupControlPanel (void)
     for(int i=0; i<10; i++)
     {
         name[7] = '0' + i;
-        const int handle = open(name, O_RDONLY);
+        const int handle = open(name, O_RDONLY | O_BINARY);
         if (handle >= 0)
         {
             char temp[32];
