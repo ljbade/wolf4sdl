@@ -754,7 +754,7 @@ void GetBonus (statobj_t *check)
             SD_PlaySound (GETGATLINGSND);
             GiveWeapon (wp_chaingun);
 
-            StatusDrawPic (17,4,GOTGATLINGPIC);
+            StatusDrawFace (GOTGATLINGPIC);
             facecount = 0;
             break;
 
