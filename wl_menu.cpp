@@ -4010,32 +4010,28 @@ CheckForEpisodes (void)
     if(param_mission == 1)
     {
         if(!stat("vswap.sod", &statbuf))
-        {
             strcpy (extension, "sod");
-        }
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 2)
     {
         if(!stat("vswap.sd2", &statbuf))
-        {
-            strcpy (extension, "sod");
-        }
+            strcpy (extension, "sd2");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 3)
     {
         if(!stat("vswap.sd3", &statbuf))
-        {
-            strcpy (extension, "sod");
-        }
+            strcpy (extension, "sd3");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else
         Quit ("UNSUPPORTED MISSION!");
+    strcpy (graphext, "sod");
+    strcpy (audioext, "sod");
 #else
     if(!stat("vswap.sdm", &statbuf))
     {
@@ -4043,7 +4039,12 @@ CheckForEpisodes (void)
     }
     else
         Quit ("NO SPEAR OF DESTINY DEMO DATA FILES TO BE FOUND!");
+    strcpy (graphext, "sdm");
+    strcpy (audioext, "sdm");
 #endif
+#else
+    strcpy (graphext, extension);
+    strcpy (audioext, extension);
 #endif
 
     strcat (configname, extension);

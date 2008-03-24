@@ -58,16 +58,7 @@ static void PML_FreePagesBuffer()
 void PM_Startup()
 {
     char fname[13] = "vswap.";
-#if defined(SPEAR) && !defined(SPEARDEMO)
-    if(param_mission == 1)
-        strcat(fname,extension);
-    else if(param_mission == 2)
-        strcat(fname,"sd2");
-    else if(param_mission == 3)
-        strcat(fname,"sd3");
-#else
     strcat(fname,extension);
-#endif
 
     FILE *file = fopen(fname,"rb");
     if(!file)

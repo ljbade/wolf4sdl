@@ -32,6 +32,8 @@ extern  byte *audiosegs[NUMSNDCHUNKS];
 extern  byte *grsegs[NUMCHUNKS];
 
 extern  char  extension[5];
+extern  char  graphext[5];
+extern  char  audioext[5];
 
 //===========================================================================
 

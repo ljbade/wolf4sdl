@@ -77,6 +77,8 @@ word    RLEWtag;
 */
 
 char extension[5]; // Need a string, not constant to change cache files
+char graphext[5];
+char audioext[5];
 static const char gheadname[] = "vgahead.";
 static const char gfilename[] = "vgagraph.";
 static const char gdictname[] = "vgadict.";
@@ -455,7 +457,7 @@ void CAL_SetupGrFile (void)
 //
 
     strcpy(fname,gdictname);
-    strcat(fname,extension);
+    strcat(fname,graphext);
 
     handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
@@ -466,7 +468,7 @@ void CAL_SetupGrFile (void)
 
     // load the data offsets from ???head.ext
     strcpy(fname,gheadname);
-    strcat(fname,extension);
+    strcat(fname,graphext);
 
     handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
@@ -489,7 +491,7 @@ void CAL_SetupGrFile (void)
 // Open the graphics file, leaving it open until the game is finished
 //
     strcpy(fname,gfilename);
-    strcat(fname,extension);
+    strcat(fname,graphext);
 
     grhandle = open(fname, O_RDONLY | O_BINARY);
     if (grhandle == -1)
@@ -531,16 +533,7 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
     strcpy(fname,mheadname);
-#if defined(SPEAR) && !defined(SPEARDEMO)
-    if(param_mission == 1)
-        strcat(fname,extension);
-    else if(param_mission == 2)
-        strcat(fname,"sd2");
-    else if(param_mission == 3)
-        strcat(fname,"sd3");
-#else
     strcat(fname,extension);
-#endif
 
     handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
@@ -559,16 +552,7 @@ void CAL_SetupMapFile (void)
 //
 #ifdef CARMACIZED
     strcpy(fname, "gamemaps.");
-#if defined(SPEAR) && !defined(SPEARDEMO)
-    if(param_mission == 1)
-        strcat(fname,extension);
-    else if(param_mission == 2)
-        strcat(fname,"sd2");
-    else if(param_mission == 3)
-        strcat(fname,"sd3");
-#else
-    strcat(fname,extension);
-#endif
+    strcat(fname, extension);
 
     maphandle = open(fname, O_RDONLY | O_BINARY);
     if (maphandle == -1)
@@ -629,7 +613,7 @@ void CAL_SetupAudioFile (void)
 // load audiohed.ext (offsets for audio file)
 //
     strcpy(fname,aheadname);
-    strcat(fname,extension);
+    strcat(fname,audioext);
 
     void* ptr;
     if (!CA_LoadFile(fname, &ptr))
@@ -640,7 +624,7 @@ void CAL_SetupAudioFile (void)
 // open the data file
 //
     strcpy(fname,afilename);
-    strcat(fname,extension);
+    strcat(fname,audioext);
 
     audiohandle = open(fname, O_RDONLY | O_BINARY);
     if (audiohandle == -1)
