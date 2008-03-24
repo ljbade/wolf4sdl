@@ -14,6 +14,7 @@
     #include <kos.h>
     #include <SDL.h>
     //#include <SDL_dreamcast.h>
+    #define O_BINARY 0      // kos only supports binary mode
 #elif !defined(_WIN32)
 	#include <stdint.h>
     #include <string.h>
