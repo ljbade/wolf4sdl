@@ -1,7 +1,7 @@
 #ifndef WL_DEF_H
 #define WL_DEF_H
 
-// Defines which version shall be build and configures supported extra features
+// Defines which version shall be built and configures supported extra features
 #include "version.h"
 
 #include <assert.h>
@@ -11,17 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #if defined(_arch_dreamcast)
-    #include <kos.h>
-    #include <SDL.h>
-    //#include <SDL_dreamcast.h>
+#	include <kos.h>
 #elif !defined(_WIN32)
-	#include <stdint.h>
-    #include <string.h>
-    #include <stdarg.h>
-    #include <SDL.h>
-#else
-    #include <SDL.h>
+#	include <stdint.h>
+#	include <string.h>
+#	include <stdarg.h>
 #endif
+#include <SDL.h>
 
 #if !defined O_BINARY
 #	define O_BINARY 0
