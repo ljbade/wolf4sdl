@@ -1,9 +1,9 @@
 // WL_MAIN.C
 
 #ifdef _WIN32
-	#include <io.h>
+    #include <io.h>
 #else
-	#include <unistd.h>
+    #include <unistd.h>
 #endif
 
 #include "wl_def.h"
@@ -86,7 +86,7 @@ int     param_joystickindex = 0;
 
 #ifdef _arch_dreamcast
 int     param_joystickhat = 0;
-int     param_samplerate = 22050;       // higher samplerates result in "out of memory"
+int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
 int     param_audiobuffer = 4096 / (44100 / param_samplerate);
 #else
 int     param_joystickhat = -1;
@@ -119,6 +119,10 @@ void ReadConfig(void)
     SDMode  sd;
     SMMode  sm;
     SDSMode sds;
+
+#ifdef _arch_dreamcast
+    DC_LoadFromVMU(configname);
+#endif
 
     const int file = open(configname, O_RDONLY | O_BINARY);
     if (file != -1)
@@ -244,6 +248,10 @@ noconfig:
 
 void WriteConfig(void)
 {
+#ifdef _arch_dreamcast
+    fs_unlink(configname);
+#endif
+
     const int file = open(configname, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (file != -1)
     {
@@ -272,6 +280,9 @@ void WriteConfig(void)
 
         close(file);
     }
+#ifdef _arch_dreamcast
+    DC_SaveToVMU(configname, 1);
+#endif
 }
 
 
@@ -1000,11 +1011,11 @@ void InitDigiMap (void)
     int *map;
 
     for (map = wolfdigimap; *map != LASTSOUND; map += 3)
-	{
+    {
         DigiMap[map[0]] = map[1];
         DigiChannel[map[1]] = map[2];
-		SD_PrepareSound(map[1]);
-	}
+        SD_PrepareSound(map[1]);
+    }
 }
 
 #ifndef SPEAR
@@ -1783,10 +1794,11 @@ void CheckParameters(int argc, char *argv[])
 int main (int argc, char *argv[])
 {
 #ifdef _arch_dreamcast
-    fs_chdir("/cd");
-#endif
-
+    DC_Main();
+    DC_CheckParameters();
+#else
     CheckParameters(argc, argv);
+#endif
 
     CheckForEpisodes();
 

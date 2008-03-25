@@ -1525,6 +1525,9 @@ CP_LoadGame (int quick)
         if (SaveGamesAvail[which])
         {
             name[7] = which + '0';
+#ifdef _arch_dreamcast
+            DC_LoadFromVMU(name);
+#endif
             file = fopen (name, "rb");
             fseek (file, 32, SEEK_SET);
             loadedgame = true;
@@ -1561,6 +1564,9 @@ CP_LoadGame (int quick)
             ShootSnd ();
             name[7] = which + '0';
 
+#ifdef _arch_dreamcast
+            DC_LoadFromVMU(name);
+#endif
             file = fopen (name, "rb");
             fseek (file, 32, SEEK_SET);
 
@@ -1710,6 +1716,10 @@ CP_SaveGame (int quick)
             SaveTheGame (file, 0, 0);
             fclose (file);
 
+#ifdef _arch_dreamcast
+            DC_SaveToVMU (name, 2);
+#endif
+
             return 1;
         }
     }
@@ -1775,6 +1785,10 @@ CP_SaveGame (int quick)
                 SaveTheGame (file, LSA_X + 8, LSA_Y + 5);
 
                 fclose (file);
+
+#ifdef _arch_dreamcast
+                DC_SaveToVMU (name, 2);
+#endif
 
                 ShootSnd ();
                 exit = 1;
@@ -3104,6 +3118,11 @@ void
 SetupControlPanel (void)
 {
     char name[13];
+#ifdef _arch_dreamcast
+    file_t dir;
+    dirent_t *dirent;
+    int x;
+#endif
 
     //
     // CACHE GRAPHICS & SOUNDS
@@ -3127,6 +3146,42 @@ SetupControlPanel (void)
     //
     // SEE WHICH SAVE GAME FILES ARE AVAILABLE & READ STRING IN
     //
+#ifdef _arch_dreamcast
+
+    dir = fs_open("/vmu/a1", O_RDONLY | O_DIR);
+    x = 0;
+
+    strcpy(name, SaveName);
+    while((dirent = fs_readdir(dir)) && x < 10)
+    {
+        for(int i=0; i<10; i++)
+        {
+            name[7] = '0' + i;
+            if(!strcmp(name, dirent->name))
+            {
+                if(DC_LoadFromVMU(name) != -1)
+                {
+                    const int handle = open(name, O_RDONLY);
+                    if (handle >= 0)
+                    {
+                        char temp[32];
+
+        				SaveGamesAvail[i] = 1;
+						read(handle, temp, 32);
+						close(handle);
+						strcpy(&SaveGameNames[i][0], temp);
+						x++;
+					}
+					fs_unlink(name);
+				}
+			}
+		}
+    }
+
+	fs_close(dir);
+
+#else
+
     strcpy(name, SaveName);
     for(int i=0; i<10; i++)
     {
@@ -3143,6 +3198,7 @@ SetupControlPanel (void)
         }
     }
 
+#endif
     //
     // CENTER MOUSE
     //

@@ -925,6 +925,7 @@ extern  int      param_joystickhat;
 extern  int      param_samplerate;
 extern  int      param_audiobuffer;
 extern  int      param_mission;
+extern  boolean  param_goodtimes;
 
 
 void            NewGame (int difficulty,int episode);
@@ -1349,8 +1350,14 @@ extern  void    EndText(void);
 
 #ifdef _arch_dreamcast
 
+// defined in dc_main.cpp
+void DC_Main(void);
+void DC_CheckParameters(void);
+
 // defined in dc_vmu.cpp
 void StatusDrawLCD(int lcd_index);
+int DC_SaveToVMU(char *src, int tp);
+int DC_LoadFromVMU(char *dst);
 
 #else
 
