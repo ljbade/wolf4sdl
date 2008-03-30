@@ -4107,15 +4107,11 @@ CheckForEpisodes (void)
     strcat (SaveName, extension);
     strcat (demoname, extension);
 
-#ifdef ABCAUS
-
 #ifndef SPEAR
 #ifndef GOODTIMES
     strcat (helpfilename, extension);
 #endif
     strcat (endfilename, extension);
 #endif
-#endif
-
 #endif
 }
