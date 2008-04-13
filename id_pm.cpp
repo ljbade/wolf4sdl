@@ -41,7 +41,7 @@ void PM_Startup()
     fseek(file, 0, SEEK_END);
     long fileSize = ftell(file);
     long pageDataSize = fileSize - pageOffsets[0];
-    if(pageDataSize > SIZE_MAX)
+    if(pageDataSize > (size_t) -1)
         Quit("The page file \"%s\" is too large!", fname);
 
     pageOffsets[ChunksInFile] = fileSize;
