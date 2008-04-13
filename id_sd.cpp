@@ -60,6 +60,12 @@ typedef struct
 	longword chunklength;
 } wavechunk;
 
+typedef struct
+{
+    uint32_t startpage;
+    uint32_t length;
+} digiinfo;
+
 static Mix_Chunk *SoundChunks[ STARTMUSIC - STARTDIGISOUNDS];
 static byte      *SoundBuffers[STARTMUSIC - STARTDIGISOUNDS];
 
@@ -94,7 +100,7 @@ static  int                     RightPosition;
 static  word                    TimerRate;
 
         word                    NumDigi;
-static  word                    *DigiList;
+static  digiinfo               *DigiList;
 static  boolean                 DigiPlaying;
 
 //      SoundBlaster variables
@@ -1275,8 +1281,8 @@ void SD_PrepareSound(int which)
     if(DigiList == NULL)
         Quit("SD_PrepageSound(%i): DigiList not initialized!\n", which);
 
-    int page = DigiList[which * 2];
-    int size = DigiList[(which * 2) + 1];
+    int page = DigiList[which].startpage;
+    int size = DigiList[which].length;
 
     byte *origsamples = PM_GetSound(page);
 
@@ -1395,32 +1401,43 @@ SD_SetDigiDevice(SDSMode mode)
 void
 SDL_SetupDigi(void)
 {
-    memptr  list;
-    word    *p;
-    word pg;
-    int             i;
+    // Correct padding enforced by PM_Startup()
+    word *soundInfoPage = (word *) (void *) PM_GetPage(ChunksInFile-1);
+    NumDigi = PM_GetPageSize(ChunksInFile - 1) / 4;
 
-    list=malloc(PMPageSize);
-    CHECKMALLOCRESULT(list);
-    p=(word *)PM_GetPage(ChunksInFile-1);
-    memcpy(list,p,PMPageSize);
-
-    pg = PMSoundStart;
-    for (i = 0;i < PMPageSize / (sizeof(word) * 2);i++,p += 2)
+    DigiList = (digiinfo *) malloc(NumDigi * sizeof(digiinfo));
+    for(int i = 0; i < NumDigi; i++)
     {
-        if (pg >= ChunksInFile - 1)
-            break;
-        pg += (p[1] + (PMPageSize - 1)) / PMPageSize;
+        // Calculate the size of the digi from the sizes of the pages between
+        // the start page and the start page of the next sound
+
+        DigiList[i].startpage = soundInfoPage[i * 2];
+        int lastPage;
+        if(i < NumDigi - 1)
+        {
+            lastPage = PMSoundStart + soundInfoPage[i * 2 + 2];
+            if(lastPage == 0) lastPage = ChunksInFile - 1;
+        }
+        else lastPage = ChunksInFile - 1;
+
+        int size = 0;
+        for(int page = PMSoundStart + DigiList[i].startpage; page < lastPage; page++)
+            size += PM_GetPageSize(page);
+
+        // Don't include padding of sound info page, if padding was added
+        if(lastPage == ChunksInFile - 1 && PMSoundInfoPagePadded) size--;
+
+        // Patch lower 16-bit of size with size from sound info page.
+        // The original VSWAP contains padding which is included in the page size,
+        // but not included in the 16-bit size. So we use the more precise value.
+        if((size & 0xffff0000) != 0 && (size & 0xffff) < soundInfoPage[i * 2 + 1])
+            size -= 0x10000;
+        size = (size & 0xffff0000) | soundInfoPage[i * 2 + 1];
+
+        DigiList[i].length = size;
     }
 
-    DigiList=(word *) malloc(i*sizeof(word)*2);
-    CHECKMALLOCRESULT(DigiList);
-    memcpy(DigiList,list,i*sizeof(word)*2);
-    free(list);
-
-    NumDigi = i;
-
-    for (i = 0;i < LASTSOUND;i++)
+    for(int i = 0; i < LASTSOUND; i++)
     {
         DigiMap[i] = -1;
         DigiChannel[i] = -1;

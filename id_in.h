@@ -157,7 +157,7 @@ extern	void		IN_GetJoyAbs(word joy,word *xp,word *yp);
 extern	void		IN_SetupJoy(word joy,word minx,word maxx,
 								word miny,word maxy);
 extern	void		IN_StopDemo(void),IN_FreeDemoBuffer(void),
-					IN_Ack(void),IN_AckBack(void);
+					IN_Ack(void);
 extern	boolean		IN_UserInput(longword delay);
 extern	char		IN_WaitForASCII(void);
 extern	ScanCode	IN_WaitForKey(void);
