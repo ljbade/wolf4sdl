@@ -439,7 +439,7 @@ void TakeDamage (int points,objtype *attacker)
     // MAKE BJ'S EYES BUG IF MAJOR DAMAGE!
     //
 #ifdef SPEAR
-    if (points > 30 && gamestate.health!=0 && !godmode)
+    if (points > 30 && gamestate.health!=0 && !godmode && viewsize != 20)
     {
         StatusDrawFace(BJOUCHPIC);
         facecount = 0;
@@ -763,7 +763,8 @@ void GetBonus (statobj_t *check)
             SD_PlaySound (GETGATLINGSND);
             GiveWeapon (wp_chaingun);
 
-            StatusDrawFace (GOTGATLINGPIC);
+            if(viewsize != 20)
+                StatusDrawFace (GOTGATLINGPIC);
             facecount = 0;
             break;
 
