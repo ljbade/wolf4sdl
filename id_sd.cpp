@@ -1412,11 +1412,18 @@ SDL_SetupDigi(void)
         // the start page and the start page of the next sound
 
         DigiList[i].startpage = soundInfoPage[i * 2];
+        if(DigiList[i].startpage >= ChunksInFile - 1)
+        {
+            NumDigi = i;
+            break;
+        }
+
         int lastPage;
         if(i < NumDigi - 1)
         {
-            lastPage = PMSoundStart + soundInfoPage[i * 2 + 2];
-            if(lastPage == 0) lastPage = ChunksInFile - 1;
+            lastPage = soundInfoPage[i * 2 + 2];
+            if(lastPage == 0 || lastPage + PMSoundStart > ChunksInFile - 1) lastPage = ChunksInFile - 1;
+            else lastPage += PMSoundStart;
         }
         else lastPage = ChunksInFile - 1;
 
