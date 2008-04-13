@@ -1,4 +1,11 @@
 Head (not released yet)
+ - Added some asserts in id_vl.cpp to check for screen access out of bounds
+ - Fixed BJ face popping up in fullsize mode sometimes
+   (Thanks to Andy_Nonymous)
+ - Rewrote page manager to support page >= 64kB
+   and to correctly handle sounds >= 4kB
+ - Improved SOD mission packs support
+   (Thanks to fackue)
  - Updated Code::Blocks search paths to ..\SDL-devel\
  - Added version.h to Dev-C++ and Code::Blocks project file
  - Fixed some files being read in text mode on MinGW
