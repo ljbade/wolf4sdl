@@ -1127,19 +1127,16 @@ void UpdatePaletteShifts (void)
 
     if (red)
     {
-        VW_WaitVBL (1);
         VL_SetPalette (redshifts[red - 1]);
         palshifted = true;
     }
     else if (white)
     {
-        VW_WaitVBL (1);
         VL_SetPalette (whiteshifts[white - 1]);
         palshifted = true;
     }
     else if (palshifted)
     {
-        VW_WaitVBL (1);
         VL_SetPalette (gamepal);        // back to normal
         palshifted = false;
     }
@@ -1161,7 +1158,6 @@ void FinishPaletteShifts (void)
     if (palshifted)
     {
         palshifted = 0;
-        VW_WaitVBL (1);
         VL_SetPalette (gamepal);
     }
 }
