@@ -38,8 +38,8 @@ How to play:
 
 To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original WL6
 files into the same directory as the Wolf4SDL executable. If you want to use
-Wolf4SDL with the shareware version (tested) or with Spear (tested), you can
-compile Wolf4SDL with other defines at the beginning of "wl_def.h".
+Wolf4SDL with the shareware version or with Spear, you can compile Wolf4SDL
+with other defines in "version.h".
 
 If you play in windowed mode (--windowed parameter), press SCROLLLOCK or F12
 to grab the mouse. Press it again to release the mouse.
@@ -52,7 +52,8 @@ The current version of the source code is available in the svn repository at:
 
 The following ways of compiling the source code are supported:
  - Makefile (for Linux, BSD variants and MinGW/MSYS)
- - Visual Studio 2005 or above (Wolf4SDL.sln and Wolf4SDL.vcproj)
+ - Visual C++ 2005 or above (Wolf4SDL.sln and Wolf4SDL.vcproj)
+ - Visual C++ 6 (Wolf4SDL.dsw and Wolf4SDL.dsp)
  - Code::Blocks 8.02 (Wolf4SDL.cbp)
  - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
 

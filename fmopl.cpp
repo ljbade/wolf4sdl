@@ -85,7 +85,11 @@ Revision History:
 
 //#include "ymdeltat.h"
 
+#if _MSC_VER == 1200            // Visual C++ 6
+inline void logerror(...) {}
+#else
 #define logerror(...)
+#endif
 
 #include "fmopl.h"
 

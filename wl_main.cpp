@@ -404,7 +404,8 @@ boolean SaveTheGame(FILE *file,int x,int y)
     checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
     DiskFlopAnim(x,y);
 
-    for(int i=0;i<MAPSIZE;i++)
+    int i;
+    for(i=0;i<MAPSIZE;i++)
     {
         for(int j=0;j<MAPSIZE;j++)
         {
@@ -449,7 +450,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
     checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);
 
     DiskFlopAnim(x,y);
-    for(int i=0;i<MAXSTATS;i++)
+    for(i=0;i<MAXSTATS;i++)
     {
         memcpy(&nullstat,statobjlist+i,sizeof(nullstat));
         nullstat.visspot=(byte *) ((uintptr_t) nullstat.visspot-(uintptr_t)spotvis);
@@ -523,8 +524,8 @@ boolean LoadTheGame(FILE *file,int x,int y)
 
     DiskFlopAnim(x,y);
 
-    int actnum=0;
-    for(int i=0;i<MAPSIZE;i++)
+    int actnum=0, i;
+    for(i=0;i<MAPSIZE;i++)
     {
         for(int j=0;j<MAPSIZE;j++)
         {
@@ -564,7 +565,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
     checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);
 
     DiskFlopAnim(x,y);
-    for(int i=0;i<MAXSTATS;i++)
+    for(i=0;i<MAXSTATS;i++)
     {
         fread(&nullstat,sizeof(nullstat),1,file);
         checksum = DoChecksum((byte *)&nullstat,sizeof(nullstat),checksum);
@@ -693,7 +694,8 @@ void BuildTables (void)
     // calculate fine tangents
     //
 
-    for(int i=0;i<FINEANGLES/8;i++)
+    int i;
+    for(i=0;i<FINEANGLES/8;i++)
     {
         double tang=tan((i+0.5)/radtoint);
         finetangent[i]=(int32_t)(tang*GLOBAL1);
@@ -707,7 +709,7 @@ void BuildTables (void)
 
     float angle=0;
     float anglestep=(float)(PI/2/ANGLEQUAD);
-    for(int i=0; i<ANGLEQUAD; i++)
+    for(i=0; i<ANGLEQUAD; i++)
     {
         fixed value=(int32_t)(GLOBAL1*sin(angle));
         sintable[i]=sintable[i+ANGLES]=sintable[ANGLES/2-i]=value;
