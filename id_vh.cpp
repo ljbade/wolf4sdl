@@ -243,8 +243,6 @@ void LoadLatchMem (void)
 	CA_CacheGrChunk (STARTTILE8);
 	src = grsegs[STARTTILE8];
 
-    byte *surfmem = VL_LockSurface(surf);
-
 	for (i=0;i<NUMTILE8;i++)
 	{
 		VL_MemToLatch (src, 8, 8, surf, (i & 7) * 8, (i >> 3) * 8);

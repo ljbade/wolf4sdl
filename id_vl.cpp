@@ -525,7 +525,7 @@ void VL_MemToLatch(byte *source, int width, int height,
                 + (xsrc & 3) * (width >> 2) * height];
         }
     }
-    VL_UnlockSurface(curSurface);
+    VL_UnlockSurface(destSurface);
 }
 
 //===========================================================================
