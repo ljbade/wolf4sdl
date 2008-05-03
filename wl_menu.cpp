@@ -3624,6 +3624,11 @@ ReadAnyControl (ControlInfo * ci)
     {
         int mousex, mousey, buttons;
         buttons = SDL_GetMouseState(&mousex, &mousey);
+        int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+        int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+        buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
+        if(middlePressed) buttons |= 1 << 2;
+        if(rightPressed) buttons |= 1 << 1;
 
         if(mousey - CENTERY < -SENSITIVE)
         {

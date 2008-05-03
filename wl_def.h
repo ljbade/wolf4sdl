@@ -801,7 +801,6 @@ typedef struct objstruct
     struct objstruct *next,*prev;
 } objtype;
 
-#define NUMBUTTONS      14
 enum
 {
     bt_nobutton=-1,
@@ -818,7 +817,12 @@ enum
     bt_esc,
     bt_pause,
     bt_strafeleft,
-    bt_straferight
+    bt_straferight,
+    bt_moveforward,
+    bt_movebackward,
+    bt_turnleft,
+    bt_turnright,
+    NUMBUTTONS
 };
 
 

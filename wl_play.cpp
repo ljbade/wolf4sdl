@@ -274,9 +274,7 @@ void PollKeyboardButtons (void)
 
 void PollMouseButtons (void)
 {
-    int buttons;
-
-    buttons = IN_MouseButtons ();
+    int buttons = IN_MouseButtons ();
 
     if (buttons & 1)
         buttonstate[buttonmouse[0]] = true;
@@ -318,28 +316,16 @@ void PollJoystickButtons (void)
 
 void PollKeyboardMove (void)
 {
-    if (buttonstate[bt_run])
-    {
-        if (Keyboard[dirscan[di_north]])
-            controly -= RUNMOVE * tics;
-        if (Keyboard[dirscan[di_south]])
-            controly += RUNMOVE * tics;
-        if (Keyboard[dirscan[di_west]])
-            controlx -= RUNMOVE * tics;
-        if (Keyboard[dirscan[di_east]])
-            controlx += RUNMOVE * tics;
-    }
-    else
-    {
-        if (Keyboard[dirscan[di_north]])
-            controly -= BASEMOVE * tics;
-        if (Keyboard[dirscan[di_south]])
-            controly += BASEMOVE * tics;
-        if (Keyboard[dirscan[di_west]])
-            controlx -= BASEMOVE * tics;
-        if (Keyboard[dirscan[di_east]])
-            controlx += BASEMOVE * tics;
-    }
+    int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
+
+    if (Keyboard[dirscan[di_north]])
+        controly -= delta * tics;
+    if (Keyboard[dirscan[di_south]])
+        controly += delta * tics;
+    if (Keyboard[dirscan[di_west]])
+        controlx -= delta * tics;
+    if (Keyboard[dirscan[di_east]])
+        controlx += delta * tics;
 }
 
 
@@ -381,28 +367,16 @@ void PollJoystickMove (void)
 
     IN_GetJoyDelta (&joyx, &joyy);
 
-    if (buttonstate[bt_run])
-    {
-        if (joyx > 64)
-            controlx += RUNMOVE * tics;
-        else if (joyx < -64)
-            controlx -= RUNMOVE * tics;
-        if (joyy > 64)
-            controly += RUNMOVE * tics;
-        else if (joyy < -64)
-            controly -= RUNMOVE * tics;
-    }
-    else
-    {
-        if (joyx > 64)
-            controlx += BASEMOVE * tics;
-        else if (joyx < -64)
-            controlx -= BASEMOVE * tics;
-        if (joyy > 64)
-            controly += BASEMOVE * tics;
-        else if (joyy < -64)
-            controly -= BASEMOVE * tics;
-    }
+    int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
+
+    if (joyx > 64 || buttonstate[bt_turnright])
+        controlx += delta;
+    else if (joyx < -64  || buttonstate[bt_turnleft])
+        controlx -= delta;
+    if (joyy > 64 || buttonstate[bt_movebackward])
+        controly += delta;
+    else if (joyy < -64 || buttonstate[bt_moveforward])
+        controly -= delta;
 }
 
 /*
