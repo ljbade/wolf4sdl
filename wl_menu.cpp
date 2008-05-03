@@ -2230,7 +2230,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
         //
         // CHANGE BUTTON VALUE?
         //
-        if ((ci.button0 | ci.button1 | ci.button2 | ci.button3) ||
+        if ((type != KEYBOARDBTNS && type != KEYBOARDMOVE) && (ci.button0 | ci.button1 | ci.button2 | ci.button3) ||
             ((type == KEYBOARDBTNS || type == KEYBOARDMOVE) && LastScan == sc_Enter))
         {
             lastFlashTime = GetTimeCount();
@@ -2240,11 +2240,9 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
             if (type == KEYBOARDBTNS || type == KEYBOARDMOVE)
                 IN_ClearKeysDown ();
 
-            do
+            while(1)
             {
                 int button, result = 0;
-
-                IN_ProcessEvents();
 
                 //
                 // FLASH CURSOR
@@ -2289,10 +2287,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
 
                         if (result)
                         {
-                            int z;
-
-
-                            for (z = 0; z < 4; z++)
+                            for (int z = 0; z < 4; z++)
                                 if (order[which] == buttonmouse[z])
                                 {
                                     buttonmouse[z] = bt_nobutton;
@@ -2333,7 +2328,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                         break;
 
                     case KEYBOARDBTNS:
-                        if (LastScan)
+                        if (LastScan && LastScan != sc_Escape)
                         {
                             buttonscan[order[which]] = LastScan;
                             picked = 1;
@@ -2343,7 +2338,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                         break;
 
                     case KEYBOARDMOVE:
-                        if (LastScan)
+                        if (LastScan && LastScan != sc_Escape)
                         {
                             dirscan[moveorder[which]] = LastScan;
                             picked = 1;
@@ -2356,14 +2351,16 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 //
                 // EXIT INPUT?
                 //
-                if (IN_KeyDown (sc_Escape))
+                if (IN_KeyDown (sc_Escape) || type != JOYSTICK && ci.button1)
                 {
                     picked = 1;
-                    continue;
+                    SD_PlaySound (ESCPRESSEDSND);
                 }
 
+                if(picked) break;
+
+                ReadAnyControl (&ci);
             }
-            while (!picked);
 
             SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
             redraw = 1;
