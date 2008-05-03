@@ -1169,10 +1169,11 @@ boolean CheckSight (objtype *ob);
 =============================================================================
 */
 
-extern  short   anglefrac;
-extern  int     facecount;
-extern  word    plux,pluy;         // player coordinates scaled to unsigned
-extern  int32_t    thrustspeed;
+extern  short    anglefrac;
+extern  int      facecount;
+extern  word     plux,pluy;         // player coordinates scaled to unsigned
+extern  int32_t  thrustspeed;
+extern  objtype  *LastAttacker;
 
 void    Thrust (int angle, int32_t speed);
 void    SpawnPlayer (int tilex, int tiley, int dir);

@@ -645,6 +645,8 @@ void SetupGameLevel (void)
             = gamestate.killcount
             = gamestate.treasurecount
             = pwallstate = pwallpos = 0;
+        LastAttacker = NULL;
+        killerobj = NULL;
     }
 
     if (demoplayback || demorecord)

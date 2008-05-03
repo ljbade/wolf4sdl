@@ -74,7 +74,6 @@ globalsoundpos channelSoundPos[MIX_CHANNELS];
         SDMode          SoundMode;
         SMMode          MusicMode;
         SDSMode         DigiMode;
-//volatile longword       TimeCount;
 static  byte          **SoundTable;
         int             DigiMap[LASTSOUND];
         int             DigiChannel[STARTMUSIC - STARTDIGISOUNDS];

@@ -309,7 +309,7 @@ void DrawFace (void)
     else
     {
 #ifndef SPEAR
-        if (LastAttacker->obclass == needleobj)
+        if (LastAttacker && LastAttacker->obclass == needleobj)
             StatusDrawFace(MUTANTBJPIC);
         else
 #endif
