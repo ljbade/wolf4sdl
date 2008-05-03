@@ -119,7 +119,7 @@ CP_itemtype SndMenu[] = {
     {0, "", 0},
     {0, "", 0},
     {1, STR_NONE, 0},
-    {1, STR_DISNEY, 0},
+    {0, STR_DISNEY, 0},
     {1, STR_SB, 0},
     {0, "", 0},
     {0, "", 0},
@@ -1304,12 +1304,12 @@ CP_Sound (int)
                 }
                 break;
             case 6:
-                if (DigiMode != sds_SoundSource)
+/*                if (DigiMode != sds_SoundSource)
                 {
                     SD_SetDigiDevice (sds_SoundSource);
                     DrawSoundMenu ();
                     ShootSnd ();
-                }
+                }*/
                 break;
             case 7:
                 if (DigiMode != sds_SoundBlaster)
@@ -1386,13 +1386,10 @@ DrawSoundMenu (void)
         SndMenu[2].active = SndMenu[10].active = SndMenu[11].active = 0;
     }
 
-    if (!SoundSourcePresent)
-        SndMenu[6].active = 0;
-
     if (!SoundBlasterPresent)
         SndMenu[7].active = 0;
 
-    if (!SoundSourcePresent && !SoundBlasterPresent)
+    if (!SoundBlasterPresent)
         SndMenu[5].active = 0;
 
     DrawMenu (&SndItems, &SndMenu[0]);
@@ -1439,8 +1436,8 @@ DrawSoundMenu (void)
                         on = 1;
                     break;
                 case 6:
-                    if (DigiMode == sds_SoundSource)
-                        on = 1;
+//                    if (DigiMode == sds_SoundSource)
+//                        on = 1;
                     break;
                 case 7:
                     if (DigiMode == sds_SoundBlaster)
@@ -3028,8 +3025,8 @@ IntroScreen (void)
     if (SoundBlasterPresent)
         VWB_Bar (164, 151, 12, 2, FILLCOLOR);
 
-    if (SoundSourcePresent)
-        VWB_Bar (164, 174, 12, 2, FILLCOLOR);
+//    if (SoundSourcePresent)
+//        VWB_Bar (164, 174, 12, 2, FILLCOLOR);
 }
 
 

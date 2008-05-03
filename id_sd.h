@@ -25,7 +25,7 @@ typedef enum
 
 typedef enum
 {
-    sds_Off,sds_PC,sds_SoundSource,sds_SoundBlaster
+    sds_Off,sds_PC,sds_SoundBlaster
 } SDSMode;
 
 typedef struct
@@ -111,7 +111,6 @@ extern globalsoundpos channelSoundPos[];
 
 // Global variables
 extern  boolean         AdLibPresent,
-                        SoundSourcePresent,
                         SoundBlasterPresent,
                         SoundPositioned;
 extern  SDMode          SoundMode;
@@ -153,12 +152,5 @@ extern  void    SD_SetDigiDevice(SDSMode);
 extern  void	SD_PrepareSound(int which);
 extern  int     SD_PlayDigitized(word which,int leftpos,int rightpos);
 extern  void    SD_StopDigitized(void);
-
-#ifdef  _MUSE_  // MUSE Goes directly to the lower level routines
-extern  void    SDL_PCPlaySound(PCSound far *sound),
-                SDL_PCStopSound(void),
-                SDL_ALPlaySound(AdLibSound far *sound),
-                SDL_ALStopSound(void);
-#endif
 
 #endif

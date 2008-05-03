@@ -167,8 +167,7 @@ void ReadConfig(void)
             sm = smm_Off;
         }
 
-        if ((sds == sds_SoundBlaster && !SoundBlasterPresent) ||
-                (sds == sds_SoundSource && !SoundSourcePresent))
+        if ((sds == sds_SoundBlaster && !SoundBlasterPresent))
             sds = sds_Off;
 
         // make sure values are correct
@@ -211,8 +210,6 @@ noconfig:
 
         if (SoundBlasterPresent)
             sds = sds_SoundBlaster;
-        else if (SoundSourcePresent)
-            sds = sds_SoundSource;
         else
             sds = sds_Off;
 
