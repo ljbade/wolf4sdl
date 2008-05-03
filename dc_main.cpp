@@ -260,12 +260,28 @@ void DC_Main()	{
 		}
 #endif
 #else
-#ifndef UPLOAD
+#ifdef UPLOAD
+		/* Random Shareware CD-ROM */
+		fp = fopen("/cd/vgahead.wl1", "r");
+		if(fp)	{
+			fclose(fp);
+			fs_chdir("/cd");
+			goto copy2ram;
+		}
+#else
 		/* Activision Wolfenstein 3D CD-ROM */
 		fp = fopen("/cd/Install/data/WOLF3D/vgahead.wl6", "r");
 		if(fp)	{
 			fclose(fp);
 			fs_chdir("/cd/Install/data/WOLF3D");
+			goto copy2ram;
+		}
+
+		/* Random Full Version CD-ROM */
+		fp = fopen("/cd/vgahead.wl6", "r");
+		if(fp)	{
+			fclose(fp);
+			fs_chdir("/cd");
 			goto copy2ram;
 		}
 
@@ -435,10 +451,14 @@ void DC_CheckParameters()	{
 		result = strtok(NULL, " ");
 	}
 
-    free(buf);
+	free(buf);
 
-    if(sampleRateGiven && !audioBufferGiven)
-        param_audiobuffer = 4096 / (44100 / param_samplerate);
+	if(sampleRateGiven && !audioBufferGiven)
+		param_audiobuffer = 4096 / (44100 / param_samplerate);
+}
+
+int DC_MousePresent() {
+	return maple_first_mouse() != 0;
 }
 
 #endif // _arch_dreamcast

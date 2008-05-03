@@ -1353,6 +1353,7 @@ extern  void    EndText(void);
 // defined in dc_main.cpp
 void DC_Main(void);
 void DC_CheckParameters(void);
+int DC_MousePresent(void);
 
 // defined in dc_vmu.cpp
 void StatusDrawLCD(int lcd_index);

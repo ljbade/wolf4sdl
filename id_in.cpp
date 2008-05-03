@@ -385,8 +385,10 @@ IN_Startup(void)
     }
 
     // I didn't find a way to ask libSDL whether a mouse is present, yet...
-#if defined(GP2x) || defined(_arch_dreamcast)
+#if defined(GP2x)
     MousePresent = false;
+#elif defined(_arch_dreamcast)
+    MousePresent = DC_MousePresent();
 #else
     MousePresent = true;
 #endif
