@@ -79,6 +79,9 @@ void			US_PrintCentered(const char *s),
 				US_CPrint(const char *s),
 				US_CPrintLine(const char *s),
 				US_Print(const char *s);
+void			US_Printf(const char *formatStr, ...);
+void			US_CPrintf(const char *formatStr, ...);
+
 void			US_PrintUnsigned(longword n);
 void			US_PrintSigned(int32_t n);
 void			US_StartCursor(void),

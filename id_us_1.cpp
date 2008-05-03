@@ -252,8 +252,8 @@ US_CPrintLine(const char *s)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	US_CPrint() - Prints a string in the current window. Newlines are
-//		supported.
+//  US_CPrint() - Prints a string centered in the current window.
+//      Newlines are supported.
 //
 ///////////////////////////////////////////////////////////////////////////
 void
@@ -281,6 +281,44 @@ US_CPrint(const char *sorg)
 		}
 	}
 	free(sstart);
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//  US_Printf() - Prints a formatted string in the current window.
+//      Newlines are supported.
+//
+///////////////////////////////////////////////////////////////////////////
+
+void US_Printf(const char *formatStr, ...)
+{
+    char strbuf[256];
+    va_list vlist;
+    va_start(vlist, formatStr);
+    int len = vsnprintf(strbuf, sizeof(strbuf), formatStr, vlist);
+    va_end(vlist);
+    if(len <= -1 || len >= sizeof(strbuf))
+        strbuf[sizeof(strbuf) - 1] = 0;
+    US_Print(strbuf);
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//  US_CPrintf() - Prints a formatted string centered in the current window.
+//      Newlines are supported.
+//
+///////////////////////////////////////////////////////////////////////////
+
+void US_CPrintf(const char *formatStr, ...)
+{
+    char strbuf[256];
+    va_list vlist;
+    va_start(vlist, formatStr);
+    int len = vsnprintf(strbuf, sizeof(strbuf), formatStr, vlist);
+    va_end(vlist);
+    if(len <= -1 || len >= sizeof(strbuf))
+        strbuf[sizeof(strbuf) - 1] = 0;
+    US_CPrint(strbuf);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -412,6 +450,24 @@ USL_XORICursor(int x,int y,const char *s,word cursor)
 	}
 }
 
+char USL_RotateChar(char ch, int dir)
+{
+    static const char charSet[] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ.,-!?0123456789";
+    const int numChars = sizeof(charSet) / sizeof(char) - 1;
+    int i;
+    for(i = 0; i < numChars; i++)
+    {
+        if(ch == charSet[i]) break;
+    }
+
+    if(i == numChars) i = 0;
+
+    i += dir;
+    if(i < 0) i = numChars - 1;
+    else if(i >= numChars) i = 0;
+    return charSet[i];
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_LineInput() - Gets a line of user input at (x,y), the string defaults
@@ -428,7 +484,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 {
 	boolean		redraw,
 				cursorvis,cursormoved,
-				done,result;
+				done,result, checkkey;
 	ScanCode	sc;
 	char		c;
 	char		s[MaxString],olds[MaxString];
@@ -436,7 +492,9 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 	word		i,
 				w,h,
 				temp;
-	longword	lasttime;
+	longword	curtime, lasttime, lastdirtime, lastbuttontime, lastdirmovetime;
+	ControlInfo ci;
+	Direction   lastdir = dir_None;
 
 	if (def)
 		strcpy(s,def);
@@ -447,13 +505,14 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 	cursormoved = redraw = true;
 
 	cursorvis = done = false;
-	lasttime = GetTimeCount();
+	lasttime = lastdirtime = lastdirmovetime = GetTimeCount();
+	lastbuttontime = lasttime + TickBase / 4;	// 250 ms => first button press accepted after 500 ms
 	LastASCII = key_None;
 	LastScan = sc_None;
 
 	while (!done)
 	{
-	    IN_ProcessEvents();
+		ReadAnyControl(&ci);
 
 		if (cursorvis)
 			USL_XORICursor(x,y,s,cursor);
@@ -463,88 +522,188 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 		c = LastASCII;
 		LastASCII = key_None;
 
-		switch (sc)
+		checkkey = true;
+		curtime = GetTimeCount();
+
+		// After each direction change accept the next change after 250 ms and then everz 125 ms
+		if(ci.dir != lastdir || curtime - lastdirtime > TickBase / 4 && curtime - lastdirmovetime > TickBase / 8)
 		{
-            case sc_LeftArrow:
-                if (cursor)
-                    cursor--;
-                c = key_None;
-                cursormoved = true;
-                break;
-            case sc_RightArrow:
-                if (s[cursor])
-                    cursor++;
-                c = key_None;
-                cursormoved = true;
-                break;
-            case sc_Home:
-                cursor = 0;
-                c = key_None;
-                cursormoved = true;
-                break;
-            case sc_End:
-                cursor = (int) strlen(s);
-                c = key_None;
-                cursormoved = true;
-                break;
+			if(ci.dir != lastdir)
+			{
+				lastdir = ci.dir;
+				lastdirtime = curtime;
+			}
+            lastdirmovetime = curtime;
 
-            case sc_Return:
-                strcpy(buf,s);
-                done = true;
-                result = true;
-                c = key_None;
-                break;
-            case sc_Escape:
-                if (escok)
-                {
-                    done = true;
-                    result = false;
-                }
-                c = key_None;
-                break;
+			switch(ci.dir)
+			{
+				case dir_West:
+					if(cursor)
+					{
+						// Remove trailing whitespace if cursor is at end of string
+						if(s[cursor] == ' ' && s[cursor + 1] == 0)
+							s[cursor] = 0;
+						cursor--;
+					}
+					cursormoved = true;
+					checkkey = false;
+					break;
+				case dir_East:
+					if(cursor >= MaxString - 1) break;
 
-            case sc_BackSpace:
-                if (cursor)
-                {
-                    strcpy(s + cursor - 1,s + cursor);
-                    cursor--;
-                    redraw = true;
-                }
-                c = key_None;
-                cursormoved = true;
-                break;
-            case sc_Delete:
-                if (s[cursor])
-                {
-                    strcpy(s + cursor,s + cursor + 1);
-                    redraw = true;
-                }
-                c = key_None;
-                cursormoved = true;
-                break;
+					if(!s[cursor])
+					{
+						USL_MeasureString(s,&w,&h);
+						if(len >= maxchars || maxwidth && w >= maxwidth) break;
 
-            case SDLK_KP5: //0x4c:	// Keypad 5 // TODO: hmmm...
-            case sc_UpArrow:
-            case sc_DownArrow:
-            case sc_PgUp:
-            case sc_PgDn:
-            case sc_Insert:
-                c = key_None;
-                break;
+						s[cursor] = ' ';
+						s[cursor + 1] = 0;
+					}
+					cursor++;
+					cursormoved = true;
+					checkkey = false;
+					break;
+
+				case dir_North:
+					if(!s[cursor])
+					{
+						USL_MeasureString(s,&w,&h);
+						if(len >= maxchars || maxwidth && w >= maxwidth) break;
+						s[cursor + 1] = 0;
+					}
+					s[cursor] = USL_RotateChar(s[cursor], 1);
+					redraw = true;
+					checkkey = false;
+					break;
+
+				case dir_South:
+					if(!s[cursor])
+					{
+						USL_MeasureString(s,&w,&h);
+						if(len >= maxchars || maxwidth && w >= maxwidth) break;
+						s[cursor + 1] = 0;
+					}
+					s[cursor] = USL_RotateChar(s[cursor], -1);
+					redraw = true;
+					checkkey = false;
+					break;
+			}
 		}
 
-		if (c)
+		if((int)(curtime - lastbuttontime) > TickBase / 4)   // 250 ms
 		{
-			len = (int) strlen(s);
-			USL_MeasureString(s,&w,&h);
-
-			if	(isprint(c)	&&	(len < MaxString - 1) &&	((!maxchars) || (len < maxchars))
-					&&	((!maxwidth) || (w < maxwidth)))
+			if(ci.button0)             // acts as return
 			{
-				for (i = len + 1;i > cursor;i--)
-					s[i] = s[i - 1];
-				s[cursor++] = c;
-				redraw = true;
+				strcpy(buf,s);
+				done = true;
+				result = true;
+				checkkey = false;
+			}
+			if(ci.button1 && escok)    // acts as escape
+			{
+				done = true;
+				result = false;
+				checkkey = false;
+			}
+			if(ci.button2)             // acts as backspace
+			{
+				lastbuttontime = curtime;
+				if(cursor)
+				{
+					strcpy(s + cursor - 1,s + cursor);
+					cursor--;
+					redraw = true;
+				}
+				cursormoved = true;
+				checkkey = false;
+			}
+		}
+
+		if(checkkey)
+		{
+			switch (sc)
+			{
+				case sc_LeftArrow:
+					if (cursor)
+						cursor--;
+					c = key_None;
+					cursormoved = true;
+					break;
+				case sc_RightArrow:
+					if (s[cursor])
+						cursor++;
+					c = key_None;
+					cursormoved = true;
+					break;
+				case sc_Home:
+					cursor = 0;
+					c = key_None;
+					cursormoved = true;
+					break;
+				case sc_End:
+					cursor = (int) strlen(s);
+					c = key_None;
+					cursormoved = true;
+					break;
+
+				case sc_Return:
+					strcpy(buf,s);
+					done = true;
+					result = true;
+					c = key_None;
+					break;
+				case sc_Escape:
+					if (escok)
+					{
+						done = true;
+						result = false;
+					}
+					c = key_None;
+					break;
+
+				case sc_BackSpace:
+					if (cursor)
+					{
+						strcpy(s + cursor - 1,s + cursor);
+						cursor--;
+						redraw = true;
+					}
+					c = key_None;
+					cursormoved = true;
+					break;
+				case sc_Delete:
+					if (s[cursor])
+					{
+						strcpy(s + cursor,s + cursor + 1);
+						redraw = true;
+					}
+					c = key_None;
+					cursormoved = true;
+					break;
+
+				case SDLK_KP5: //0x4c:	// Keypad 5 // TODO: hmmm...
+				case sc_UpArrow:
+				case sc_DownArrow:
+				case sc_PgUp:
+				case sc_PgDn:
+				case sc_Insert:
+					c = key_None;
+					break;
+			}
+
+			if (c)
+			{
+				len = (int) strlen(s);
+				USL_MeasureString(s,&w,&h);
+
+				if(isprint(c) && (len < MaxString - 1) && ((!maxchars) || (len < maxchars))
+					&& ((!maxwidth) || (w < maxwidth)))
+				{
+					for (i = len + 1;i > cursor;i--)
+						s[i] = s[i - 1];
+					s[cursor++] = c;
+					redraw = true;
+				}
 			}
 		}
 
@@ -568,13 +727,13 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 		if (cursormoved)
 		{
 			cursorvis = false;
-			lasttime = GetTimeCount() - TickBase;
+			lasttime = curtime - TickBase;
 
 			cursormoved = false;
 		}
-		if (GetTimeCount() - lasttime > TickBase / 2)
+		if (curtime - lasttime > TickBase / 2)    // 500 ms
 		{
-			lasttime = GetTimeCount();
+			lasttime = curtime;
 
 			cursorvis ^= true;
 		}
@@ -609,7 +768,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 void US_InitRndT(int randomize)
 {
     if(randomize)
-        rndindex = SDL_GetTicks()&0xff;
+        rndindex = (SDL_GetTicks() >> 4) & 0xff;
     else
         rndindex = 0;
 }
