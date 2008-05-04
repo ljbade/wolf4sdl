@@ -9,6 +9,7 @@ Supported operating systems are at least:
  - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
  - Linux
  - BSD variants
+ - KallistiOS
 
 Only little endian platforms like x86, ARM and SH-4 are supported, yet.
 
@@ -56,6 +57,7 @@ The following ways of compiling the source code are supported:
  - Visual C++ 6 (Wolf4SDL.dsw and Wolf4SDL.dsp)
  - Code::Blocks 8.02 (Wolf4SDL.cbp)
  - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
+ - Special compiling for Dreamcast (see README-dc.txt)
 
 To compile the source code you need the development libraries of
  - SDL (http://www.libsdl.org/download-1.2.php) and
