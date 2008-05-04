@@ -13,6 +13,8 @@
 #include <kos.h>
 #include "wl_def.h"
 
+#define DCROOT "/cd"
+
 void DC_DrawString(int x, int y, char *string)
 {
 	bfont_draw_str(vram_s + ((y + 1) * 24 * 640) + (x * 12), 640, 0, string);
@@ -188,36 +190,36 @@ void DC_Main()	{
 
 #ifdef SPEAR
 #ifndef SPEARDEMO
-	int Missions = GetAvailableMissions("/cd/wolf3d/");
+	int Missions = GetAvailableMissions(DCROOT "/wolf3d/");
 	if(Missions != 0) {
 		if(Missions == 1)	{
-			fs_chdir("/cd/wolf3d");
+			fs_chdir(DCROOT "/wolf3d");
 			goto copy2ram;
 		}
 		else	{
 			selectedMission = DC_SpearMenu();
-			fs_chdir("/cd/wolf3d");
+			fs_chdir(DCROOT "/wolf3d");
 			goto copy2ram;
 		}
 	}
 #else
-	fp = fopen("/cd/wolf3d/vgahead.sdm", "r");
+	fp = fopen(DCROOT "/wolf3d/vgahead.sdm", "r");
 #endif
 #else
 #ifdef UPLOAD
-	fp = fopen("/cd/wolf3d/vgahead.wl1", "r");
+	fp = fopen(DCROOT "/wolf3d/vgahead.wl1", "r");
 #else
-	fp = fopen("/cd/wolf3d/vgahead.wl6", "r");
+	fp = fopen(DCROOT "/wolf3d/vgahead.wl6", "r");
 #endif
 #endif
 	if(fp)	{
 		fclose(fp);
-		fs_chdir("/cd/wolf3d");
+		fs_chdir(DCROOT "/wolf3d");
 		goto copy2ram;
 	}
 
 	DC_CLS();
-	DC_DrawString(4, 1, "Wolf4SDL\\DC 1.4");
+	DC_DrawString(4, 1, "Wolf4SDL\\DC 1.5");
 	DC_DrawString(4, 6, "Please insert your Wolfenstein 3D CD");
 	DC_DrawString(4, 7, "and press start.");
 
@@ -232,29 +234,29 @@ void DC_Main()	{
 #ifdef SPEAR
 #ifndef SPEARDEMO
 		/* Activision Wolfenstein 3D CD-ROM */
-		Missions = GetAvailableMissions("/cd/Install/data/SOD/");
+		Missions = GetAvailableMissions(DCROOT "/Install/data/SOD/");
 		if(Missions != 0) {
 			if(Missions == 1)	{
-				fs_chdir("/cd/Install/data/SOD");
+				fs_chdir(DCROOT "/Install/data/SOD");
 				goto copy2ram;
 			}
 			else	{
 				selectedMission = DC_SpearMenu();
-				fs_chdir("/cd/Install/data/SOD");
+				fs_chdir(DCROOT "/Install/data/SOD");
 				goto copy2ram;
 			}
 		}
 
 		/* Spear of Destiny Super CD CD-ROM */
-		Missions = GetAvailableMissions("/cd/");
+		Missions = GetAvailableMissions(DCROOT "/");
 		if(Missions != 0) {
 			if(Missions == 1)	{
-				fs_chdir("/cd");
+				fs_chdir(DCROOT);
 				goto copy2ram;
 			}
 			else	{
 				selectedMission = DC_SpearMenu();
-				fs_chdir("/cd");
+				fs_chdir(DCROOT);
 				goto copy2ram;
 			}
 		}
@@ -262,34 +264,34 @@ void DC_Main()	{
 #else
 #ifdef UPLOAD
 		/* Random Shareware CD-ROM */
-		fp = fopen("/cd/vgahead.wl1", "r");
+		fp = fopen(DCROOT "/vgahead.wl1", "r");
 		if(fp)	{
 			fclose(fp);
-			fs_chdir("/cd");
+			fs_chdir(DCROOT);
 			goto copy2ram;
 		}
 #else
 		/* Activision Wolfenstein 3D CD-ROM */
-		fp = fopen("/cd/Install/data/WOLF3D/vgahead.wl6", "r");
+		fp = fopen(DCROOT "/Install/data/WOLF3D/vgahead.wl6", "r");
 		if(fp)	{
 			fclose(fp);
-			fs_chdir("/cd/Install/data/WOLF3D");
+			fs_chdir(DCROOT "/Install/data/WOLF3D");
 			goto copy2ram;
 		}
 
 		/* Random Full Version CD-ROM */
-		fp = fopen("/cd/vgahead.wl6", "r");
+		fp = fopen(DCROOT "/vgahead.wl6", "r");
 		if(fp)	{
 			fclose(fp);
-			fs_chdir("/cd");
+			fs_chdir(DCROOT);
 			goto copy2ram;
 		}
 
 		/* RTCW Game of the Year CD-ROM */
-		fp = fopen("/cd/Bonus/Wolf3D/PROGRAM FILES/Wolfenstein 3D/wolf3d/vgahead.wl6", "r");
+		fp = fopen(DCROOT "/Bonus/Wolf3D/PROGRAM FILES/Wolfenstein 3D/wolf3d/vgahead.wl6", "r");
 		if(fp)	{
 			fclose(fp);
-			fs_chdir("/cd/Bonus/Wolf3D/PROGRAM FILES/Wolfenstein 3D/wolf3d");
+			fs_chdir(DCROOT "/Bonus/Wolf3D/PROGRAM FILES/Wolfenstein 3D/wolf3d");
 			goto copy2ram;
 		}
 #endif
@@ -372,7 +374,7 @@ void DC_CheckParameters()	{
     bool 	audioBufferGiven = false;
 	int		length = 0;
 
-	fp = fopen("/cd/params.txt", "r");
+	fp = fopen(DCROOT "/params.txt", "r");
 
 	if(!fp)
 		return;

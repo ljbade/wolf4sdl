@@ -12,10 +12,13 @@
 				<Option compiler="dreamcast_shelf_dependent" />
 				<Option use_console_runner="0" />
 				<Compiler>
-					<Add directory="..\kos\kos-ports\include\SDL" />
+					<Add directory="C:\cygwin\usr\local\dc\kos\kos-ports\include\SDL" />
 				</Compiler>
 				<Linker>
-					<Add option="-lSDL_mixer -lSDL -lm -lz" />
+					<Add option="-lSDL_mixer" />
+					<Add option="-lSDL" />
+					<Add option="-lm" />
+					<Add option="-lz" />
 				</Linker>
 			</Target>
 		</Build>
@@ -74,7 +77,6 @@
 			<code_completion />
 			<envvars />
 			<debugger />
-			<lib_finder />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
