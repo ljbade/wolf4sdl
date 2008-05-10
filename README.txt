@@ -53,7 +53,8 @@ The current version of the source code is available in the svn repository at:
 
 The following ways of compiling the source code are supported:
  - Makefile (for Linux, BSD variants and MinGW/MSYS)
- - Visual C++ 2005 or above (Wolf4SDL.sln and Wolf4SDL.vcproj)
+ - Visual C++ 2008 (Wolf4SDL.VC9.sln and Wolf4SDL.VC9.vcproj)
+ - Visual C++ 2005 (Wolf4SDL.sln and Wolf4SDL.vcproj)
  - Visual C++ 6 (Wolf4SDL.dsw and Wolf4SDL.dsp)
  - Code::Blocks 8.02 (Wolf4SDL.cbp)
  - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
