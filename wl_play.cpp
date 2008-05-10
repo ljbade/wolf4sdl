@@ -319,13 +319,13 @@ void PollKeyboardMove (void)
     int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
 
     if (Keyboard[dirscan[di_north]])
-        controly -= delta * tics;
+        controly -= delta;
     if (Keyboard[dirscan[di_south]])
-        controly += delta * tics;
+        controly += delta;
     if (Keyboard[dirscan[di_west]])
-        controlx -= delta * tics;
+        controlx -= delta;
     if (Keyboard[dirscan[di_east]])
-        controlx += delta * tics;
+        controlx += delta;
 }
 
 
