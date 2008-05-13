@@ -796,7 +796,7 @@ void SetupGameLevel (void)
 */
 void DrawPlayBorderSides(void)
 {
-    if(viewsize == 20) return;
+    if(viewsize == 21) return;
 
 	const int sw = screenWidth;
 	const int sh = screenHeight;
@@ -808,17 +808,32 @@ void DrawPlayBorderSides(void)
 	const int xl = sw / 2 - vw / 2;
 	const int yl = (h - vh) / 2;
 
-	VWB_BarScaledCoord(0,            0, xl - px,     h, bordercol);
-	VWB_BarScaledCoord(xl + vw + px, 0, xl - px * 2, h, bordercol);
+    if(xl != 0)
+    {
+	    VWB_BarScaledCoord(0,            0, xl - px,     h, bordercol);                 // left side
+	    VWB_BarScaledCoord(xl + vw + px, 0, xl - px * 2, h, bordercol);                 // right side
+    }
 
-	VWB_BarScaledCoord(0, 0,            sw, yl - px, bordercol);
-	VWB_BarScaledCoord(0, yl + vh + px, sw, yl - px, bordercol);
+    if(yl != 0)
+    {
+	    VWB_BarScaledCoord(0, 0,            sw, yl - px, bordercol);                    // upper side
+	    VWB_BarScaledCoord(0, yl + vh + px, sw, yl - px, bordercol);                    // lower side
+    }
 
-	VWB_BarScaledCoord(xl - px, yl - px, vw + px, px,          0);
-	VWB_BarScaledCoord(xl,      yl + vh, vw + px, px,          bordercol - 2);
-	VWB_BarScaledCoord(xl - px, yl - px, px,      vh + px,     0);
-	VWB_BarScaledCoord(xl + vw, yl - px, px,      vh + px * 2, bordercol - 2);
-	VWB_BarScaledCoord(xl - px, yl + vh, px,      px,          bordercol - 3);
+    if(xl != 0)
+    {
+        // Paint game view border lines
+	    VWB_BarScaledCoord(xl - px, yl - px, vw + px, px,          0);                      // upper border
+	    VWB_BarScaledCoord(xl,      yl + vh, vw + px, px,          bordercol - 2);          // lower border
+	    VWB_BarScaledCoord(xl - px, yl - px, px,      vh + px,     0);                      // left border
+	    VWB_BarScaledCoord(xl + vw, yl - px, px,      vh + px * 2, bordercol - 2);          // right border
+	    VWB_BarScaledCoord(xl - px, yl + vh, px,      px,          bordercol - 3);          // lower left highlight
+    }
+    else
+    {
+        // Just paint a lower border line
+        VWB_BarScaledCoord(0, yl+vh, vw, px, bordercol-2);       // lower border
+    }
 }
 
 
@@ -864,30 +879,41 @@ void DrawStatusBorder (byte color)
 
 void DrawPlayBorder (void)
 {
+	const int px = scaleFactor; // size of one "pixel"
+
     if (bordercol != VIEWCOLOR)
         DrawStatusBorder(bordercol);
     else
     {
-        int statusborderw = (screenWidth-scaleFactor*320)/2;
-        VWB_BarScaledCoord (0, screenHeight-scaleFactor*STATUSLINES,
-            statusborderw+scaleFactor*8, scaleFactor*STATUSLINES, bordercol);
-        VWB_BarScaledCoord (screenWidth-statusborderw-scaleFactor*8, screenHeight-scaleFactor*STATUSLINES,
-            statusborderw+scaleFactor*8, scaleFactor*STATUSLINES, bordercol);
+        const int statusborderw = (screenWidth-px*320)/2;
+        VWB_BarScaledCoord (0, screenHeight-px*STATUSLINES,
+            statusborderw+px*8, px*STATUSLINES, bordercol);
+        VWB_BarScaledCoord (screenWidth-statusborderw-px*8, screenHeight-px*STATUSLINES,
+            statusborderw+px*8, px*STATUSLINES, bordercol);
     }
 
     if(viewheight == screenHeight) return;
 
-    VWB_BarScaledCoord (0,0,screenWidth,screenHeight-scaleFactor*STATUSLINES,bordercol);
+    VWB_BarScaledCoord (0,0,screenWidth,screenHeight-px*STATUSLINES,bordercol);
 
-    int xl = screenWidth/2-viewwidth/2;
-    int yl = (screenHeight-scaleFactor*STATUSLINES-viewheight)/2;
+    const int xl = screenWidth/2-viewwidth/2;
+    const int yl = (screenHeight-px*STATUSLINES-viewheight)/2;
     VWB_BarScaledCoord (xl,yl,viewwidth,viewheight,0);
 
-    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, viewwidth+scaleFactor, scaleFactor, 0);
-    VWB_BarScaledCoord(xl, yl+viewheight, viewwidth+scaleFactor, scaleFactor, bordercol-2);
-    VWB_BarScaledCoord(xl-scaleFactor, yl-scaleFactor, scaleFactor, viewheight+scaleFactor, 0);
-    VWB_BarScaledCoord(xl+viewwidth, yl-scaleFactor, scaleFactor, viewheight+2*scaleFactor, bordercol-2);
-    VWB_BarScaledCoord(xl-scaleFactor, yl+viewheight, scaleFactor, scaleFactor, bordercol-3);
+    if(xl != 0)
+    {
+        // Paint game view border lines
+        VWB_BarScaledCoord(xl-px, yl-px, viewwidth+px, px, 0);                      // upper border
+        VWB_BarScaledCoord(xl, yl+viewheight, viewwidth+px, px, bordercol-2);       // lower border
+        VWB_BarScaledCoord(xl-px, yl-px, px, viewheight+px, 0);                     // left border
+        VWB_BarScaledCoord(xl+viewwidth, yl-px, px, viewheight+2*px, bordercol-2);  // right border
+        VWB_BarScaledCoord(xl-px, yl+viewheight, px, px, bordercol-3);              // lower left highlight
+    }
+    else
+    {
+        // Just paint a lower border line
+        VWB_BarScaledCoord(0, yl+viewheight, viewwidth, px, bordercol-2);       // lower border
+    }
 }
 
 
@@ -950,7 +976,7 @@ void ShowActStatus()
     int width = pictable[picnum].width;
     int height = pictable[picnum].height;
     int destx = (screenWidth-scaleFactor*320)/2 + 9 * scaleFactor;
-    int desty = (200 - height + 4) * scaleFactor;
+    int desty = screenHeight - (height - 4) * scaleFactor;
     VL_MemToScreenScaledCoord(source, width, height, 9, 4, destx, desty, width - 18, height - 7);
 
     ingame = false;
@@ -1316,7 +1342,7 @@ void Died (void)
         gamestate.attackframe = gamestate.attackcount =
             gamestate.weaponframe = 0;
 
-        if(viewsize != 20)
+        if(viewsize != 21)
         {
             DrawKeys ();
             DrawWeapon ();
@@ -1354,7 +1380,7 @@ restartgame:
     {
         if (!loadedgame)
             gamestate.score = gamestate.oldscore;
-        if(!died || viewsize != 20) DrawScore();
+        if(!died || viewsize != 21) DrawScore();
 
         startgame = false;
         if (!loadedgame)
@@ -1429,7 +1455,7 @@ startplayloop:
         {
             case ex_completed:
             case ex_secretlevel:
-                if(viewsize == 20) DrawPlayScreen();
+                if(viewsize == 21) DrawPlayScreen();
                 gamestate.keys = 0;
                 DrawKeys ();
                 VW_FadeOut ();
@@ -1437,7 +1463,7 @@ startplayloop:
                 ClearMemory ();
 
                 LevelCompleted ();              // do the intermission
-                if(viewsize == 20) DrawPlayScreen();
+                if(viewsize == 21) DrawPlayScreen();
 
 #ifdef SPEARDEMO
                 if (gamestate.mapon == 1)
@@ -1540,7 +1566,7 @@ startplayloop:
                 return;
 
             case ex_victorious:
-                if(viewsize == 20) DrawPlayScreen();
+                if(viewsize == 21) DrawPlayScreen();
 #ifndef SPEAR
                 VW_FadeOut ();
 #else
@@ -1560,7 +1586,7 @@ startplayloop:
                 return;
 
             default:
-                if(viewsize == 20) DrawPlayScreen();
+                if(viewsize == 21) DrawPlayScreen();
                 ClearMemory ();
                 break;
         }

@@ -713,7 +713,7 @@ void CheckKeys (void)
 
         SETFONTCOLOR (0, 15);
         IN_ClearKeysDown ();
-        if(viewsize != 20)
+        if(viewsize != 21)
             DrawPlayScreen ();
         else
             VW_FadeOut();
@@ -1315,7 +1315,7 @@ void PlayLoop (void)
         if (funnyticount > 30l * 70)
         {
             funnyticount = 0;
-            if(viewsize != 20)
+            if(viewsize != 21)
                 StatusDrawFace(BJWAITING1PIC + (US_RndT () & 1));
             facecount = 0;
         }

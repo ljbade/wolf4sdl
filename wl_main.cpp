@@ -186,7 +186,7 @@ void ReadConfig(void)
         else if(mouseadjustment>9) mouseadjustment=9;
 
         if(viewsize<4) viewsize=4;
-        else if(viewsize>20) viewsize=20;
+        else if(viewsize>21) viewsize=21;
 
         MainMenu[6].active=1;
         MainItems.curpos=0;
@@ -1349,11 +1349,17 @@ void ShowViewSize (int width)
     oldwidth = viewwidth;
     oldheight = viewheight;
 
-    if(width == 20)
+    if(width == 21)
     {
         viewwidth = screenWidth;
         viewheight = screenHeight;
         VWB_BarScaledCoord (0, 0, screenWidth, screenHeight, 0);
+    }
+    else if(width == 20)
+    {
+        viewwidth = screenWidth;
+        viewheight = screenHeight - scaleFactor*STATUSLINES;
+        DrawPlayBorder ();
     }
     else
     {
@@ -1370,10 +1376,12 @@ void ShowViewSize (int width)
 void NewViewSize (int width)
 {
     viewsize = width;
-    if(viewsize == 20)
+    if(viewsize == 21)
         SetViewSize(screenWidth, screenHeight);
+    else if(viewsize == 20)
+        SetViewSize(screenWidth, screenHeight - scaleFactor * STATUSLINES);
     else
-        SetViewSize (width*16*screenWidth/320, (unsigned) (width*16*HEIGHTRATIO*screenHeight/200));
+        SetViewSize(width*16*screenWidth/320, (unsigned) (width*16*HEIGHTRATIO*screenHeight/200));
 }
 
 
@@ -1637,7 +1645,7 @@ static void DemoLoop()
 
 void CheckParameters(int argc, char *argv[])
 {
-    bool hasError = false;
+    bool hasError = false, showHelp = false;
     bool sampleRateGiven = false, audioBufferGiven = false;
     int defaultSampleRate = param_samplerate;
 
@@ -1684,8 +1692,25 @@ void CheckParameters(int argc, char *argv[])
                 screenHeight = atoi(argv[++i]);
                 if(screenWidth % 320)
                     printf("Screen width must be a multiple of 320!\n"), hasError = true;
-                if(screenHeight % 200)
-                    printf("Screen height must be a multiple of 200!\n"), hasError = true;
+                if(screenHeight % 200 && screenHeight % 240)
+                    printf("Screen height must be a multiple of 200 or 240!\n"), hasError = true;
+            }
+        }
+        else IFARG("--resf")
+        {
+            if(i + 2 >= argc)
+            {
+                printf("The resf option needs the width and/or the height argument!\n");
+                hasError = true;
+            }
+            else
+            {
+                screenWidth = atoi(argv[++i]);
+                screenHeight = atoi(argv[++i]);
+                if(screenWidth < 320)
+                    printf("Screen width must be at least 320!\n"), hasError = true;
+                if(screenHeight < 200)
+                    printf("Screen height must be at least 200!\n"), hasError = true;
             }
         }
         else IFARG("--joystick")
@@ -1737,16 +1762,20 @@ void CheckParameters(int argc, char *argv[])
         }
         else IFARG("--goodtimes")
             param_goodtimes = true;
+        else IFARG("--help")
+            showHelp = true;
         else hasError = true;
     }
-    if(hasError)
+    if(hasError || showHelp)
     {
+        if(hasError) printf("\n");
         printf(
             "Wolf4SDL v1.4 ($Revision$)\n"
             "Ported by Chaos-Software (http://www.chaos-software.de.vu)\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"
+            " --help                 This help page\n"
             " --tedlevel <level>     Starts the game in the given level\n"
             " --baby                 Sets the difficulty to baby for tedlevel\n"
             " --easy                 Sets the difficulty to easy for tedlevel\n"
@@ -1755,7 +1784,10 @@ void CheckParameters(int argc, char *argv[])
             " --nowait               Skips intro screens\n"
             " --windowed             Starts the game in a window\n"
             "                        (Use this when you have palette problems)\n"
-            " --res <width> <height> Sets the screen resolution (must be multiple of 320x200)\n"
+            " --res <width> <height> Sets the screen resolution\n"
+            "                        (must be multiple of 320x200 or 320x240)\n"
+            " --resf <w> <h>         Sets any screen resolution >= 320x200\n"
+            "                        (which may result in graphic errors)\n"
             " --joystick <index>     Use the index-th joystick if available (default: 0)\n"
             " --joystickhat <index>  Enables movement with the given coolie hat\n"
             " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"

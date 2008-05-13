@@ -165,8 +165,7 @@ Victory (void)
     CA_CacheGrChunk (C_TIMECODEPIC);
 #endif
 
-
-    VWB_Bar (0, 0, 320, 200 - STATUSLINES, VIEWCOLOR);
+    VWB_Bar (0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
     if (bordercol != VIEWCOLOR)
         DrawStatusBorder (VIEWCOLOR);
 
@@ -280,6 +279,8 @@ Victory (void)
     IN_Ack ();
 
     VW_FadeOut ();
+    if(screenHeight % 200 != 0)
+        VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
 
 #ifndef SPEAR
     UNCACHEGRCHUNK (C_TIMECODEPIC);
@@ -558,7 +559,7 @@ LevelCompleted (void)
 
     CacheLump (LEVELEND_LUMP_START, LEVELEND_LUMP_END);
     ClearSplitVWB ();           // set up for double buffering in split screen
-    VWB_Bar (0, 0, 320, 200 - STATUSLINES, VIEWCOLOR);
+    VWB_Bar (0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
 
     if (bordercol != VIEWCOLOR)
         DrawStatusBorder (VIEWCOLOR);
@@ -982,7 +983,7 @@ PreloadGraphics (void)
     DrawLevel ();
     ClearSplitVWB ();           // set up for double buffering in split screen
 
-    VWB_BarScaledCoord (0, 0, screenWidth, screenHeight - scaleFactor*STATUSLINES, bordercol);
+    VWB_BarScaledCoord (0, 0, screenWidth, screenHeight - scaleFactor * (STATUSLINES - 1), bordercol);
     LatchDrawPicScaledCoord ((screenWidth-scaleFactor*224)/16,
         (screenHeight-scaleFactor*(STATUSLINES+48))/2, GETPSYCHEDPIC);
 

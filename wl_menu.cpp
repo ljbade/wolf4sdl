@@ -816,13 +816,15 @@ CP_CheckQuick (ScanCode scancode)
 #endif
 
                 VW_FadeOut ();
+                if(screenHeight % 200 != 0)
+                    VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
 
                 lastgamemusicoffset = StartCPMusic (MENUSONG);
                 pickquick = CP_SaveGame (0);
 
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
-                if(viewsize != 20)
+                if(viewsize != 21)
                     DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
@@ -884,13 +886,15 @@ CP_CheckQuick (ScanCode scancode)
 #endif
 
                 VW_FadeOut ();
+                if(screenHeight % 200 != 0)
+                    VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
 
                 lastgamemusicoffset = StartCPMusic (MENUSONG);
                 pickquick = CP_LoadGame (0);    // loads lastgamemusicoffs
 
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
-                if(viewsize != 20)
+                if(viewsize != 21)
                     DrawPlayScreen ();
 
                 if (!startgame && !loadedgame)
@@ -2832,7 +2836,7 @@ CP_ChangeView (int)
                 newview--;
                 if (newview < 4)
                     newview = 4;
-                if(newview == 19) DrawChangeView(newview);
+                if(newview >= 19) DrawChangeView(newview);
                 else ShowViewSize (newview);
                 VW_UpdateScreen ();
                 SD_PlaySound (HITWALLSND);
@@ -2842,9 +2846,9 @@ CP_ChangeView (int)
             case dir_North:
             case dir_East:
                 newview++;
-                if (newview >= 20)
+                if (newview >= 21)
                 {
-                    newview = 20;
+                    newview = 21;
                     DrawChangeView(newview);
                 }
                 else ShowViewSize (newview);
@@ -2860,6 +2864,8 @@ CP_ChangeView (int)
         {
             SD_PlaySound (ESCPRESSEDSND);
             MenuFadeOut ();
+            if(screenHeight % 200 != 0)
+                VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
             return 0;
         }
     }
@@ -2874,6 +2880,8 @@ CP_ChangeView (int)
 
     ShootSnd ();
     MenuFadeOut ();
+    if(screenHeight % 200 != 0)
+        VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
 
     return 0;
 }
@@ -2886,15 +2894,17 @@ CP_ChangeView (int)
 void
 DrawChangeView (int view)
 {
+    int rescaledHeight = screenHeight / scaleFactor;
+    if(view != 21) VWB_Bar (0, rescaledHeight - 40, 320, 40, bordercol);
+
 #ifdef JAPAN
     CA_CacheScreen (S_CHANGEPIC);
 
     ShowViewSize (view);
 #else
     ShowViewSize (view);
-    if(view != 20) VWB_Bar (0, 160, 320, 40, bordercol);
 
-    PrintY = 161;
+    PrintY = (screenHeight / scaleFactor) - 39;
     WindowX = 0;
     WindowY = 320;                                  // TODO: Check this!
     SETFONTCOLOR (HIGHLIGHT, BKGDCOLOR);
@@ -3131,6 +3141,8 @@ SetupControlPanel (void)
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
     fontnumber = 1;
     WindowH = 200;
+    if(screenHeight % 200 != 0)
+        VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
 
     if (!ingame)
         CA_LoadAllSounds ();

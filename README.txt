@@ -18,8 +18,10 @@ Adlib sounds but also music without any Adlib-compatible soundcards!
 Digitized sounds are played on 8 channels! So in a fire fight you will always
 hear, when a guard opens the door behind you ;)
 
-Higher screen resolutions (multiples of 320x200, default is 640x400) can be
-set using the --res parameter (start Wolf4SDL with --help to see usage).
+Higher screen resolutions (multiples of 320x200 or 320x240, default is
+640x400) can be set using the --res parameter (start Wolf4SDL with --help
+to see usage). You may also try other unsupported resolutions with --resf,
+but only the ingame graphic will be right then.
 
 The following versions of Wolfenstein 3D data files are currently supported
 by the source code (choose the version by commenting/uncommenting lines in
@@ -88,7 +90,7 @@ Credits:
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
- - Thanks to Pickle for the GP2X support
+ - Thanks to Pickle for the GP2X support and help on 320x240 support
  - Thanks to fackue for the Dreamcast support
 
 

@@ -1,4 +1,7 @@
 Head (not released yet)
+ - Added --resf option to force to use unsupported resolutions >= 320x200
+ - Added support for resolutions being a multiple of 320x240
+   (thanks for your help, Pickle!)
  - Fixed crash when cheat-hurting oneself to death (bug reported by Tricob)
  - Cleaned up id_sd.cpp (kept PC speaker stuff for future reference)
  - Added move buttons (invalidates config file, only hardcoded yet)
