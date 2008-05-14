@@ -817,7 +817,7 @@ CP_CheckQuick (ScanCode scancode)
 
                 VW_FadeOut ();
                 if(screenHeight % 200 != 0)
-                    VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
+                    VL_ClearScreen(0);
 
                 lastgamemusicoffset = StartCPMusic (MENUSONG);
                 pickquick = CP_SaveGame (0);
@@ -887,7 +887,7 @@ CP_CheckQuick (ScanCode scancode)
 
                 VW_FadeOut ();
                 if(screenHeight % 200 != 0)
-                    VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
+                    VL_ClearScreen(0);
 
                 lastgamemusicoffset = StartCPMusic (MENUSONG);
                 pickquick = CP_LoadGame (0);    // loads lastgamemusicoffs
@@ -2865,7 +2865,7 @@ CP_ChangeView (int)
             SD_PlaySound (ESCPRESSEDSND);
             MenuFadeOut ();
             if(screenHeight % 200 != 0)
-                VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
+                VL_ClearScreen(0);
             return 0;
         }
     }
@@ -2881,7 +2881,7 @@ CP_ChangeView (int)
     ShootSnd ();
     MenuFadeOut ();
     if(screenHeight % 200 != 0)
-        VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
+        VL_ClearScreen(0);
 
     return 0;
 }
@@ -3142,7 +3142,7 @@ SetupControlPanel (void)
     fontnumber = 1;
     WindowH = 200;
     if(screenHeight % 200 != 0)
-        VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
+        VL_ClearScreen(0);
 
     if (!ingame)
         CA_LoadAllSounds ();

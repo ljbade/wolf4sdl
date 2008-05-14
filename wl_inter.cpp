@@ -280,7 +280,7 @@ Victory (void)
 
     VW_FadeOut ();
     if(screenHeight % 200 != 0)
-        VL_BarScaledCoord(0, 0, screenWidth, screenHeight, 0);
+        VL_ClearScreen(0);
 
 #ifndef SPEAR
     UNCACHEGRCHUNK (C_TIMECODEPIC);

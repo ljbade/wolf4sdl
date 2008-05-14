@@ -583,7 +583,7 @@ int SD_PlayDigitized(word which,int leftpos,int rightpos)
         return 0;
 
     if (which >= NumDigi)
-        Quit("SD_PlayDigitized: bad sound number");
+        Quit("SD_PlayDigitized: bad sound number %i", which);
 
     int channel = SD_GetChannelForDigi(which);
     SD_SetPosition(channel, leftpos,rightpos);
