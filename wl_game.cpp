@@ -928,8 +928,8 @@ void DrawPlayBorder (void)
 void DrawPlayScreen (void)
 {
     VW_FadeOut();
-    DrawPlayBorder ();
     VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
+    DrawPlayBorder ();
 
     DrawFace ();
     DrawHealth ();
