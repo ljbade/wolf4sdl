@@ -123,66 +123,23 @@ void CountObjects (void)
 =
 ===================
 */
-// TODO: Support other screensizes
 void PictureGrabber (void)
 {
     static char fname[] = "WSHOT000.BMP";
 
-    int file;
-    byte buffer[320];
-    byte *wolfpal=(byte *)(gamepal);
-    int i,x;
-
-    uint32_t col;
-    byte bmpheads[54]={'B','M',0x8e,0x3f,0,0,0,0,0,0,0x36,4,0,0,
-        40,0,0,0,0x40,1,0,0,200,0,0,0,1,0,8,0,0,0,0,0,
-        0,0xfa,0,0,0xc4,0x0e,0,0,0xc4,0x0e,0,0,0,0,0,0,0,0,0,0};
-
-    for(i=0;i<1000;i++)
+    for(int i = 0; i < 1000; i++)
     {
-        fname[7]=i%10+'0';
-        fname[6]=(i/10)%10+'0';
-        fname[5]=i/100+'0';
-        file = open(fname, O_RDONLY | O_BINARY);
-        if(file==-1) break;
+        fname[7] = i % 10 + '0';
+        fname[6] = (i / 10) % 10 + '0';
+        fname[5] = i / 100 + '0';
+        int file = open(fname, O_RDONLY | O_BINARY);
+        if(file == -1) break;       // file does not exist, so use that filename
         close(file);
     }
 
     // overwrites WSHOT999.BMP if all wshot files exist
 
-    file=open(fname, O_CREAT | O_WRONLY | O_BINARY);
-    if(file==-1)
-    {
-        CenterWindow(22,3);
-        US_Print("Unable to create file:\n");
-        US_Print(fname);
-        VW_UpdateScreen();
-        IN_Ack();
-        return;
-    }
-
-    write(file,bmpheads,sizeof(bmpheads));
-    for(i=0;i<256;i++)                              // 1024 bytes palette
-    {
-        col=(((((uint32_t)wolfpal[i*3])<<10)+
-            (((uint32_t)wolfpal[i*3+1])<<2))<<8)+
-            (((uint32_t)wolfpal[i*3+2])<<2);
-        write(file,&col,4);
-    }
-
-    byte *vbuf = LOCK();
-
-    for(i=199;i>=0;i--)
-    {                                               // 64000 bytes image data
-        for(x=0;x<320;x++)
-        {
-            buffer[x]=vbuf[i*80+(x>>2)];
-        }
-        write(file,buffer,320);         // writes by line to make it 320 times faster
-    }
-
-    UNLOCK();
-    close(file);
+    SDL_SaveBMP(curSurface, fname);
 
     CenterWindow (18,2);
     US_PrintCentered ("Screenshot taken");
