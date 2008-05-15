@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gp2x.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\id_ca.cpp"
 				>
 			</File>
@@ -344,6 +348,10 @@
 			</File>
 			<File
 				RelativePath=".\gfxv_wl6.h"
+				>
+			</File>
+			<File
+				RelativePath=".\gp2x.h"
 				>
 			</File>
 			<File

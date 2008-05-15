@@ -325,6 +325,16 @@ static void processEvent(SDL_Event *event)
                 Keyboard[key] = 0;
             break;
         }
+
+#ifdef GP2X
+        case SDL_JOYBUTTONDOWN:
+            GP2X_ButtonDown(event->jbutton.button);
+            break;
+
+        case SDL_JOYBUTTONUP:
+            GP2X_ButtonUp(event->jbutton.button);
+            break;
+#endif
     }
 }
 
@@ -385,7 +395,7 @@ IN_Startup(void)
     }
 
     // I didn't find a way to ask libSDL whether a mouse is present, yet...
-#if defined(GP2x)
+#if defined(GP2X)
     MousePresent = false;
 #elif defined(_arch_dreamcast)
     MousePresent = DC_MousePresent();

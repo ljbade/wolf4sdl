@@ -17,9 +17,12 @@
 #endif
 
 boolean fullscreen = true;
-#ifdef _arch_dreamcast
+#if defined(_arch_dreamcast)
 unsigned screenWidth = 320;
 unsigned screenHeight = 200;
+#elif defined(GP2X)
+unsigned screenWidth = 320;
+unsigned screenHeight = 240;
 #else
 unsigned screenWidth = 640;
 unsigned screenHeight = 400;

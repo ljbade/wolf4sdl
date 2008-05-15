@@ -84,10 +84,14 @@ int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
 int     param_joystickindex = 0;
 
-#ifdef _arch_dreamcast
+#if defined(_arch_dreamcast)
 int     param_joystickhat = 0;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
 int     param_audiobuffer = 4096 / (44100 / param_samplerate);
+#elif defined(GP2X)
+int     param_joystickhat = -1;
+int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
+int     param_audiobuffer = 256;
 #else
 int     param_joystickhat = -1;
 int     param_samplerate = 44100;
@@ -665,6 +669,9 @@ void ShutdownId (void)
     IN_Shutdown ();
     VW_Shutdown ();
     CA_Shutdown ();
+#if defined(GP2X)
+    GP2X_Shutdown();
+#endif
 }
 
 
@@ -1824,9 +1831,11 @@ void CheckParameters(int argc, char *argv[])
 
 int main (int argc, char *argv[])
 {
-#ifdef _arch_dreamcast
+#if defined(_arch_dreamcast)
     DC_Main();
     DC_CheckParameters();
+#elif defined(GP2X)
+    GP2X_Init();
 #else
     CheckParameters(argc, argv);
 #endif
