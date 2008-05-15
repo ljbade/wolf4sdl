@@ -1677,6 +1677,17 @@ void    ThreeDRefresh (void)
     }
     else
     {
+#ifndef REMDEBUG
+        if (fpscounter)
+        {
+            fontnumber = 0;
+            SETFONTCOLOR(7,127);
+            PrintX=4; PrintY=1;
+            VWB_Bar(0,0,50,10,bordercol);
+            US_PrintSigned(fps);
+            US_Print(" fps");
+        }
+#endif
         SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
         SDL_UpdateRect(screen, 0, 0, 0, 0);
     }
@@ -1693,12 +1704,6 @@ void    ThreeDRefresh (void)
             fps=fps_frames<<1;
             fps_frames=0;
         }
-        fontnumber = 0;
-        SETFONTCOLOR(7,127);
-        PrintX=8; PrintY=190;
-        VWB_Bar(2,189,50,10,bordercol);
-        US_PrintSigned(fps);
-        US_Print(" fps");
     }
 #endif
 }
