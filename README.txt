@@ -13,15 +13,39 @@ Supported operating systems are at least:
 
 Only little endian platforms like x86, ARM and SH-4 are supported, yet.
 
-This port includes the OPL2 emulator from MAME, so you can not only hear the
-Adlib sounds but also music without any Adlib-compatible soundcards!
-Digitized sounds are played on 8 channels! So in a fire fight you will always
-hear, when a guard opens the door behind you ;)
 
-Higher screen resolutions (multiples of 320x200 or 320x240, default is
-640x400) can be set using the --res parameter (start Wolf4SDL with --help
-to see usage). You may also try other unsupported resolutions with --resf,
-but only the ingame graphic will be right then.
+Main features:
+
+ - AdLib sounds and music:
+      This port includes the OPL2 emulator from MAME, so you can not only
+      hear the AdLib sounds but also music without any AdLib-compatible
+      soundcards in near to perfect quality!
+
+ - Multichannel digitized sounds:
+      Digitized sounds play on 8 channels! So in a fire fight you will
+      always hear, when a guard opens the door behind you ;)
+
+ - Higher screen resolutions:
+      Aside from the original 320x200 resolution, Wolf4SDL currently
+      supports any resolutions being multiples of 320x200 or 320x240,
+      the default being 640x400.
+      Unlike some other ports, Wolf4SDL does NOT apply any bilinear
+      or similar filtering, so the graphics are NOT blurred but
+      pixelated as we love it.
+
+Additional features:
+
+ - Two additional view sizes:
+      Wolf4SDL supports one view size using the full width of the screen
+      and showing the status bar, like in Mac-enstein, and one view size
+      filling the whole screen (press TAB to see the status bar).
+
+ - Optional integrated tutorials for mod developers:
+      Wolf4SDL already contains the shading, directional 3D sprites,
+      floor and ceiling textures, high resolution textures/sprites,
+      parallax sky, cloud sky and outside atmosphere tutorials, which
+      can be easily activated in version.h.
+
 
 The following versions of Wolfenstein 3D data files are currently supported
 by the source code (choose the version by commenting/uncommenting lines in
@@ -36,19 +60,47 @@ version.h as described in that file):
  - Wolfenstein 3D v1.4 shareware
  - Spear of Destiny full
  - Spear of Destiny demo
+ - Spear of Destiny - Mission 2: Return to Danger
+ - Spear of Destiny - Mission 3: Ultimate Challenge
+
 
 How to play:
 
-To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original WL6
-files into the same directory as the Wolf4SDL executable. If you want to use
-Wolf4SDL with the shareware version or with Spear, you can compile Wolf4SDL
-with other defines in "version.h".
+To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original data
+files (e.g. *.WL6) into the same directory as the Wolf4SDL executable.
 
 If you play in windowed mode (--windowed parameter), press SCROLLLOCK or F12
 to grab the mouse. Press it again to release the mouse.
 
 
-Compiling from source:
+Usage:
+
+Wolf4SDL supports the following command line options:
+ --help                 This help page
+ --tedlevel <level>     Starts the game in the given level
+ --baby                 Sets the difficulty to baby for tedlevel
+ --easy                 Sets the difficulty to easy for tedlevel
+ --normal               Sets the difficulty to normal for tedlevel
+ --hard                 Sets the difficulty to hard for tedlevel
+ --nowait               Skips intro screens
+ --windowed             Starts the game in a window
+                        (Use this when you have palette problems)
+ --res <width> <height> Sets the screen resolution
+                        (must be multiple of 320x200 or 320x240)
+ --resf <w> <h>         Sets any screen resolution >= 320x200
+                        (which may result in graphic errors)
+ --joystick <index>     Use the index-th joystick if available
+ --joystickhat <index>  Enables movement with the given coolie hat
+ --samplerate <rate>    Sets the sound sample rate (given in Hz)
+ --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)
+                        (given in bytes)
+
+For Spear of Destiny the following additional options are available:
+ --mission              Mission number to play (1-3)
+ --goodtimes            Disable copy protection quiz
+
+
+Compiling from source code:
 
 The current version of the source code is available in the svn repository at:
    svn://tron.homeunix.org:3690/wolf3d/trunk
@@ -73,6 +125,12 @@ http://sourceforge.net/project/showfiles.php?group_id=94270&package_id=151751
 Just rename the file extension from ".devpack" to ".tar.bz2" and unpack it
 with for example WinRAR. Then add the directories include/SDL and lib to the
 according search paths in your project.
+
+
+TODOs:
+ - Add PC speaker emulation
+ - Center non-ingame screens for resolutions being a multiple of 320x240
+ - Add support for any graphic resolution >= 320x200
 
 
 Known bugs:
