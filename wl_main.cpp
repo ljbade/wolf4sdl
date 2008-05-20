@@ -91,7 +91,7 @@ int     param_audiobuffer = 4096 / (44100 / param_samplerate);
 #elif defined(GP2X)
 int     param_joystickhat = -1;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
-int     param_audiobuffer = 256;
+int     param_audiobuffer = 128;
 #else
 int     param_joystickhat = -1;
 int     param_samplerate = 44100;
