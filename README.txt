@@ -5,16 +5,17 @@ Original Wolfenstein 3D by id Software (http://www.idsoftware.com)
 Wolf4SDL is an open-source port of Wolfenstein 3D to the cross-plattform
 multimedia library "Simple DirectMedia Layer (SDL)" (http://www.libsdl.org).
 
-Supported operating systems are at least:
- - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
- - Linux
- - BSD variants
- - KallistiOS
-
-Only little endian platforms like x86, ARM and SH-4 are supported, yet.
-
 
 Main features:
+
+ - Cross-plattform:
+      Supported operating systems are at least:
+       - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
+         (32 and 64 bit)
+       - Linux
+       - BSD variants
+       - KallistiOS (used for Dreamcast)
+      Only little endian platforms like x86, ARM and SH-4 are supported, yet.
 
  - AdLib sounds and music:
       This port includes the OPL2 emulator from MAME, so you can not only
@@ -31,7 +32,7 @@ Main features:
       the default being 640x400.
       Unlike some other ports, Wolf4SDL does NOT apply any bilinear
       or similar filtering, so the graphics are NOT blurred but
-      pixelated as we love it.
+      pixelated just as we love it.
 
 Additional features:
 
@@ -113,6 +114,7 @@ The following ways of compiling the source code are supported:
  - Code::Blocks 8.02 (Wolf4SDL.cbp)
  - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
  - Special compiling for Dreamcast (see README-dc.txt)
+ - Special compiling for GP2X (see README-GP2X.txt)
 
 To compile the source code you need the development libraries of
  - SDL (http://www.libsdl.org/download-1.2.php) and
@@ -145,6 +147,8 @@ Known bugs:
 Credits:
  - Special thanks to id Software! Without the source code we would still have
    to pelt Wolfenstein 3D with hex editors and disassemblers ;D
+ - Special thanks to the MAME developer team for providing the source code
+   of the OPL2 emulator!
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
