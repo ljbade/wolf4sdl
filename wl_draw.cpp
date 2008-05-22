@@ -1262,11 +1262,6 @@ void AsmRefresh()
         yspot=(((uint32_t)xintercept>>16)<<mapshift)+ytile;
         texdelta=0;
 
-        if(xintercept<0) xintercept=0;
-        if(xintercept>mapwidth*65536-1) xintercept=mapwidth*65536-1;
-        if(yintercept<0) yintercept=0;
-        if(yintercept>mapheight*65536-1) yintercept=mapheight*65536-1;
-
         do
         {
             if(ytilestep==-1 && (yintercept>>16)<=ytile) goto horizentry;
@@ -1279,6 +1274,7 @@ vertentry:
                 if(yintercept<0) yintercept=0;
                 if(yintercept>=(mapheight<<TILESHIFT)) yintercept=mapheight<<TILESHIFT;
                 yspot=0xffff;
+                tilehit=0;
                 HitHorizBorder();
                 break;
             }
@@ -1424,6 +1420,7 @@ horizentry:
                 if(xintercept<0) xintercept=0;
                 if(xintercept>=(mapwidth<<TILESHIFT)) xintercept=mapwidth<<TILESHIFT;
                 xspot=0xffff;
+                tilehit=0;
                 HitVertBorder();
                 break;
             }
@@ -1446,7 +1443,7 @@ horizentry:
                 {
                     if(tilehit==64)
                     {
-                       if(pwalldir==di_north || pwalldir==di_south)
+                        if(pwalldir==di_north || pwalldir==di_south)
                         {
                             int32_t xintbuf;
                             int pwallposnorm;
