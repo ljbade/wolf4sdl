@@ -740,8 +740,6 @@ word pwallx,pwally;
 byte pwalldir,pwalltile;
 int dirs[4][2]={{0,-1},{1,0},{0,1},{-1,0}};
 
-char PushwallSteps = 0;
-
 /*
 ===============
 =
@@ -756,7 +754,6 @@ void PushWall (int checkx, int checky, int dir)
 
     if (pwallstate)
         return;
-
 
     oldtile = tilemap[checkx][checky];
     if (!oldtile)
@@ -800,37 +797,18 @@ void PushWall (int checkx, int checky, int dir)
 void MovePWalls (void)
 {
     int oldblock,oldtile;
-    static int ppressed = 0;
-    static int32_t ptimecount = 0;
 
     if (!pwallstate)
         return;
 
     oldblock = pwallstate/128;
 
-#ifdef DEBUGKEYS
-    if(PushwallSteps)
-    {
-        if(ppressed)
-        {
-            if(Keyboard[sc_P] && GetTimeCount()-ptimecount<10) return;
-            ppressed=0;
-            return;
-        }
-        if(!Keyboard[sc_P]) return;
-        ppressed=1;
-        ptimecount = GetTimeCount();
-
-        pwallstate += 4;
-    }
-    else
-#endif
-        pwallstate += (word)tics;
+    pwallstate += (word)tics;
 
     if (pwallstate/128 != oldblock)
     {
         // block crossed into a new block
-        oldtile = pwalltile; // tilemap[pwallx][pwally] & 63;
+        oldtile = pwalltile;
 
         //
         // the tile can now be walked into
@@ -860,11 +838,11 @@ void MovePWalls (void)
             xh = (player->x+PLAYERSIZE) >> TILESHIFT;
             yh = (player->y+PLAYERSIZE) >> TILESHIFT;
 
-            pwallx+=dx;
-            pwally+=dy;
+            pwallx += dx;
+            pwally += dy;
 
             if (actorat[pwallx+dx][pwally+dy]
-            || xl<=pwallx+dx && pwallx+dx<=xh && yl<=pwally+dy && pwally+dy<=yh)
+                || xl<=pwallx+dx && pwallx+dx<=xh && yl<=pwally+dy && pwally+dy<=yh)
             {
                 pwallstate = 0;
                 tilemap[pwallx][pwally] = oldtile;
