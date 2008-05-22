@@ -1269,6 +1269,7 @@ static void InitGame()
 
     ReadConfig ();
 
+    SetupSaveGames();
 
 //
 // HOLDING DOWN 'M' KEY?

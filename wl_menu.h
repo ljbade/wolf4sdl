@@ -119,6 +119,7 @@ extern CP_iteminfo MainItems;
 void    US_ControlPanel(ScanCode);
 
 void SetupControlPanel(void);
+void SetupSaveGames();
 void CleanupControlPanel(void);
 
 void DrawMenu(CP_iteminfo *item_i,CP_itemtype *items);

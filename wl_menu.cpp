@@ -3121,13 +3121,6 @@ DrawOutline (int x, int y, int w, int h, int color1, int color2)
 void
 SetupControlPanel (void)
 {
-    char name[13];
-#ifdef _arch_dreamcast
-    file_t dir;
-    dirent_t *dirent;
-    int x;
-#endif
-
     //
     // CACHE GRAPHICS & SOUNDS
     //
@@ -3150,9 +3143,25 @@ SetupControlPanel (void)
         MainMenu[savegame].active = 1;
 
     //
-    // SEE WHICH SAVE GAME FILES ARE AVAILABLE & READ STRING IN
+    // CENTER MOUSE
     //
+    if(IN_IsInputGrabbed())
+        IN_CenterMouse();
+}
+
+////////////////////////////////////////////////////////////////////
+//
+// SEE WHICH SAVE GAME FILES ARE AVAILABLE & READ STRING IN
+//
+////////////////////////////////////////////////////////////////////
+void SetupSaveGames()
+{
+    char name[13];
+
 #ifdef _arch_dreamcast
+    file_t dir;
+    dirent_t *dirent;
+    int x;
 
     dir = fs_open("/vmu/a1", O_RDONLY | O_DIR);
     x = 0;
@@ -3172,22 +3181,20 @@ SetupControlPanel (void)
                     {
                         char temp[32];
 
-        				SaveGamesAvail[i] = 1;
-						read(handle, temp, 32);
-						close(handle);
-						strcpy(&SaveGameNames[i][0], temp);
-						x++;
-					}
-					fs_unlink(name);
-				}
-			}
-		}
+                        SaveGamesAvail[i] = 1;
+                        read(handle, temp, 32);
+                        close(handle);
+                        strcpy(&SaveGameNames[i][0], temp);
+                        x++;
+                    }
+                    fs_unlink(name);
+                }
+            }
+        }
     }
 
-	fs_close(dir);
-
+    fs_close(dir);
 #else
-
     strcpy(name, SaveName);
     for(int i=0; i<10; i++)
     {
@@ -3203,15 +3210,8 @@ SetupControlPanel (void)
             strcpy(&SaveGameNames[i][0], temp);
         }
     }
-
 #endif
-    //
-    // CENTER MOUSE
-    //
-    if(IN_IsInputGrabbed())
-        IN_CenterMouse();
 }
-
 
 ////////////////////////////////////////////////////////////////////
 //
