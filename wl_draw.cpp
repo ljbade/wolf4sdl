@@ -1021,7 +1021,8 @@ void DrawScaleds (void)
             &visptr->viewx,&visptr->viewheight) && statptr->flags & FL_BONUS)
         {
             GetBonus (statptr);
-            continue;
+            if(statptr->shapenum == -1)
+                continue;                                           // object has been taken
         }
 
         if (!visptr->viewheight)
