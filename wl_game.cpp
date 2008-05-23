@@ -927,7 +927,6 @@ void DrawPlayBorder (void)
 
 void DrawPlayScreen (void)
 {
-    VW_FadeOut();
     VWB_DrawPicScaledCoord ((screenWidth-scaleFactor*320)/2,screenHeight-scaleFactor*STATUSLINES,STATUSBARPIC);
     DrawPlayBorder ();
 
@@ -1374,6 +1373,7 @@ void GameLoop (void)
 restartgame:
     ClearMemory ();
     SETFONTCOLOR(0,15);
+    VW_FadeOut();
     DrawPlayScreen ();
     died = false;
     do
@@ -1555,6 +1555,8 @@ startplayloop:
                     break;                          // more lives left
 
                 VW_FadeOut ();
+                if(screenHeight % 200 != 0)
+                    VL_ClearScreen(0);
 
                 ClearMemory ();
 

@@ -399,7 +399,6 @@ US_ControlPanel (ScanCode scancode)
 {
     int which;
 
-
     if (ingame)
     {
         if (CP_CheckQuick (scancode))
@@ -447,7 +446,7 @@ US_ControlPanel (ScanCode scancode)
             CP_Control (0);
             goto finishup;
 
-          finishup:
+        finishup:
             CleanupControlPanel ();
 #ifdef SPEAR
             UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
@@ -522,37 +521,14 @@ US_ControlPanel (ScanCode scancode)
         {
             case viewscores:
                 if (MainMenu[viewscores].routine == NULL)
+                {
                     if (CP_EndGame (0))
                         StartGame = 1;
-
-                DrawMainMenu ();
-                MenuFadeIn ();
+                }
+                else MenuFadeIn ();
                 break;
 
             case backtodemo:
-/*                              #ifdef SPEAR
-                                if (!ingame)
-                                {
-                                        //
-                                        // DEALLOCATE ALL SOUNDS!
-                                        //
-                                        switch (SoundMode)
-                                        {
-                                                case sdm_PC:
-                                                        start = STARTPCSOUNDS;
-                                                        break;
-                                                case sdm_AdLib:
-                                                        start = STARTADLIBSOUNDS;
-                                                        break;
-                                        }
-
-                                        if (SoundMode != sdm_Off)
-                                                for (i=0;i<NUMSOUNDS;i++,start++)
-                                                        if (audiosegs[start])
-                                                                MM_SetPurge (&(memptr)audiosegs[start],3);              // make purgable
-                                }
-                                #endif */
-
                 StartGame = 1;
                 if (!ingame)
                     StartCPMusic (INTROSONG);
@@ -598,7 +574,6 @@ US_ControlPanel (ScanCode scancode)
 
 #ifdef SPEAR
     UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-//      MM_SortMem ();
 #endif
 }
 
@@ -824,6 +799,7 @@ CP_CheckQuick (ScanCode scancode)
 
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
+                VW_FadeOut();
                 if(viewsize != 21)
                     DrawPlayScreen ();
 
@@ -894,6 +870,7 @@ CP_CheckQuick (ScanCode scancode)
 
                 SETFONTCOLOR (0, 15);
                 IN_ClearKeysDown ();
+                VW_FadeOut();
                 if(viewsize != 21)
                     DrawPlayScreen ();
 
@@ -966,12 +943,14 @@ CP_CheckQuick (ScanCode scancode)
 int
 CP_EndGame (int)
 {
+    int res;
 #ifdef JAPAN
-    if (!GetYorN (7, 8, C_JAPQUITPIC))
+    res = GetYorN (7, 8, C_JAPQUITPIC);
 #else
-    if (!Confirm (ENDGAMESTR))
+    res = Confirm (ENDGAMESTR);
 #endif
-        return 0;
+    DrawMainMenu();
+    if(!res) return 0;
 
     pickquick = gamestate.lives = 0;
     playstate = ex_died;

@@ -713,10 +713,9 @@ void CheckKeys (void)
 
         SETFONTCOLOR (0, 15);
         IN_ClearKeysDown ();
+        VW_FadeOut();
         if(viewsize != 21)
             DrawPlayScreen ();
-        else
-            VW_FadeOut();
         if (!startgame && !loadedgame)
             ContinueMusic (lastoffs);
         if (loadedgame)
