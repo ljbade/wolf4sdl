@@ -116,7 +116,9 @@ extern CP_iteminfo MainItems;
 // FUNCTION PROTOTYPES
 //
 
-void    US_ControlPanel(ScanCode);
+void US_ControlPanel(ScanCode);
+
+void EnableEndGameMenuItem();
 
 void SetupControlPanel(void);
 void SetupSaveGames();

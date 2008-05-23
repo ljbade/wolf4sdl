@@ -563,12 +563,7 @@ US_ControlPanel (ScanCode scancode)
     // CHANGE MAINMENU ITEM
     //
     if (startgame || loadedgame)
-    {
-        MainMenu[viewscores].routine = NULL;
-#ifndef JAPAN
-        strcpy (MainMenu[viewscores].string, STR_EG);
-#endif
-    }
+        EnableEndGameMenuItem();
 
     // RETURN/START GAME EXECUTION
 
@@ -577,6 +572,13 @@ US_ControlPanel (ScanCode scancode)
 #endif
 }
 
+void EnableEndGameMenuItem()
+{
+    MainMenu[viewscores].routine = NULL;
+#ifndef JAPAN
+    strcpy (MainMenu[viewscores].string, STR_EG);
+#endif
+}
 
 ////////////////////////
 //

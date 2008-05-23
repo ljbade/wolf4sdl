@@ -1506,6 +1506,7 @@ static void DemoLoop()
     if (param_tedlevel != -1)
     {
         param_nowait = true;
+        EnableEndGameMenuItem();
         NewGame(param_difficulty,0);
 
 #ifndef SPEAR
