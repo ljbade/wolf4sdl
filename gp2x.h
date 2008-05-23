@@ -32,14 +32,15 @@
 #define VOLUME_MIN 0
 #define VOLUME_MAX 100
 #define VOLUME_CHANGE_RATE 2
+#define VOLUME_NOCHG 0
 #define VOLUME_DOWN 1
-#define VOLUME_UP 0
+#define VOLUME_UP 2
 #define KEY_DOWN 1
 #define KEY_UP 0
 
-extern volatile char LastASCII;
-extern volatile ScanCode LastScan;
-extern volatile boolean  Keyboard[SDLK_LAST];
+void GP2X_Init();
+void GP2X_Shutdown();
+void GP2X_StartMMUHack();
 
 void GP2X_AdjustVolume( int direction );
 void GP2X_ButtonDown( int button );

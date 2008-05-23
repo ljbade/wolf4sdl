@@ -31,8 +31,8 @@ static int intButtonStick = 0;
 
 void GP2X_Init()
 {
-    system("/sbin/rmmod mmuhack");
-    system("/sbin/insmod mmuhack.o");
+    GP2X_StartMMUHack();
+    GP2X_AdjustVolume(VOLUME_NOCHG);
 }
 
 void GP2X_Shutdown()
@@ -42,6 +42,9 @@ void GP2X_Shutdown()
 
 void GP2X_StartMMUHack()
 {
+    system("/sbin/rmmod mmuhack");
+    system("/sbin/insmod mmuhack.o");
+
     int mmufd = open("/dev/mmuhack", O_RDWR);
     if(mmufd < 0)
     {

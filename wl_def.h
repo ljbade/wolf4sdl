@@ -1383,6 +1383,8 @@ int DC_LoadFromVMU(char *dst);
 
 #ifdef GP2X
 
+void GP2X_Init();
+void GP2X_Shutdown();
 void GP2X_ButtonDown(int button);
 void GP2X_ButtonUp(int button);
 
