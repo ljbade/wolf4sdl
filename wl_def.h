@@ -1033,8 +1033,7 @@ extern  memptr      demobuffer;
 //
 // control info
 //
-extern  boolean     mouseenabled,joystickenabled,joypadenabled;
-extern  int         joystickport;
+extern  boolean     mouseenabled,joystickenabled;
 extern  int         dirscan[4];
 extern  int         buttonscan[NUMBUTTONS];
 extern  int         buttonmouse[4];

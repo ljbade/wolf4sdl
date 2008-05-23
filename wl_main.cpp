@@ -149,10 +149,12 @@ void ReadConfig(void)
 
         read(file,&mouseenabled,sizeof(mouseenabled));
         read(file,&joystickenabled,sizeof(joystickenabled));
-        read(file,&joypadenabled,sizeof(joypadenabled));
+        boolean dummyJoypadEnabled;
+        read(file,&dummyJoypadEnabled,sizeof(dummyJoypadEnabled));
         boolean dummyJoystickProgressive;
         read(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
-        read(file,&joystickport,sizeof(joystickport));
+        int dummyJoystickPort = 0;
+        read(file,&dummyJoystickPort,sizeof(dummyJoystickPort));
 
         read(file,dirscan,sizeof(dirscan));
         read(file,buttonscan,sizeof(buttonscan));
@@ -178,8 +180,6 @@ void ReadConfig(void)
 
         if(mouseenabled) mouseenabled=true;
         if(joystickenabled) joystickenabled=true;
-        if(joypadenabled) joypadenabled = true;
-        if(joystickport) joystickport = 1;
 
         if (!MousePresent)
             mouseenabled = false;
@@ -220,15 +220,8 @@ noconfig:
         if (MousePresent)
             mouseenabled = true;
 
-#ifdef _arch_dreamcast
-        joystickenabled = true;
-        joypadenabled = true;
-        joystickport = 1;          // actually joystickport is not implemented, yet, so there is no difference
-#else
-        joystickenabled = false;
-        joypadenabled = false;
-        joystickport = 0;
-#endif
+        if (IN_JoyPresent())
+            joystickenabled = true;
 
         viewsize = 19;                          // start with a good size
         mouseadjustment=5;
@@ -266,10 +259,12 @@ void WriteConfig(void)
 
         write(file,&mouseenabled,sizeof(mouseenabled));
         write(file,&joystickenabled,sizeof(joystickenabled));
-        write(file,&joypadenabled,sizeof(joypadenabled));
+        boolean dummyJoypadEnabled = false;
+        write(file,&dummyJoypadEnabled,sizeof(dummyJoypadEnabled));
         boolean dummyJoystickProgressive = false;
         write(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
-        write(file,&joystickport,sizeof(joystickport));
+        int dummyJoystickPort = 0;
+        write(file,&dummyJoystickPort,sizeof(dummyJoystickPort));
 
         write(file,dirscan,sizeof(dirscan));
         write(file,buttonscan,sizeof(buttonscan));
@@ -1208,12 +1203,12 @@ static void InitGame()
     atexit(SDL_Quit);
 
     int numJoysticks = SDL_NumJoysticks();
-    if(param_joystickindex && (param_joystickindex < 0 || param_joystickindex >= numJoysticks))
+    if(param_joystickindex && (param_joystickindex < -1 || param_joystickindex >= numJoysticks))
     {
         if(!numJoysticks)
             printf("No joysticks are available to SDL!\n");
         else
-            printf("The joystick index must be between 0 and %i!\n", numJoysticks - 1);
+            printf("The joystick index must be between -1 and %i!\n", numJoysticks - 1);
         exit(1);
     }
 
@@ -1797,7 +1792,8 @@ void CheckParameters(int argc, char *argv[])
             "                        (must be multiple of 320x200 or 320x240)\n"
             " --resf <w> <h>         Sets any screen resolution >= 320x200\n"
             "                        (which may result in graphic errors)\n"
-            " --joystick <index>     Use the index-th joystick if available (default: 0)\n"
+            " --joystick <index>     Use the index-th joystick if available\n"
+            "                        (-1 to disable joystick, default: 0)\n"
             " --joystickhat <index>  Enables movement with the given coolie hat\n"
             " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"
             " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
