@@ -525,7 +525,11 @@ US_ControlPanel (ScanCode scancode)
                     if (CP_EndGame (0))
                         StartGame = 1;
                 }
-                else MenuFadeIn ();
+                else
+                {
+                    DrawMainMenu();
+                    MenuFadeIn ();
+                }
                 break;
 
             case backtodemo:
