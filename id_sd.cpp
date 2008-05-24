@@ -79,8 +79,8 @@ static  byte          **SoundTable;
         int             DigiChannel[STARTMUSIC - STARTDIGISOUNDS];
 
 //      Internal variables
-static  boolean         SD_Started;
-static  boolean         nextsoundpos;
+static  boolean                 SD_Started;
+static  boolean                 nextsoundpos;
 static  soundnames              SoundNumber;
 static  soundnames              DigiNumber;
 static  word                    SoundPriority;
@@ -93,19 +93,19 @@ static  digiinfo               *DigiList;
 static  boolean                 DigiPlaying;
 
 //      PC Sound variables
-static  volatile byte   pcLastSample;
-static  volatile byte *pcSound;
+static  volatile byte           pcLastSample;
+static  byte * volatile         pcSound;
 static  longword                pcLengthLeft;
 
 //      AdLib variables
-static  byte                   *alSound;
+static  byte * volatile         alSound;
 static  byte                    alBlock;
 static  longword                alLengthLeft;
 static  longword                alTimeCount;
 static  Instrument              alZeroInst;
 
 //      Sequencer variables
-static  boolean                 sqActive;
+static  volatile boolean        sqActive;
 static  word                   *sqHack;
 static  word                   *sqHackPtr;
 static  word                    sqHackLen;
