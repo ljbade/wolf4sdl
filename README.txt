@@ -2,8 +2,10 @@ Wolf4SDL by Moritz "Ripper" Kroll (http://www.chaos-software.de.vu)
 Original Wolfenstein 3D by id Software (http://www.idsoftware.com)
 =============================================================================
 
-Wolf4SDL is an open-source port of Wolfenstein 3D to the cross-plattform
-multimedia library "Simple DirectMedia Layer (SDL)" (http://www.libsdl.org).
+Wolf4SDL is an open-source port of id Software's classic first-person shooter
+Wolfenstein 3D to the cross-plattform multimedia library "Simple DirectMedia
+Layer (SDL)" (http://www.libsdl.org). It is meant to keep the original feel
+while taking advantage of some improvements mentioned in the list below.
 
 
 Main features:
@@ -20,7 +22,7 @@ Main features:
  - AdLib sounds and music:
       This port includes the OPL2 emulator from MAME, so you can not only
       hear the AdLib sounds but also music without any AdLib-compatible
-      soundcards in near to perfect quality!
+      soundcard in near to perfect quality!
 
  - Multichannel digitized sounds:
       Digitized sounds play on 8 channels! So in a fire fight you will
@@ -34,6 +36,11 @@ Main features:
       or similar filtering, so the graphics are NOT blurred but
       pixelated just as we love it.
 
+ - Fully playable with only a game controller:
+      Wolf4SDL can be played completely without a keyboard. At least two
+      buttons are required (shoot/YES and open door/NO), but five or more
+      are recommended (run, strafe, ESC).
+
 Additional features:
 
  - Two additional view sizes:
@@ -41,10 +48,20 @@ Additional features:
       and showing the status bar, like in Mac-enstein, and one view size
       filling the whole screen (press TAB to see the status bar).
 
- - Optional integrated tutorials for mod developers:
+ - (Nearly) unlimited sound and song lengths:
+      Mod developers are not restricted to 64kB for digitized sounds and
+      IMF songs anymore, so longer songs and digitized sounds with better
+      quality are possible.
+
+ - Resuming ingame music:
+      When you come back to the game from the menu or load a save game, the
+      music will be resumed where it was suspended rather than started from
+      the beginning.
+
+ - Optional integrated features for mod developers:
       Wolf4SDL already contains the shading, directional 3D sprites,
       floor and ceiling textures, high resolution textures/sprites,
-      parallax sky, cloud sky and outside atmosphere tutorials, which
+      parallax sky, cloud sky and outside atmosphere features, which
       can be easily activated in version.h.
 
 
@@ -136,12 +153,13 @@ TODOs:
 
 
 Known bugs:
- - There seem to exist some problems with the palette sometimes. Then some or
-   all colors are wrong. This only appears in fullscreen mode. If you restart
-   the game one or two times, it should be OK (smells like a race condition).
+ - Windows only: There seem to exist some problems with the palette
+   sometimes. Then some or all colors are wrong. This only appears in
+   fullscreen mode. If you restart the game one or two times, it should be OK
+   (smells like a race condition in libSDL, it's not always reproducible).
    You can press ALT+F4 to leave the game faster. If it does not help you,
    consider using the --windowed option.
- - Demos don't work very well...
+ - Original demos don't work very well... This might be a timing issue.
 
 
 Credits:

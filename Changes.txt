@@ -1,4 +1,17 @@
 Head (not released yet)
+ - Enable 'End game' menu item also when using --tedlevel
+ - Removed some unneccessary fade outs
+   (DrawPlayScreen does not call VW_FadeOut anymore!!)
+ - When using 'End game', 'View scores' does not directly show up anymore
+ - Fixed quickload/quicksave not working when started with --tedlevel (vanilla
+   bug). This now also only checks for save games once at startup (may speed
+   up entering the menu on Dreamcast)
+ - Fixed drawing moving pushwalls viewed at acute angles near the level border
+ - Fixed vanilla bug hiding bonus items on same tile as player, when he cannot
+   pick them up (e.g. medikit at 100% health) (thanks to Pickle for noticing)
+ - Added GP2X specific code by Pickle
+ - Reimplemented picture grabber to support all screen resolutions
+   (<TAB>+P in debug mode)
  - Added --resf option to force to use unsupported resolutions >= 320x200
  - Added support for resolutions being a multiple of 320x240
    (thanks for your help, Pickle!)
