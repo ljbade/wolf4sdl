@@ -648,7 +648,8 @@ SDL_SetupDigi(void)
     NumDigi = PM_GetPageSize(ChunksInFile - 1) / 4;
 
     DigiList = (digiinfo *) malloc(NumDigi * sizeof(digiinfo));
-    for(int i = 0; i < NumDigi; i++)
+    int i;
+    for(i = 0; i < NumDigi; i++)
     {
         // Calculate the size of the digi from the sizes of the pages between
         // the start page and the start page of the next sound
@@ -686,7 +687,7 @@ SDL_SetupDigi(void)
         DigiList[i].length = size;
     }
 
-    for(int i = 0; i < LASTSOUND; i++)
+    for(i = 0; i < LASTSOUND; i++)
     {
         DigiMap[i] = -1;
         DigiChannel[i] = -1;

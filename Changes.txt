@@ -1,4 +1,4 @@
-Head (not released yet)
+Wolf4SDL v1.5 (released 2008-05-25, revision 215)
  - Reduced minimum distance to back of moving pushwall to PLAYERSIZE
  - Fixed pushwall rendering when player's eye is in the pushwall back tile
    (bug reported by Pickle)

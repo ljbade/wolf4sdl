@@ -47,9 +47,10 @@ void PM_Startup()
     pageOffsets[ChunksInFile] = fileSize;
 
     uint32_t dataStart = pageOffsets[0];
+    int i;
 
     // Check that all pageOffsets are valid
-    for(int i = 0; i < ChunksInFile; i++)
+    for(i = 0; i < ChunksInFile; i++)
     {
         if(!pageOffsets[i]) continue;   // sparse page
         if(pageOffsets[i] < dataStart || pageOffsets[i] >= (size_t) fileSize)
@@ -59,7 +60,7 @@ void PM_Startup()
 
     // Calculate total amount of padding needed for sprites and sound info page
     int alignPadding = 0;
-    for(int i = PMSpriteStart; i < PMSoundStart; i++)
+    for(i = PMSpriteStart; i < PMSoundStart; i++)
     {
         if(!pageOffsets[i]) continue;   // sparse page
         uint32_t offs = pageOffsets[i] - dataStart + alignPadding;
@@ -79,7 +80,7 @@ void PM_Startup()
 
     // Load pages and initialize PMPages pointers
     uint8_t *ptr = (uint8_t *) PMPageData;
-    for(int i = 0; i < ChunksInFile; i++)
+    for(i = 0; i < ChunksInFile; i++)
     {
         if(i >= PMSpriteStart && i < PMSoundStart || i == ChunksInFile - 1)
         {

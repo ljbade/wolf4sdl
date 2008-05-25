@@ -24,6 +24,10 @@
 
 #pragma	hdrstop
 
+#if _MSC_VER == 1200            // Visual C++ 6
+	#define vsnprintf _vsnprintf
+#endif
+
 //	Global variables
 		word		PrintX,PrintY;
 		word		WindowX,WindowY,WindowW,WindowH;
