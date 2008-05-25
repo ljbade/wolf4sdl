@@ -836,7 +836,7 @@ boolean TryMove (objtype *ob)
     xh = (ob->x+PLAYERSIZE) >>TILESHIFT;
     yh = (ob->y+PLAYERSIZE) >>TILESHIFT;
 
-#define PUSHWALLMINDIST (0x9000)
+#define PUSHWALLMINDIST PLAYERSIZE
 
     //
     // check for solid walls
@@ -848,7 +848,7 @@ boolean TryMove (objtype *ob)
             check = actorat[x][y];
             if (check && !ISPOINTER(check))
             {
-                if(tilemap[x][y]==64 && x==pwallx && y==pwally)	// front of moving pushwall?
+                if(tilemap[x][y]==64 && x==pwallx && y==pwally)   // back of moving pushwall?
                 {
                     switch(pwalldir)
                     {
@@ -1387,7 +1387,7 @@ void    T_Attack (objtype *ob)
                         gamestate.weapon = gamestate.chosenweapon;
                         DrawWeapon ();
                     }
-                };
+                }
                 gamestate.attackframe = gamestate.weaponframe = 0;
                 return;
 

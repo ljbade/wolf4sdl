@@ -1,4 +1,7 @@
 Head (not released yet)
+ - Reduced minimum distance to back of moving pushwall to PLAYERSIZE
+ - Fixed pushwall rendering when player's eye is in the pushwall back tile
+   (bug reported by Pickle)
  - Enable 'End game' menu item also when using --tedlevel
  - Removed some unneccessary fade outs
    (DrawPlayScreen does not call VW_FadeOut anymore!!)

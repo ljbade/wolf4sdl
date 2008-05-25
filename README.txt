@@ -58,6 +58,12 @@ Additional features:
       music will be resumed where it was suspended rather than started from
       the beginning.
 
+ - Freely movable pushwalls:
+      Moving pushwalls can be viewed from all sides, allowing mod developers
+      to place them with fewer restrictions. The player can also follow the
+      pushwall directly instead of having to wait until the pushwall has left
+      a whole tile.
+
  - Optional integrated features for mod developers:
       Wolf4SDL already contains the shading, directional 3D sprites,
       floor and ceiling textures, high resolution textures/sprites,

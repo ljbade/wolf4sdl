@@ -1212,6 +1212,7 @@ void AsmRefresh()
 {
     int32_t xstep,ystep;
     longword xpartial,ypartial;
+    boolean playerInPushwallBackTile = tilemap[focaltx][focalty] == 64;
 
     for(pixx=0;pixx<viewwidth;pixx++)
     {
@@ -1262,6 +1263,43 @@ void AsmRefresh()
         yspot=(((uint32_t)xintercept>>16)<<mapshift)+ytile;
         texdelta=0;
 
+        // Special treatment when player is in back tile of pushwall
+        if(playerInPushwallBackTile)
+        {
+            if(    pwalldir == di_east && xtilestep ==  1
+                || pwalldir == di_west && xtilestep == -1)
+            {
+                int32_t yintbuf = yintercept - ((ystep * (64 - pwallpos)) >> 6);
+                if((yintbuf >> 16) == focalty)   // ray hits pushwall back?
+                {
+                    if(pwalldir == di_east)
+                        xintercept = (focaltx << TILESHIFT) + (pwallpos << 10);
+                    else
+                        xintercept = (focaltx << TILESHIFT) - TILEGLOBAL + ((64 - pwallpos) << 10);
+                    yintercept = yintbuf;
+                    tilehit = pwalltile;
+                    HitVertWall();
+                    continue;
+                }
+            }
+            else if(pwalldir == di_south && ytilestep ==  1
+                ||  pwalldir == di_north && ytilestep == -1)
+            {
+                int32_t xintbuf = xintercept - ((xstep * (64 - pwallpos)) >> 6);
+                if((xintbuf >> 16) == focaltx)   // ray hits pushwall back?
+                {
+                    xintercept = xintbuf;
+                    if(pwalldir == di_south)
+                        yintercept = (focalty << TILESHIFT) + (pwallpos << 10);
+                    else
+                        yintercept = (focalty << TILESHIFT) - TILEGLOBAL + ((64 - pwallpos) << 10);
+                    tilehit = pwalltile;
+                    HitHorizWall();
+                    continue;
+                }
+            }
+        }
+
         do
         {
             if(ytilestep==-1 && (yintercept>>16)<=ytile) goto horizentry;
@@ -1304,13 +1342,13 @@ vertentry:
                             int pwallposinv;
                             if(pwalldir==di_west)
                             {
-                                pwallposnorm = 63-pwallpos;
+                                pwallposnorm = 64-pwallpos;
                                 pwallposinv = pwallpos;
                             }
                             else
                             {
                                 pwallposnorm = pwallpos;
-                                pwallposinv = 63-pwallpos;
+                                pwallposinv = 64-pwallpos;
                             }
                             if(pwalldir == di_east && xtile==pwallx && ((uint32_t)yintercept>>16)==pwally
                                 || pwalldir == di_west && !(xtile==pwallx && ((uint32_t)yintercept>>16)==pwally))
@@ -1339,7 +1377,7 @@ vertentry:
                         else
                         {
                             int pwallposi = pwallpos;
-                            if(pwalldir==di_north) pwallposi = 63-pwallpos;
+                            if(pwalldir==di_north) pwallposi = 64-pwallpos;
                             if(pwalldir==di_south && (word)yintercept<(pwallposi<<10)
                                 || pwalldir==di_north && (word)yintercept>(pwallposi<<10))
                             {
@@ -1350,10 +1388,10 @@ vertentry:
                                         goto passvert;
 
                                     if(pwalldir==di_south)
-                                       yintercept=(yintercept&0xffff0000)+(pwallposi<<10);
+                                        yintercept=(yintercept&0xffff0000)+(pwallposi<<10);
                                     else
-                                       yintercept=(yintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
-                                    xintercept=xintercept-((xstep*(63-pwallpos))>>6);
+                                        yintercept=(yintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
+                                    xintercept=xintercept-((xstep*(64-pwallpos))>>6);
                                     tilehit=pwalltile;
                                     HitHorizWall();
                                 }
@@ -1381,9 +1419,9 @@ vertentry:
                                         goto passvert;
 
                                     if(pwalldir==di_south)
-                                        yintercept=(yintercept&0xffff0000)-((63-pwallpos)<<10);
+                                        yintercept=(yintercept&0xffff0000)-((64-pwallpos)<<10);
                                     else
-                                        yintercept=(yintercept&0xffff0000)+((63-pwallpos)<<10);
+                                        yintercept=(yintercept&0xffff0000)+((64-pwallpos)<<10);
                                     xintercept=xintercept-((xstep*pwallpos)>>6);
                                     tilehit=pwalltile;
                                     HitHorizWall();
@@ -1450,13 +1488,13 @@ horizentry:
                             int pwallposinv;
                             if(pwalldir==di_north)
                             {
-                                pwallposnorm = 63-pwallpos;
+                                pwallposnorm = 64-pwallpos;
                                 pwallposinv = pwallpos;
                             }
                             else
                             {
                                 pwallposnorm = pwallpos;
-                                pwallposinv = 63-pwallpos;
+                                pwallposinv = 64-pwallpos;
                             }
                             if(pwalldir == di_south && ytile==pwally && ((uint32_t)xintercept>>16)==pwallx
                                 || pwalldir == di_north && !(ytile==pwally && ((uint32_t)xintercept>>16)==pwallx))
@@ -1485,7 +1523,7 @@ horizentry:
                         else
                         {
                             int pwallposi = pwallpos;
-                            if(pwalldir==di_west) pwallposi = 63-pwallpos;
+                            if(pwalldir==di_west) pwallposi = 64-pwallpos;
                             if(pwalldir==di_east && (word)xintercept<(pwallposi<<10)
                                     || pwalldir==di_west && (word)xintercept>(pwallposi<<10))
                             {
@@ -1499,7 +1537,7 @@ horizentry:
                                         xintercept=(xintercept&0xffff0000)+(pwallposi<<10);
                                     else
                                         xintercept=(xintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
-                                    yintercept=yintercept-((ystep*(63-pwallpos))>>6);
+                                    yintercept=yintercept-((ystep*(64-pwallpos))>>6);
                                     tilehit=pwalltile;
                                     HitVertWall();
                                 }
@@ -1527,9 +1565,9 @@ horizentry:
                                         goto passhoriz;
 
                                     if(pwalldir==di_east)
-                                        xintercept=(xintercept&0xffff0000)-((63-pwallpos)<<10);
+                                        xintercept=(xintercept&0xffff0000)-((64-pwallpos)<<10);
                                     else
-                                        xintercept=(xintercept&0xffff0000)+((63-pwallpos)<<10);
+                                        xintercept=(xintercept&0xffff0000)+((64-pwallpos)<<10);
                                     yintercept=yintercept-((ystep*pwallpos)>>6);
                                     tilehit=pwalltile;
                                     HitVertWall();
