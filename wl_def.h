@@ -41,7 +41,7 @@
 #else
     #include "audiosod.h"
     #include "gfxv_sod.h"
-    #include "F_SPEAR.H"
+    #include "f_spear.h"
 #endif
 
 #ifdef _arch_dreamcast
