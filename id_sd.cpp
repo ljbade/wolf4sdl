@@ -655,7 +655,7 @@ SDL_SetupDigi(void)
         // the start page and the start page of the next sound
 
         DigiList[i].startpage = soundInfoPage[i * 2];
-        if(DigiList[i].startpage >= ChunksInFile - 1)
+        if((int) DigiList[i].startpage >= ChunksInFile - 1)
         {
             NumDigi = i;
             break;
