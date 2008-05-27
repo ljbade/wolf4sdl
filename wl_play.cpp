@@ -403,19 +403,18 @@ void PollControls (void)
 //
 // get timing info for last frame
 //
-    if (demoplayback)
+    if (demoplayback || demorecord)   // demo recording and playback needs to be constant
     {
-        Delay(lasttimecount + DEMOTICS - GetTimeCount());
-        lasttimecount = GetTimeCount();
-        tics = DEMOTICS;
-    }
-    else if (demorecord)        // demo recording and playback needs
-    {                           // to be constant
-//
-// take DEMOTICS or more tics
-//
-        Delay(lasttimecount + DEMOTICS - GetTimeCount());
-        lasttimecount = GetTimeCount();
+        // wait up to DEMOTICS Wolf tics
+        uint32_t curtime = SDL_GetTicks();
+        lasttimecount += DEMOTICS;
+        int32_t timediff = (lasttimecount * 100) / 7 - curtime;
+        if(timediff > 0)
+            SDL_Delay(timediff);
+
+        if(timediff < -2 * DEMOTICS)       // more than 2-times DEMOTICS behind?
+            lasttimecount = (curtime * 7) / 100;    // yes, set to current timecount
+
         tics = DEMOTICS;
     }
     else
