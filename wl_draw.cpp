@@ -1182,27 +1182,25 @@ void DrawPlayerWeapon (void)
 
 void CalcTics (void)
 {
-    int32_t    newtime;
-
 //
 // calculate tics since last refresh for adaptive timing
 //
     if (lasttimecount > (int32_t) GetTimeCount())
         lasttimecount = GetTimeCount();    // if the game was paused a LONG time
 
-    // TODO: Don't wait busily!
-    do
+    uint32_t curtime = SDL_GetTicks();
+    tics = (curtime * 7) / 100 - lasttimecount;
+    if(!tics)
     {
-        newtime = GetTimeCount();
-        tics = newtime-lasttimecount;
-    } while (!tics);                        // make sure at least one tic passes
+        // wait until end of current tic
+        SDL_Delay(((lasttimecount + 1) * 100) / 7 - curtime);
+        tics = 1;
+    }
 
-    lasttimecount = newtime;
+    lasttimecount += tics;
 
     if (tics>MAXTICS)
-    {
         tics = MAXTICS;
-    }
 }
 
 
