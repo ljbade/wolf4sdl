@@ -1616,6 +1616,8 @@ static void DemoLoop()
             if (playstate == ex_abort)
                 break;
             VW_FadeOut();
+            if(screenHeight % 200 != 0)
+                VL_ClearScreen(0);
             StartCPMusic(INTROSONG);
         }
 
