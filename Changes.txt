@@ -1,3 +1,14 @@
+Wolf4SDL v1.6 (not released yet)
+ - Fixed directional 3d sprites on architectures only allowing aligned memory
+   access (bug reported by Pickle)
+ - Fixed remaining status bar after end of demo in 320x240s resolutions
+   (bug reported by Pickle)
+ - Stabilized demo timing (no noticable changes, though)
+ - Removed last busy waiting (fixes very unstable framerates on machines with
+   stricter schedulers like FreeBSD; thanks to Tron for making me notice)
+ - Fixed compiling of SOD on case sensitive file systems
+   (thanks to Michael)
+
 Wolf4SDL v1.5 (released 2008-05-25, revision 215)
  - Reduced minimum distance to back of moving pushwall to PLAYERSIZE
  - Fixed pushwall rendering when player's eye is in the pushwall back tile
