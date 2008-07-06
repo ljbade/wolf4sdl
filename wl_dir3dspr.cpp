@@ -14,7 +14,7 @@ void Scale3DShaper(int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixe
     t_compshape *shape;
     unsigned scale1,starty,endy;
     word *cmdptr;
-    word *line;
+    byte *line;
     byte *vmem;
     int dx,len,i,newstart,ycnt,pixheight,screndy,upperedge,scrstarty;
     unsigned j;
@@ -81,13 +81,13 @@ void Scale3DShaper(int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixe
                 pixheight=scale1*SPRITESCALEFACTOR;
                 upperedge=viewheight/2-scale1;
 
-                line=(word *)((byte *)shape + cmdptr[i]);
+                line=(byte *)shape + cmdptr[i];
 
-                while(*line)
+                while((endy = READWORD(line)) != 0)
                 {
-                    starty=(*(line+2))>>1;
-                    endy=(*line)>>1;
-                    newstart=(*(line+1));
+                    endy >>= 1;
+                    newstart = READWORD(line);
+                    starty = READWORD(line) >> 1;
                     j=starty;
                     ycnt=j*pixheight;
                     screndy=(ycnt>>6)+upperedge;
@@ -116,7 +116,6 @@ void Scale3DShaper(int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixe
                             }
                         }
                     }
-                    line+=3;
                 }
             }
         }
