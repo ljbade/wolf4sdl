@@ -4,7 +4,7 @@
 #include "wl_def.h"
 #pragma hdrstop
 
-// Uncomment the next line, if you get destination out of bounds
+// Uncomment the following line, if you get destination out of bounds
 // assertion errors and want to ignore them during debugging
 //#define IGNORE_BAD_DEST
 
@@ -20,12 +20,15 @@ boolean fullscreen = true;
 #if defined(_arch_dreamcast)
 unsigned screenWidth = 320;
 unsigned screenHeight = 200;
+unsigned screenBits = 8;
 #elif defined(GP2X)
 unsigned screenWidth = 320;
 unsigned screenHeight = 240;
+unsigned screenBits = 8;
 #else
 unsigned screenWidth = 640;
 unsigned screenHeight = 400;
+unsigned screenBits = -1;      // use "best" color depth according to libSDL
 #endif
 
 SDL_Surface *screen = NULL;
@@ -94,8 +97,14 @@ void	VL_SetVGAPlaneMode (void)
 #endif
 #endif
 
-    screen = SDL_SetVideoMode(screenWidth, screenHeight, 8,
-        SDL_SWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0));
+    if(screenBits == -1)
+    {
+        const SDL_VideoInfo *vidInfo = SDL_GetVideoInfo();
+        screenBits = vidInfo->vfmt->BitsPerPixel;
+    }
+
+    screen = SDL_SetVideoMode(screenWidth, screenHeight, screenBits,
+        SDL_SWSURFACE | (screenBits == 8 ? SDL_HWPALETTE : 0) | (fullscreen ? SDL_FULLSCREEN : 0));
     if(!screen)
     {
         printf("Unable to set %ix%ix8 video mode: %s\n", screenWidth,
@@ -182,8 +191,7 @@ void VL_FillPalette (int red, int green, int blue)
 	    pal[i].b = blue;
 	}
 
-	SDL_SetPalette(screen, SDL_PHYSPAL, pal, 0, 256);
-    memcpy(curpal, pal, sizeof(SDL_Color) * 256);
+	VL_SetPalette(pal);
 }
 
 //===========================================================================
@@ -199,8 +207,16 @@ void VL_FillPalette (int red, int green, int blue)
 void VL_SetColor	(int color, int red, int green, int blue)
 {
     SDL_Color col = { red, green, blue };
-    SDL_SetPalette(screen, SDL_PHYSPAL, &col, color, 1);
     curpal[color] = col;
+
+    if(screenBits == 8)
+        SDL_SetPalette(screen, SDL_PHYSPAL, &col, color, 1);
+    else
+    {
+        SDL_SetPalette(curSurface, SDL_LOGPAL, &col, color, 1);
+        SDL_BlitSurface(curSurface, NULL, screen, NULL);
+        SDL_UpdateRect(screen, 0, 0, 0, 0);
+    }
 }
 
 //===========================================================================
@@ -233,8 +249,16 @@ void VL_GetColor	(int color, int *red, int *green, int *blue)
 
 void VL_SetPalette (SDL_Color *palette)
 {
-    SDL_SetPalette(screen, SDL_PHYSPAL, palette, 0, 256);
     memcpy(curpal, palette, sizeof(SDL_Color) * 256);
+
+    if(screenBits == 8)
+        SDL_SetPalette(screen, SDL_PHYSPAL, palette, 0, 256);
+    else
+    {
+        SDL_SetPalette(curSurface, SDL_LOGPAL, palette, 0, 256);
+        SDL_BlitSurface(curSurface, NULL, screen, NULL);
+        SDL_UpdateRect(screen, 0, 0, 0, 0);
+    }
 }
 
 

@@ -108,11 +108,14 @@ Wolf4SDL supports the following command line options:
  --hard                 Sets the difficulty to hard for tedlevel
  --nowait               Skips intro screens
  --windowed             Starts the game in a window
-                        (Use this when you have palette problems)
  --res <width> <height> Sets the screen resolution
                         (must be multiple of 320x200 or 320x240)
  --resf <w> <h>         Sets any screen resolution >= 320x200
                         (which may result in graphic errors)
+ --bits <b>             Sets the screen color depth
+                        (Use this when you have palette/fading problem
+                        or perhaps to optimize speed on old systems.
+                        Allowed: 8, 16, 24, 32, default: "best" depth)
  --joystick <index>     Use the index-th joystick if available
  --joystickhat <index>  Enables movement with the given coolie hat
  --samplerate <rate>    Sets the sound sample rate (given in Hz)
@@ -159,12 +162,6 @@ TODOs:
 
 
 Known bugs:
- - Windows only: There seem to exist some problems with the palette
-   sometimes. Then some or all colors are wrong. This only appears in
-   fullscreen mode. If you restart the game one or two times, it should be OK
-   (smells like a race condition in libSDL, it's not always reproducible).
-   You can press ALT+F4 to leave the game faster. If it does not help you,
-   consider using the --windowed option.
  - Original demos don't work very well... This might be a timing issue.
 
 

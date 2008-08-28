@@ -1,4 +1,6 @@
 Wolf4SDL v1.6 (not released yet)
+ - Fixed palette issues occurring on some Windows systems by using the
+   "best" color depth reported by libSDL per default (also see --bits option)
  - Fixed directional 3d sprites on architectures only allowing aligned memory
    access (bug reported by Pickle)
  - Fixed remaining status bar after end of demo in 320x240s resolutions

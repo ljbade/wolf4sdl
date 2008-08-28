@@ -1678,7 +1678,7 @@ void CheckParameters(int argc, char *argv[])
         {
             if(++i >= argc)
             {
-                printf("The tedlevel option is missing thr level argument!\n");
+                printf("The tedlevel option is missing the level argument!\n");
                 hasError = true;
             }
             else param_tedlevel = atoi(argv[i]);
@@ -1717,6 +1717,31 @@ void CheckParameters(int argc, char *argv[])
                     printf("Screen width must be at least 320!\n"), hasError = true;
                 if(screenHeight < 200)
                     printf("Screen height must be at least 200!\n"), hasError = true;
+            }
+        }
+        else IFARG("--bits")
+        {
+            if(++i >= argc)
+            {
+                printf("The bits option is missing the color depth argument!\n");
+                hasError = true;
+            }
+            else
+            {
+                screenBits = atoi(argv[i]);
+                switch(screenBits)
+                {
+                    case 8:
+                    case 16:
+                    case 24:
+                    case 32:
+                        break;
+
+                    default:
+                        printf("Screen color depth must be 8, 16, 24, or 32!\n");
+                        hasError = true;
+                        break;
+                }
             }
         }
         else IFARG("--joystick")
@@ -1789,11 +1814,13 @@ void CheckParameters(int argc, char *argv[])
             " --hard                 Sets the difficulty to hard for tedlevel\n"
             " --nowait               Skips intro screens\n"
             " --windowed             Starts the game in a window\n"
-            "                        (Use this when you have palette problems)\n"
             " --res <width> <height> Sets the screen resolution\n"
             "                        (must be multiple of 320x200 or 320x240)\n"
             " --resf <w> <h>         Sets any screen resolution >= 320x200\n"
             "                        (which may result in graphic errors)\n"
+            " --bits <b>             Sets the screen color depth\n"
+            "                        (use this when you have palette/fading problems\n"
+            "                        allowed: 8, 16, 24, 32, default: \"best\" depth)\n"
             " --joystick <index>     Use the index-th joystick if available\n"
             "                        (-1 to disable joystick, default: 0)\n"
             " --joystickhat <index>  Enables movement with the given coolie hat\n"

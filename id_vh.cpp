@@ -286,6 +286,8 @@ void LoadLatchMem (void)
 ===================
 */
 
+extern SDL_Color curpal[256];
+
 #ifdef BIGVIDEOSIZE
 const unsigned int xb = 9;
 const unsigned int yb = 8;
@@ -347,8 +349,18 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
 			// copy one pixel
 			//
 
-            *(destptr + (y1 + y) * dest->pitch + x1 + x)
-                = *(srcptr + (y1 + y) * source->pitch + x1 + x);
+			if(screenBits == 8)
+			{
+				*(destptr + (y1 + y) * dest->pitch + x1 + x)
+					= *(srcptr + (y1 + y) * source->pitch + x1 + x);
+			}
+			else
+			{
+				byte col = *(srcptr + (y1 + y) * source->pitch + x1 + x);
+				uint32_t fullcol = SDL_MapRGB(dest->format, curpal[col].r, curpal[col].g, curpal[col].b);
+				memcpy(destptr + (y1 + y) * dest->pitch + (x1 + x) * dest->format->BytesPerPixel,
+						&fullcol, dest->format->BytesPerPixel);
+			}
 
 			if (rndval == 0)		// entire sequence has been completed
                 goto finished;
