@@ -1,4 +1,5 @@
 Wolf4SDL v1.6 (not released yet)
+ - Removed system menu on Windows in windowed mode to avoid ALT to open it
  - Fixed palette issues occurring on some Windows systems by using the
    "best" color depth reported by libSDL per default (also see --bits option)
  - Fixed directional 3d sprites on architectures only allowing aligned memory
