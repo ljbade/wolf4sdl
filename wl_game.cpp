@@ -644,7 +644,7 @@ void SetupGameLevel (void)
             = gamestate.secretcount
             = gamestate.killcount
             = gamestate.treasurecount
-            = pwallstate = pwallpos = 0;
+            = pwallstate = pwallpos = facetimes = 0;
         LastAttacker = NULL;
         killerobj = NULL;
     }

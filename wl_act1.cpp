@@ -709,19 +709,21 @@ void MoveDoors (void)
         return;
 
     for (door = 0; door < doornum; door++)
-        switch (doorobjlist[door].action)
     {
-        case dr_open:
-            DoorOpen (door);
-            break;
+        switch (doorobjlist[door].action)
+        {
+            case dr_open:
+                DoorOpen (door);
+                break;
 
-        case dr_opening:
-            DoorOpening(door);
-            break;
+            case dr_opening:
+                DoorOpening(door);
+                break;
 
-        case dr_closing:
-            DoorClosing(door);
-            break;
+            case dr_closing:
+                DoorClosing(door);
+                break;
+        }
     }
 }
 

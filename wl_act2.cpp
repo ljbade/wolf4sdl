@@ -925,7 +925,10 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 void SpawnDeadGuard (int tilex, int tiley)
 {
     SpawnNewObj (tilex,tiley,&s_grddie4);
-    newobj->flags |= FL_NONMARK;    // walk through moving enemy fix
+    DEMOIF_SDL
+    {
+        newobj->flags |= FL_NONMARK;    // walk through moving enemy fix
+    }
     newobj->obclass = inertobj;
 }
 
@@ -3077,19 +3080,32 @@ void T_Chase (objtype *ob)
         dx = abs(ob->tilex - player->tilex);
         dy = abs(ob->tiley - player->tiley);
         dist = dx>dy ? dx : dy;
-        if (dist)
-            chance = (tics<<4)/dist;
-        else
-            chance = 300;
 
-        if (dist == 1)
+#ifdef PLAYDEMOLIKEORIGINAL
+        if(DEMOCOND_ORIG)
         {
-            target = abs(ob->x - player->x);
-            if (target < 0x14000l)
+            if(!dist || (dist == 1 && ob->distance < 0x4000))
+                chance = 300;
+            else
+                chance = (tics<<4)/dist;
+        }
+        else
+#endif
+        {
+            if (dist)
+                chance = (tics<<4)/dist;
+            else
+                chance = 300;
+
+            if (dist == 1)
             {
-                target = abs(ob->y - player->y);
+                target = abs(ob->x - player->x);
                 if (target < 0x14000l)
-                    chance = 300;
+                {
+                    target = abs(ob->y - player->y);
+                    if (target < 0x14000l)
+                        chance = 300;
+                }
             }
         }
 
@@ -3173,7 +3189,10 @@ void T_Chase (objtype *ob)
             if (doorobjlist[-ob->distance-1].action != dr_open)
                 return;
             ob->distance = TILEGLOBAL;      // go ahead, the door is now open
-            TryWalk(ob);
+            DEMOIF_SDL
+            {
+                TryWalk(ob);
+            }
         }
 
         if (move < ob->distance)
@@ -3397,7 +3416,10 @@ void T_Path (objtype *ob)
             if (doorobjlist[-ob->distance-1].action != dr_open)
                 return;
             ob->distance = TILEGLOBAL;      // go ahead, the door is now open
-            TryWalk(ob);
+            DEMOIF_SDL
+            {
+                TryWalk(ob);
+            }
         }
 
         if (move < ob->distance)
