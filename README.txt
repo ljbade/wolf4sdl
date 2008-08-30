@@ -162,7 +162,7 @@ TODOs:
 
 
 Known bugs:
- - Original demos don't work very well... This might be a timing issue.
+ - None! ;D
 
 
 Credits:
