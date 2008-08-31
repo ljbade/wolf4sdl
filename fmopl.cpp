@@ -1693,7 +1693,7 @@ static void OPLWriteReg(FM_OPL *OPL, int r, int v)
 			}
 		}
 		/* update */
-		if(CH->block_fnum != block_fnum)
+		if(CH->block_fnum != (UINT32) block_fnum)
 		{
 			UINT8 block  = block_fnum >> 10;
 

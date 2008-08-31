@@ -892,7 +892,7 @@ void DrawPlayBorder (void)
             statusborderw+px*8, px*STATUSLINES, bordercol);
     }
 
-    if(viewheight == screenHeight) return;
+    if((unsigned) viewheight == screenHeight) return;
 
     VWB_BarScaledCoord (0,0,screenWidth,screenHeight-px*STATUSLINES,bordercol);
 
@@ -1243,7 +1243,7 @@ void Died (void)
         dx = killerobj->x - player->x;
         dy = player->y - killerobj->y;
 
-        fangle = atan2((float) dy, (float) dx);                  // returns -pi to pi
+        fangle = (float) atan2((float) dy, (float) dx);     // returns -pi to pi
         if (fangle<0)
             fangle = (float) (M_PI*2+fangle);
 

@@ -108,8 +108,8 @@ static  Instrument              alZeroInst;
 static  volatile boolean        sqActive;
 static  word                   *sqHack;
 static  word                   *sqHackPtr;
-static  word                    sqHackLen;
-static  word                    sqHackSeqLen;
+static  int                     sqHackLen;
+static  int                     sqHackSeqLen;
 static  longword                sqHackTime;
 
 
@@ -647,7 +647,7 @@ SDL_SetupDigi(void)
 {
     // Correct padding enforced by PM_Startup()
     word *soundInfoPage = (word *) (void *) PM_GetPage(ChunksInFile-1);
-    NumDigi = PM_GetPageSize(ChunksInFile - 1) / 4;
+    NumDigi = (word) PM_GetPageSize(ChunksInFile - 1) / 4;
 
     DigiList = (digiinfo *) malloc(NumDigi * sizeof(digiinfo));
     int i;

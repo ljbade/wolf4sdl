@@ -2301,7 +2301,7 @@ void T_SchabbThrow (objtype *ob)
 
     deltax = player->x - ob->x;
     deltay = ob->y - player->y;
-    angle = atan2 ((float) deltay, (float) deltax);
+    angle = (float) atan2((float) deltay, (float) deltax);
     if (angle<0)
         angle = (float) (M_PI*2+angle);
     iangle = (int) (angle/(M_PI*2)*ANGLES);
@@ -2341,7 +2341,7 @@ void T_GiftThrow (objtype *ob)
 
     deltax = player->x - ob->x;
     deltay = ob->y - player->y;
-    angle = atan2 ((float) deltay, (float) deltax);
+    angle = (float) atan2((float) deltay, (float) deltax);
     if (angle<0)
         angle = (float) (M_PI*2+angle);
     iangle = (int) (angle/(M_PI*2)*ANGLES);
@@ -2936,7 +2936,7 @@ void T_FakeFire (objtype *ob)
 
     deltax = player->x - ob->x;
     deltay = ob->y - player->y;
-    angle = atan2 ((float) deltay, (float) deltax);
+    angle = (float) atan2((float) deltay, (float) deltax);
     if (angle<0)
         angle = (float)(M_PI*2+angle);
     iangle = (int) (angle/(M_PI*2)*ANGLES);
@@ -3841,7 +3841,7 @@ void    A_StartDeathCam (objtype *ob)
     dx = ob->x - player->x;
     dy = player->y - ob->y;
 
-    fangle = atan2((float) dy, (float) dx);                  // returns -pi to pi
+    fangle = (float) atan2((float) dy, (float) dx);          // returns -pi to pi
     if (fangle<0)
         fangle = (float) (M_PI*2+fangle);
 

@@ -1328,7 +1328,7 @@ boolean SetViewSize (unsigned width, unsigned height)
     viewheight = height&~1;                 // must be even
     centerx = viewwidth/2-1;
     shootdelta = viewwidth/10;
-    if(viewheight == screenHeight)
+    if((unsigned) viewheight == screenHeight)
         viewscreenx = viewscreeny = screenofs = 0;
     else
     {
@@ -1697,7 +1697,7 @@ void CheckParameters(int argc, char *argv[])
             {
                 screenWidth = atoi(argv[++i]);
                 screenHeight = atoi(argv[++i]);
-                int factor = screenWidth / 320;
+                unsigned factor = screenWidth / 320;
                 if(screenWidth % 320 || screenHeight != 200 * factor && screenHeight != 240 * factor)
                     printf("Screen size must be a multiple of 320x200 or 320x240!\n"), hasError = true;
             }

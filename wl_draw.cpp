@@ -1255,10 +1255,10 @@ void AsmRefresh()
         }
         yintercept=FixedMul(ystep,xpartial)+viewy;
         xtile=focaltx+xtilestep;
-        xspot=(xtile<<mapshift)+((uint32_t)yintercept>>16);
+        xspot=(word)((xtile<<mapshift)+((uint32_t)yintercept>>16));
         xintercept=FixedMul(xstep,ypartial)+viewx;
         ytile=focalty+ytilestep;
-        yspot=(((uint32_t)xintercept>>16)<<mapshift)+ytile;
+        yspot=(word)((((uint32_t)xintercept>>16)<<mapshift)+ytile);
         texdelta=0;
 
         // Special treatment when player is in back tile of pushwall
@@ -1439,7 +1439,7 @@ passvert:
             *((byte *)spotvis+xspot)=1;
             xtile+=xtilestep;
             yintercept+=ystep;
-            xspot=(xtile<<mapshift)+((uint32_t)yintercept>>16);
+            xspot=(word)((xtile<<mapshift)+((uint32_t)yintercept>>16));
         }
         while(1);
         continue;
@@ -1585,7 +1585,7 @@ passhoriz:
             *((byte *)spotvis+yspot)=1;
             ytile+=ytilestep;
             xintercept+=xstep;
-            yspot=(((uint32_t)xintercept>>16)<<mapshift)+ytile;
+            yspot=(word)((((uint32_t)xintercept>>16)<<mapshift)+ytile);
         }
         while(1);
     }

@@ -1003,7 +1003,7 @@ static fixed FixedByFracOrig(fixed a, fixed b)
         a = -a;
         sign = !sign;
     }
-    fixed res = ((int64_t) a * b) >> 16;
+    fixed res = (fixed)(((int64_t) a * b) >> 16);
     if(sign)
         res = -res;
     return res;

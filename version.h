@@ -1,6 +1,8 @@
 #ifndef _VERSION_H_
 #define _VERSION_H_
 
+#ifndef VERSIONALREADYCHOSEN              // used for batch compiling
+
 /* Defines used for different versions */
 
 //#define SPEAR
@@ -24,6 +26,8 @@
                                                 (and GOODTIMES for no FormGen quiz)
     Spear of Destiny Demo                     - define CARMACIZED and SPEAR and SPEARDEMO
 */
+
+#endif
 
 //#define USE_FEATUREFLAGS    // Enables the level feature flags (see bottom of wl_def.h)
 //#define USE_SHADING         // Enables shading support (see wl_shade.cpp)
