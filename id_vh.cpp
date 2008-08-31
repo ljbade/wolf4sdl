@@ -283,19 +283,59 @@ void LoadLatchMem (void)
 =
 = returns true if aborted
 =
+= It uses maximum-length Linear Feedback Shift Registers (LFSR) counters.
+= You can find a list of them with lengths from 3 to 168 at:
+= http://www.xilinx.com/support/documentation/application_notes/xapp052.pdf
+= Many thanks to Xilinx for this list!!!
+=
 ===================
 */
 
+// XOR masks for the pseudo-random number sequence starting with n=17 bits
+static const uint32_t rndmasks[] = {
+                    // n    XNOR from (starting at 1, not 0 as usual)
+    0x00012000,     // 17   17,14
+    0x00020400,     // 18   18,11
+    0x00040023,     // 19   19,6,2,1
+    0x00090000,     // 20   20,17
+    0x00140000,     // 21   21,19
+    0x00300000,     // 22   22,21
+    0x00420000,     // 23   23,18
+    0x00e10000,     // 24   24,23,22,17
+    0x01200000,     // 25   25,22      (this is enough for 8191x4095)
+};
+
+static unsigned int rndbits_y;
+static unsigned int rndmask;
+
 extern SDL_Color curpal[256];
 
-#ifdef BIGVIDEOSIZE
-const unsigned int xb = 9;
-const unsigned int yb = 8;
-#else
-const unsigned int xb = 10;
-const unsigned int yb = 10;
-#endif
-const unsigned int rndmask = 9 << (xb + yb - 4);
+// Returns the number of bits needed to represent the given value
+static int log2_ceil(uint32_t x)
+{
+    int n = 0;
+    uint32_t v = 1;
+    while(v < x)
+    {
+        n++;
+        v <<= 1;
+    }
+    return n;
+}
+
+void VH_Startup()
+{
+    int rndbits_x = log2_ceil(screenWidth);
+    rndbits_y = log2_ceil(screenHeight);
+
+    int rndbits = rndbits_x + rndbits_y;
+    if(rndbits < 17)
+        rndbits = 17;       // no problem, just a bit slower
+    else if(rndbits > 25)
+        rndbits = 25;       // fizzle fade will not fill whole screen
+
+    rndmask = rndmasks[rndbits - 17];
+}
 
 boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
     unsigned width, unsigned height, unsigned frames, boolean abortable)
@@ -304,7 +344,7 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
 	int32_t  rndval;
 
 	rndval = 0;
-	pixperframe = width * height / frames; //64000/frames;
+	pixperframe = width * height / frames;
 
 	IN_StartAck ();
 
@@ -328,8 +368,8 @@ boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest,	int x1, int y1,
 			// seperate random value into x/y pair
 			//
 
-			x = rndval >> yb;
-			y = rndval & ((1 << yb) - 1);
+			x = rndval >> rndbits_y;
+			y = rndval & ((1 << rndbits_y) - 1);
 
 			//
 			// advance to next random element

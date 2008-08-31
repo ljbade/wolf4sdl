@@ -175,6 +175,8 @@ Credits:
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
  - Thanks to Pickle for the GP2X support and help on 320x240 support
  - Thanks to fackue for the Dreamcast support
+ - Thanks to Xilinx for providing a list of maximum-length LFSR counters
+   used for higher resolutions of fizzle fade
 
 
 Licenses:

@@ -90,6 +90,8 @@ void	VW_MeasurePropString (const char *string, word *width, word *height);
 void    LatchDrawPic (unsigned x, unsigned y, unsigned picnum);
 void    LatchDrawPicScaledCoord (unsigned scx, unsigned scy, unsigned picnum);
 void    LoadLatchMem (void);
+
+void    VH_Startup();
 boolean FizzleFade (SDL_Surface *source, SDL_Surface *dest, int x1, int y1,
     unsigned width, unsigned height, unsigned frames, boolean abortable);
 

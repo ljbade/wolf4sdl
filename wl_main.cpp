@@ -1230,11 +1230,12 @@ static void InitGame()
     }
 #endif
 
+    VH_Startup ();
     IN_Startup ();
     PM_Startup ();
     SD_Startup ();
     CA_Startup ();
-    US_Startup();
+    US_Startup ();
 
     // TODO: Will any memory checking be needed someday??
 #ifdef NOTYET
