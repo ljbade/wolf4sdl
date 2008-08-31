@@ -1695,10 +1695,9 @@ void CheckParameters(int argc, char *argv[])
             {
                 screenWidth = atoi(argv[++i]);
                 screenHeight = atoi(argv[++i]);
-                if(screenWidth % 320)
-                    printf("Screen width must be a multiple of 320!\n"), hasError = true;
-                if(screenHeight % 200 && screenHeight % 240)
-                    printf("Screen height must be a multiple of 200 or 240!\n"), hasError = true;
+                int factor = screenWidth / 320;
+                if(screenWidth % 320 || screenHeight != 200 * factor && screenHeight != 240 * factor)
+                    printf("Screen size must be a multiple of 320x200 or 320x240!\n"), hasError = true;
             }
         }
         else IFARG("--resf")
