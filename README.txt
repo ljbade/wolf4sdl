@@ -76,7 +76,7 @@ by the source code (choose the version by commenting/uncommenting lines in
 version.h as described in that file):
 
  - Wolfenstein 3D v1.1 full Apogee
- - Wolfenstein 3D v1.4 full Apogee
+ - Wolfenstein 3D v1.4 full Apogee (not tested)
  - Wolfenstein 3D v1.4 full GT/ID/Activision
  - Wolfenstein 3D v1.0 shareware Apogee
  - Wolfenstein 3D v1.1 shareware Apogee
@@ -84,8 +84,8 @@ version.h as described in that file):
  - Wolfenstein 3D v1.4 shareware
  - Spear of Destiny full
  - Spear of Destiny demo
- - Spear of Destiny - Mission 2: Return to Danger
- - Spear of Destiny - Mission 3: Ultimate Challenge
+ - Spear of Destiny - Mission 2: Return to Danger (not tested)
+ - Spear of Destiny - Mission 3: Ultimate Challenge (not tested)
 
 
 How to play:
@@ -121,9 +121,11 @@ Wolf4SDL supports the following command line options:
  --samplerate <rate>    Sets the sound sample rate (given in Hz)
  --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)
                         (given in bytes)
+ --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*
+                        (may be useful for some broken mods)
 
 For Spear of Destiny the following additional options are available:
- --mission              Mission number to play (1-3)
+ --mission <mission>    Mission number to play (1-3)
  --goodtimes            Disable copy protection quiz
 
 
@@ -165,6 +167,11 @@ Known bugs:
  - None! ;D
 
 
+Troubleshooting:
+ - If your frame rate is low, consider to use the original screen resolution
+   (--res 320 200) or to lower the sound quality (--samplerate 22050)
+
+
 Credits:
  - Special thanks to id Software! Without the source code we would still have
    to pelt Wolfenstein 3D with hex editors and disassemblers ;D
@@ -175,7 +182,7 @@ Credits:
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
  - Thanks to Pickle for the GP2X support and help on 320x240 support
  - Thanks to fackue for the Dreamcast support
- - Thanks to Xilinx for providing a list of maximum-length LFSR counters
+ - Thanks to Xilinx, Inc. for providing a list of maximum-length LFSR counters
    used for higher resolutions of fizzle fade
 
 

@@ -17,6 +17,7 @@
 #pragma hdrstop
 
 extern int lastgamemusicoffset;
+extern int numEpisodesMissing;
 
 //
 // PRIVATE PROTOTYPES
@@ -4000,6 +4001,7 @@ CheckForEpisodes (void)
     if(!stat("vswap.wj1", &statbuf))
     {
         strcpy (extension, "wj1");
+        numEpisodesMissing = 5;
 #else
     if(!stat("vswap.wj6", &statbuf))
     {
@@ -4022,6 +4024,7 @@ CheckForEpisodes (void)
     if(!stat("vswap.wl1", &statbuf))
     {
         strcpy (extension, "wl1");
+        numEpisodesMissing = 5;
     }
     else
         Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
@@ -4043,12 +4046,16 @@ CheckForEpisodes (void)
         if(!stat("vswap.wl3", &statbuf))
         {
             strcpy (extension, "wl3");
+            numEpisodesMissing = 3;
             NewEmenu[2].active = NewEmenu[4].active = EpisodeSelect[1] = EpisodeSelect[2] = 1;
         }
         else
         {
             if(!stat("vswap.wl1", &statbuf))
+            {
                 strcpy (extension, "wl1");
+                numEpisodesMissing = 5;
+            }
             else
                 Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
         }

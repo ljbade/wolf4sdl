@@ -538,12 +538,14 @@ Sint16 GetSample(float csample, byte *samples, int size)
 void SD_PrepareSound(int which)
 {
     if(DigiList == NULL)
-        Quit("SD_PrepageSound(%i): DigiList not initialized!\n", which);
+        Quit("SD_PrepareSound(%i): DigiList not initialized!\n", which);
 
     int page = DigiList[which].startpage;
     int size = DigiList[which].length;
 
     byte *origsamples = PM_GetSound(page);
+    if(origsamples + size >= PM_GetEnd())
+        Quit("SD_PrepareSound(%i): Sound reaches out of page file!\n", which);
 
     int destsamples = (int) ((float) size * (float) param_samplerate
         / (float) ORIGSAMPLERATE);

@@ -68,6 +68,8 @@ byte    *grsegs[NUMCHUNKS];
 
 word    RLEWtag;
 
+int     numEpisodesMissing = 0;
+
 /*
 =============================================================================
 
@@ -473,6 +475,17 @@ void CAL_SetupGrFile (void)
     handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
         CA_CannotOpen(fname);
+
+    lseek(handle, 0, SEEK_END);
+    long headersize = tell(handle);
+    lseek(handle, 0, SEEK_SET);
+
+    if(!param_ignorenumchunks && headersize / 3 != lengthof(grstarts) - numEpisodesMissing)
+        Quit("Wolf4SDL was not compiled for these data files:\n"
+            "%s contains a wrong number of offsets (%i instead of %i)!\n\n"
+            "Please check whether you are using the right executable!\n"
+            "(For mod developers: perhaps you forgot to update NUMCHUNKS?)",
+            fname, headersize / 3, lengthof(grstarts) - numEpisodesMissing);
 
     byte data[lengthof(grstarts) * 3];
     read(handle, data, sizeof(data));

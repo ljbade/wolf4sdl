@@ -1,4 +1,9 @@
 Wolf4SDL v1.6 (not released yet)
+ - Try to recognize whether data files don't fit to program version
+   instead of just using them and probably crash
+   (can be disabled with --ignorenumchunks)
+ - Fizzle fade now works for resolutions up to 8191x4095
+   (thanks to Xilinx, Inc. for the list of maximum-length LFSR counters)
  - Fixed demos being dependent on actual duration of GETGATLINGSND
    (fixes second demo, which even rarely worked in vanilla Wolf3D)
  - Fixed demos by disabling some bugfixes during recording and playback

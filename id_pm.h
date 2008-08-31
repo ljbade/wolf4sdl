@@ -34,6 +34,11 @@ static inline uint8_t *PM_GetPage(int page)
     return PMPages[page];
 }
 
+static inline uint8_t *PM_GetEnd()
+{
+    return PMPages[ChunksInFile];
+}
+
 static inline byte *PM_GetTexture(int wallpic)
 {
     return PM_GetPage(wallpic);

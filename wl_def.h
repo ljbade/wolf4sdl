@@ -930,6 +930,7 @@ extern  int      param_samplerate;
 extern  int      param_audiobuffer;
 extern  int      param_mission;
 extern  boolean  param_goodtimes;
+extern  boolean  param_ignorenumchunks;
 
 
 void            NewGame (int difficulty,int episode);

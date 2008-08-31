@@ -100,6 +100,7 @@ int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 
 int     param_mission = 1;
 boolean param_goodtimes = false;
+boolean param_ignorenumchunks = false;
 
 /*
 =============================================================================
@@ -1792,6 +1793,8 @@ void CheckParameters(int argc, char *argv[])
         }
         else IFARG("--goodtimes")
             param_goodtimes = true;
+        else IFARG("--ignorenumchunks")
+            param_ignorenumchunks = true;
         else IFARG("--help")
             showHelp = true;
         else hasError = true;
@@ -1800,7 +1803,7 @@ void CheckParameters(int argc, char *argv[])
     {
         if(hasError) printf("\n");
         printf(
-            "Wolf4SDL v1.5 ($Revision$)\n"
+            "Wolf4SDL v1.6 ($Revision$)\n"
             "Ported by Chaos-Software (http://www.chaos-software.de.vu)\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
@@ -1830,8 +1833,10 @@ void CheckParameters(int argc, char *argv[])
 #else
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
 #endif
+            " --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*\n"
+            "                        (may be useful for some broken mods)\n"
 #if defined(SPEAR) && !defined(SPEARDEMO)
-            " --mission              Mission number to play (1-3)\n"
+            " --mission <mission>    Mission number to play (1-3)\n"
             " --goodtimes            Disable copy protection quiz\n"
 #endif
             , defaultSampleRate
