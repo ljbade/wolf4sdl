@@ -107,8 +107,8 @@ void	VL_SetVGAPlaneMode (void)
         SDL_SWSURFACE | (screenBits == 8 ? SDL_HWPALETTE : 0) | (fullscreen ? SDL_FULLSCREEN : 0));
     if(!screen)
     {
-        printf("Unable to set %ix%ix8 video mode: %s\n", screenWidth,
-            screenHeight, SDL_GetError());
+        printf("Unable to set %ix%ix%i video mode: %s\n", screenWidth,
+            screenHeight, screenBits, SDL_GetError());
         exit(1);
     }
     SDL_ShowCursor(SDL_DISABLE);
@@ -127,9 +127,6 @@ void	VL_SetVGAPlaneMode (void)
 
     screenPitch = screen->pitch;
     bufferPitch = screenBuffer->pitch;
-
-//    curSurface = screen;
-//    curPitch = screenPitch;
 
     curSurface = screenBuffer;
     curPitch = bufferPitch;
@@ -651,9 +648,39 @@ void VL_LatchToScreenScaledCoord(SDL_Surface *source, int xsrc, int ysrc,
 
 	if(scaleFactor == 1)
     {
-        SDL_Rect srcrect = { xsrc, ysrc, width, height };
-        SDL_Rect destrect = { scxdest, scydest, 0, 0 }; // width and height are ignored
-        SDL_BlitSurface(source, &srcrect, curSurface, &destrect);
+        // HACK: If screenBits is not 8 and the screen is faded out, the
+        //       result will be black when using SDL_BlitSurface. The reason
+        //       is that the logical palette needed for the transformation
+        //       to the screen color depth is not equal to the logical
+        //       palette of the latch (the latch is not faded). Therefore,
+        //       SDL tries to map the colors...
+        //       The result: All colors are mapped to black.
+        //       So, we do the blit on our own...
+        if(screenBits != 8)
+        {
+            VL_LockSurface(source);
+            byte *src = (byte *) source->pixels;
+            unsigned srcPitch = source->pitch;
+
+            VL_LockSurface(curSurface);
+            byte *vbuf = (byte *) curSurface->pixels;
+            for(int j=0,scj=0; j<height; j++, scj++)
+            {
+                for(int i=0,sci=0; i<width; i++, sci++)
+                {
+                    byte col = src[(ysrc + j)*srcPitch + xsrc + i];
+                    vbuf[(scydest+scj)*curPitch+scxdest+sci] = col;
+                }
+            }
+            VL_UnlockSurface(curSurface);
+            VL_UnlockSurface(source);
+        }
+        else
+        {
+            SDL_Rect srcrect = { xsrc, ysrc, width, height };
+            SDL_Rect destrect = { scxdest, scydest, 0, 0 }; // width and height are ignored
+            SDL_BlitSurface(source, &srcrect, curSurface, &destrect);
+        }
     }
     else
     {
