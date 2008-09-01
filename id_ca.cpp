@@ -476,8 +476,7 @@ void CAL_SetupGrFile (void)
     if (handle == -1)
         CA_CannotOpen(fname);
 
-    lseek(handle, 0, SEEK_END);
-    long headersize = tell(handle);
+    long headersize = lseek(handle, 0, SEEK_END);
     lseek(handle, 0, SEEK_SET);
 
     if(!param_ignorenumchunks && headersize / 3 != (long) (lengthof(grstarts) - numEpisodesMissing))
