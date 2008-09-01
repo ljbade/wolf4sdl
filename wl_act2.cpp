@@ -1638,7 +1638,7 @@ void T_Launch (objtype *ob)
 
     deltax = player->x - ob->x;
     deltay = ob->y - player->y;
-    angle = atan2 ((float) deltay, (float) deltax);
+    angle = (float) atan2 ((float) deltay, (float) deltax);
     if (angle<0)
         angle = (float) (M_PI*2+angle);
     iangle = (int) (angle/(M_PI*2)*ANGLES);

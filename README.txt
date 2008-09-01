@@ -92,6 +92,11 @@ How to play:
 
 To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original data
 files (e.g. *.WL6) into the same directory as the Wolf4SDL executable.
+Please make sure, that you use the correct version of the executable with the
+according data files version as the differences are hardcoded into the binary!
+
+On Windows SDL.dll and SDL_mixer.dll must also be copied into this directory.
+They are also available at http://www.chaos-software.de.vu
 
 If you play in windowed mode (--windowed parameter), press SCROLLLOCK or F12
 to grab the mouse. Press it again to release the mouse.
@@ -156,6 +161,9 @@ Just rename the file extension from ".devpack" to ".tar.bz2" and unpack it
 with for example WinRAR. Then add the directories include/SDL and lib to the
 according search paths in your project.
 
+IMPORTANT: Do not forget to take care of version.h!
+   By default it compiles for "Wolfenstein 3D v1.4 full GT/ID/Activision"!
+
 
 TODOs:
  - Add PC speaker emulation
@@ -168,8 +176,8 @@ Known bugs:
 
 
 Troubleshooting:
- - If your frame rate is low, consider to use the original screen resolution
-   (--res 320 200) or to lower the sound quality (--samplerate 22050)
+ - If your frame rate is low, consider using the original screen resolution
+   (--res 320 200) or lowering the sound quality (--samplerate 22050)
 
 
 Credits:

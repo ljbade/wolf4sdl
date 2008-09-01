@@ -1,4 +1,5 @@
-Wolf4SDL v1.6 (not released yet)
+Wolf4SDL v1.6 (released 2008-09-01, revision 233)
+ - Fixed songs not really supporting more than 64kb
  - Try to recognize whether data files don't fit to program version
    instead of just using them and probably crash
    (can be disabled with --ignorenumchunks)
