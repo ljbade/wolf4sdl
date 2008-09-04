@@ -604,121 +604,6 @@ void HitVertDoor (void)
 
 //==========================================================================
 
-
-/*
-====================
-=
-= HitHorizPWall
-=
-= A pushable wall in action has been hit
-=
-====================
-*/
-
-void HitHorizPWall (void)
-{
-    int wallpic;
-    int texture,offset;
-
-    texture = (xintercept>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
-    offset = pwallpos<<10;
-    if (ytilestep == -1)
-        yintercept += TILEGLOBAL-offset;
-    else
-    {
-        texture = TEXTUREMASK-texture;
-        yintercept += offset;
-    }
-
-    if(lasttilehit==tilehit && lastside==0)
-    {
-        if((pixx&3) && texture == lasttexture)
-        {
-            ScalePost();
-            postx=pixx;
-            wallheight[pixx] = wallheight[pixx-1];
-            return;
-        }
-        ScalePost();
-        wallheight[pixx] = CalcHeight();
-        postsource+=texture-lasttexture;
-        postwidth=1;
-        postx=pixx;
-        lasttexture=texture;
-        return;
-    }
-
-    if(lastside!=-1) ScalePost();
-
-    lastside=0;
-    lasttilehit=tilehit;
-    lasttexture=texture;
-    wallheight[pixx] = CalcHeight();
-    postx = pixx;
-    postwidth = 1;
-
-    wallpic = horizwall[pwalltile&63];
-
-    postsource = PM_GetTexture(wallpic) + texture;
-}
-
-/*
-====================
-=
-= HitVertPWall
-=
-= A pushable wall in action has been hit
-=
-====================
-*/
-
-void HitVertPWall (void)
-{
-    int wallpic;
-    int texture,offset;
-
-    texture = (yintercept>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
-    offset = pwallpos<<10;
-    if (xtilestep == -1)
-    {
-        xintercept += TILEGLOBAL-offset;
-        texture = TEXTUREMASK-texture;
-    }
-    else
-        xintercept += offset;
-
-    if(lasttilehit==tilehit && lastside==1)
-    {
-        if((pixx&3) && texture == lasttexture)
-        {
-            ScalePost();
-            postx=pixx;
-            wallheight[pixx] = wallheight[pixx-1];
-            return;
-        }
-        ScalePost();
-        wallheight[pixx] = CalcHeight();
-        postsource+=texture-lasttexture;
-        postwidth=1;
-        postx=pixx;
-        lasttexture=texture;
-        return;
-    }
-
-    if(lastside!=-1) ScalePost();
-
-    lastside=1;
-    lasttilehit=tilehit;
-    lasttexture=texture;
-    wallheight[pixx] = CalcHeight();
-    postx = pixx;
-    postwidth = 1;
-
-    wallpic = vertwall[pwalltile&63];
-
-    postsource = PM_GetTexture(wallpic) + texture;
-}
-
 #define HitHorizBorder HitHorizWall
 #define HitVertBorder HitVertWall
 
@@ -1275,6 +1160,7 @@ void AsmRefresh()
                     else
                         xintercept = (focaltx << TILESHIFT) - TILEGLOBAL + ((64 - pwallpos) << 10);
                     yintercept = yintbuf;
+                    ytile = (short) (yintercept >> TILESHIFT);
                     tilehit = pwalltile;
                     HitVertWall();
                     continue;
@@ -1291,6 +1177,7 @@ void AsmRefresh()
                         yintercept = (focalty << TILESHIFT) + (pwallpos << 10);
                     else
                         yintercept = (focalty << TILESHIFT) - TILEGLOBAL + ((64 - pwallpos) << 10);
+                    xtile = (short) (xintercept >> TILESHIFT);
                     tilehit = pwalltile;
                     HitHorizWall();
                     continue;
@@ -1305,10 +1192,11 @@ void AsmRefresh()
 vertentry:
             if((uint32_t)yintercept>mapheight*65536-1 || (word)xtile>=mapwidth)
             {
-                if(xtile<0) xintercept=0;
-                if(xtile>=mapwidth) xintercept=mapwidth<<TILESHIFT;
-                if(yintercept<0) yintercept=0;
-                if(yintercept>=(mapheight<<TILESHIFT)) yintercept=mapheight<<TILESHIFT;
+                if(xtile<0) xintercept=0, xtile=0;
+                else if(xtile>=mapwidth) xintercept=mapwidth<<TILESHIFT, xtile=mapwidth-1;
+                else xtile=(short) (xintercept >> TILESHIFT);
+                if(yintercept<0) yintercept=0, ytile=0;
+                else if(yintercept>=(mapheight<<TILESHIFT)) yintercept=mapheight<<TILESHIFT, ytile=mapheight-1;
                 yspot=0xffff;
                 tilehit=0;
                 HitHorizBorder();
@@ -1327,6 +1215,7 @@ vertentry:
                         goto passvert;
                     yintercept=yintbuf;
                     xintercept=(xtile<<TILESHIFT)|0x8000;
+                    ytile = (short) (yintercept >> TILESHIFT);
                     HitVertDoor();
                 }
                 else
@@ -1357,6 +1246,7 @@ vertentry:
 
                                 xintercept=(xtile<<TILESHIFT)+TILEGLOBAL-(pwallposinv<<10);
                                 yintercept=yintbuf;
+                                ytile = (short) (yintercept >> TILESHIFT);
                                 tilehit=pwalltile;
                                 HitVertWall();
                             }
@@ -1368,6 +1258,7 @@ vertentry:
 
                                 xintercept=(xtile<<TILESHIFT)-(pwallposinv<<10);
                                 yintercept=yintbuf;
+                                ytile = (short) (yintercept >> TILESHIFT);
                                 tilehit=pwalltile;
                                 HitVertWall();
                             }
@@ -1390,6 +1281,7 @@ vertentry:
                                     else
                                         yintercept=(yintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
                                     xintercept=xintercept-((xstep*(64-pwallpos))>>6);
+                                    xtile = (short) (xintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitHorizWall();
                                 }
@@ -1397,6 +1289,7 @@ vertentry:
                                 {
                                     texdelta = -(pwallposi<<10);
                                     xintercept=xtile<<TILESHIFT;
+                                    ytile = (short) (yintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitVertWall();
                                 }
@@ -1407,6 +1300,7 @@ vertentry:
                                 {
                                     texdelta = -(pwallposi<<10);
                                     xintercept=xtile<<TILESHIFT;
+                                    ytile = (short) (yintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitVertWall();
                                 }
@@ -1421,6 +1315,7 @@ vertentry:
                                     else
                                         yintercept=(yintercept&0xffff0000)+((64-pwallpos)<<10);
                                     xintercept=xintercept-((xstep*pwallpos)>>6);
+                                    xtile = (short) (xintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitHorizWall();
                                 }
@@ -1430,6 +1325,7 @@ vertentry:
                     else
                     {
                         xintercept=xtile<<TILESHIFT;
+                        ytile = (short) (yintercept >> TILESHIFT);
                         HitVertWall();
                     }
                 }
@@ -1451,10 +1347,11 @@ passvert:
 horizentry:
             if((uint32_t)xintercept>mapwidth*65536-1 || (word)ytile>=mapheight)
             {
-                if(ytile<0) yintercept=0;
-                if(ytile>=mapheight) yintercept=mapheight<<TILESHIFT;
-                if(xintercept<0) xintercept=0;
-                if(xintercept>=(mapwidth<<TILESHIFT)) xintercept=mapwidth<<TILESHIFT;
+                if(ytile<0) yintercept=0, ytile=0;
+                else if(ytile>=mapheight) yintercept=mapheight<<TILESHIFT, ytile=mapheight-1;
+                else ytile=(short) (yintercept >> TILESHIFT);
+                if(xintercept<0) xintercept=0, xtile=0;
+                else if(xintercept>=(mapwidth<<TILESHIFT)) xintercept=mapwidth<<TILESHIFT, xtile=mapwidth-1;
                 xspot=0xffff;
                 tilehit=0;
                 HitVertBorder();
@@ -1473,6 +1370,7 @@ horizentry:
                         goto passhoriz;
                     xintercept=xintbuf;
                     yintercept=(ytile<<TILESHIFT)+0x8000;
+                    xtile = (short) (xintercept >> TILESHIFT);
                     HitHorizDoor();
                 }
                 else
@@ -1503,6 +1401,7 @@ horizentry:
 
                                 yintercept=(ytile<<TILESHIFT)+TILEGLOBAL-(pwallposinv<<10);
                                 xintercept=xintbuf;
+                                xtile = (short) (xintercept >> TILESHIFT);
                                 tilehit=pwalltile;
                                 HitHorizWall();
                             }
@@ -1514,6 +1413,7 @@ horizentry:
 
                                 yintercept=(ytile<<TILESHIFT)-(pwallposinv<<10);
                                 xintercept=xintbuf;
+                                xtile = (short) (xintercept >> TILESHIFT);
                                 tilehit=pwalltile;
                                 HitHorizWall();
                             }
@@ -1536,6 +1436,7 @@ horizentry:
                                     else
                                         xintercept=(xintercept&0xffff0000)-TILEGLOBAL+(pwallposi<<10);
                                     yintercept=yintercept-((ystep*(64-pwallpos))>>6);
+                                    ytile = (short) (yintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitVertWall();
                                 }
@@ -1543,6 +1444,7 @@ horizentry:
                                 {
                                     texdelta = -(pwallposi<<10);
                                     yintercept=ytile<<TILESHIFT;
+                                    xtile = (short) (xintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitHorizWall();
                                 }
@@ -1553,6 +1455,7 @@ horizentry:
                                 {
                                     texdelta = -(pwallposi<<10);
                                     yintercept=ytile<<TILESHIFT;
+                                    xtile = (short) (xintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitHorizWall();
                                 }
@@ -1567,6 +1470,7 @@ horizentry:
                                     else
                                         xintercept=(xintercept&0xffff0000)+((64-pwallpos)<<10);
                                     yintercept=yintercept-((ystep*pwallpos)>>6);
+                                    ytile = (short) (yintercept >> TILESHIFT);
                                     tilehit=pwalltile;
                                     HitVertWall();
                                 }
@@ -1576,6 +1480,7 @@ horizentry:
                     else
                     {
                         yintercept=ytile<<TILESHIFT;
+                        xtile = (short) (xintercept >> TILESHIFT);
                         HitHorizWall();
                     }
                 }
