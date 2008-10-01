@@ -479,12 +479,18 @@ void CAL_SetupGrFile (void)
     long headersize = lseek(handle, 0, SEEK_END);
     lseek(handle, 0, SEEK_SET);
 
-    if(!param_ignorenumchunks && headersize / 3 != (long) (lengthof(grstarts) - numEpisodesMissing))
+#ifndef APOGEE_1_0
+	int expectedsize = lengthof(grstarts) - numEpisodesMissing;
+#else
+	int expectedsize = lengthof(grstarts);
+#endif
+
+    if(!param_ignorenumchunks && headersize / 3 != (long) expectedsize)
         Quit("Wolf4SDL was not compiled for these data files:\n"
             "%s contains a wrong number of offsets (%i instead of %i)!\n\n"
             "Please check whether you are using the right executable!\n"
             "(For mod developers: perhaps you forgot to update NUMCHUNKS?)",
-            fname, headersize / 3, lengthof(grstarts) - numEpisodesMissing);
+            fname, headersize / 3, expectedsize);
 
     byte data[lengthof(grstarts) * 3];
     read(handle, data, sizeof(data));
