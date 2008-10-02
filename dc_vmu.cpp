@@ -1,10 +1,10 @@
 /*
     dc_vmu.cpp
     This file is part of the Wolf4SDL\DC project.
-    It has the LCD drawing and soon saving functions.
+    It has the LCD drawing and VMU save\load functions.
 
     LCD drawing code found in Sam Steele's DreamZZT.
-    Saving code found in OneThirty8's SDLWolf-3D port.
+    Saving code found in OneThirty8's sdlWolf port.
 
     Cyle Terry <cyle.terry@gmail.com>
 */
