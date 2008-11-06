@@ -121,6 +121,9 @@ Wolf4SDL supports the following command line options:
                         (Use this when you have palette/fading problem
                         or perhaps to optimize speed on old systems.
                         Allowed: 8, 16, 24, 32, default: "best" depth)
+ --extravbls <vbls>     Sets a delay after each frame, which may help to
+                        reduce flickering (SDL does not support vsync...)
+                        (unit is currently 8 ms, default: 0)
  --joystick <index>     Use the index-th joystick if available
  --joystickhat <index>  Enables movement with the given coolie hat
  --samplerate <rate>    Sets the sound sample rate (given in Hz)
