@@ -154,7 +154,7 @@ void CAL_GetGrChunkLength (int chunk)
 
 boolean CA_WriteFile (const char *filename, void *ptr, int32_t length)
 {
-    const int handle = open(filename, O_CREAT | O_WRONLY | O_BINARY);
+    const int handle = open(filename, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (handle == -1)
         return false;
 
