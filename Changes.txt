@@ -1,6 +1,6 @@
 Wolf4SDL v1.7
  - Use SDL_DOUBLEBUF for vsync to avoid or at least reduce flickering
-   (thanks to Avramenko for the hint, use --nodblbuf to disable it)
+   (thanks to Greg Ayrton for the hint, use --nodblbuf to disable it)
  - Removed remainings of the frame rate counter on screen, when disabled
  - Don't quit game when using TAB+E with --tedlevel
  - Added --extravbls parameter
