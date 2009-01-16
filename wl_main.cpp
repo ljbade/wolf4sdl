@@ -1744,23 +1744,25 @@ void CheckParameters(int argc, char *argv[])
                 }
             }
         }
-		else IFARG("--extravbls")
-		{
-			if(++i >= argc)
+        else IFARG("--nodblbuf")
+            usedoublebuffering = false;
+        else IFARG("--extravbls")
+        {
+            if(++i >= argc)
             {
                 printf("The extravbls option is missing the vbls argument!\n");
                 hasError = true;
             }
-			else
-			{
-				extravbls = atoi(argv[i]);
-				if(extravbls < 0)
-				{
-					printf("Extravbls must be positive!\n");
-					hasError = true;
-				}
-			}
-		}
+            else
+            {
+                extravbls = atoi(argv[i]);
+                if(extravbls < 0)
+                {
+                    printf("Extravbls must be positive!\n");
+                    hasError = true;
+                }
+            }
+        }
         else IFARG("--joystick")
         {
             if(++i >= argc)
@@ -1820,7 +1822,7 @@ void CheckParameters(int argc, char *argv[])
     {
         if(hasError) printf("\n");
         printf(
-            "Wolf4SDL v1.6 ($Revision$)\n"
+            "Wolf4SDL v1.7 ($Revision$)\n"
             "Ported by Chaos-Software (http://www.chaos-software.de.vu)\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
@@ -1840,9 +1842,9 @@ void CheckParameters(int argc, char *argv[])
             " --bits <b>             Sets the screen color depth\n"
             "                        (use this when you have palette/fading problems\n"
             "                        allowed: 8, 16, 24, 32, default: \"best\" depth)\n"
-			" --extravbls <vbls>     Sets a delay after each frame, which may help to\n"
-			"                        reduce flickering (SDL does not support vsync...)\n"
-			"                        (unit is currently 8 ms, default: 0)\n"
+            " --nodblbuf             Don't use SDL's double buffering\n"
+            " --extravbls <vbls>     Sets a delay after each frame, which may help to\n"
+            "                        reduce flickering (unit is currently 8 ms, default: 0)\n"
             " --joystick <index>     Use the index-th joystick if available\n"
             "                        (-1 to disable joystick, default: 0)\n"
             " --joystickhat <index>  Enables movement with the given coolie hat\n"

@@ -1,3 +1,18 @@
+Wolf4SDL v1.7
+ - Use SDL_DOUBLEBUF for vsync to avoid or at least reduce flickering
+   (thanks to Avramenko for the hint, use --nodblbuf to disable it)
+ - Removed remainings of the frame rate counter on screen, when disabled
+ - Don't quit game when using TAB+E with --tedlevel
+ - Added --extravbls parameter
+ - Changed default for "extra VBLs" from 1 to 0
+ - Fixed missing umask parameter for open with O_CREAT
+   (bug reported by Daniel Fass)
+ - Fixed support for 1.0 shareware data files
+   (bug reported by Marcus Naylor)
+ - Fixed xtile and ytile not being valid in HitHorizWall and HitVertWall,
+   respectively. This caused problems with some tutorials.
+ - Removed unused HitHorizPWall and HitVertPWall.
+
 Wolf4SDL v1.6 (released 2008-09-01, revision 233)
  - Fixed songs not really supporting more than 64kb
  - Try to recognize whether data files don't fit to program version

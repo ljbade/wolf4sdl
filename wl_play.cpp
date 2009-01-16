@@ -733,7 +733,7 @@ void CheckKeys (void)
         CA_CacheGrChunk (STARTFONT);
         fontnumber = 0;
         SETFONTCOLOR (0, 15);
-        if (DebugKeys () && viewsize < 18)
+        if (DebugKeys () && viewsize < 20)
             DrawPlayBorder ();       // dont let the blue borders flash
 
         if (MousePresent && IN_IsInputGrabbed())
@@ -1098,17 +1098,17 @@ void UpdatePaletteShifts (void)
 
     if (red)
     {
-        VL_SetPalette (redshifts[red - 1]);
+        VL_SetPalette (redshifts[red - 1], false);
         palshifted = true;
     }
     else if (white)
     {
-        VL_SetPalette (whiteshifts[white - 1]);
+        VL_SetPalette (whiteshifts[white - 1], false);
         palshifted = true;
     }
     else if (palshifted)
     {
-        VL_SetPalette (gamepal);        // back to normal
+        VL_SetPalette (gamepal, false);        // back to normal
         palshifted = false;
     }
 }
@@ -1129,7 +1129,7 @@ void FinishPaletteShifts (void)
     if (palshifted)
     {
         palshifted = 0;
-        VL_SetPalette (gamepal);
+        VL_SetPalette (gamepal, true);
     }
 }
 
