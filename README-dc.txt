@@ -3,13 +3,17 @@ ported to Dreamcast by fackue
 
 A port of Wolf4SDL by Moritz "Ripper" Kroll.
 
-What's new in 1.5:
-- Mouse support
-- Weapon switch support
-- Controllers with C & Z button support
-- Command line parameters via 'params.txt' support
-- SOD mission pack support via menu
-- Commercial CD-ROM swap support
+Changes:
+ 1.6 <October 04, 2008>
+  - Getting the DC port up-to-date
+
+ 1.5 <May 25, 2008>
+  - Mouse support
+  - Weapon switch support
+  - Controllers with C & Z button support
+  - Command line parameters via 'params.txt' support
+  - SOD mission pack support via menu
+  - Commercial CD-ROM swap support
 
 Instructions:
 - Extract the Wolf4SDL\DC archive to it's own folder.
