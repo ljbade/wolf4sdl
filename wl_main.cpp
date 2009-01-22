@@ -1213,6 +1213,10 @@ static void InitGame()
         exit(1);
     }
 
+#if defined GP2X
+    GP2X_MemoryInit();
+#endif
+
     SignonScreen ();
 
 #if defined _WIN32
@@ -1887,8 +1891,6 @@ int main (int argc, char *argv[])
 #if defined(_arch_dreamcast)
     DC_Main();
     DC_CheckParameters();
-#elif defined(GP2X)
-    GP2X_Init();
 #else
     CheckParameters(argc, argv);
 #endif
