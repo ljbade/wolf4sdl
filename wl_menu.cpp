@@ -36,18 +36,8 @@ int CP_ReadThis (int);
 #endif
 #endif
 
+// ENDSTRx constants are defined in foreign.h
 char endStrings[9][80] = {
-#ifndef SPEAR
-    {"Dost thou wish to\nleave with such hasty\nabandon?"},
-    {"Chickening out...\nalready?"},
-    {"Press N for more carnage.\nPress Y to be a weenie."},
-    {"So, you think you can\nquit this easily, huh?"},
-    {"Press N to save the world.\nPress Y to abandon it in\nits hour of need."},
-    {"Press N if you are brave.\nPress Y to cower in shame."},
-    {"Heroes, press N.\nWimps, press Y."},
-    {"You are at an intersection.\nA sign says, 'Press Y to quit.'\n>"},
-    {"For guns and glory, press N.\nFor work and worry, press Y."}
-#else
     ENDSTR1,
     ENDSTR2,
     ENDSTR3,
@@ -57,7 +47,6 @@ char endStrings[9][80] = {
     ENDSTR7,
     ENDSTR8,
     ENDSTR9
-#endif
 };
 
 CP_itemtype MainMenu[] = {

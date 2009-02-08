@@ -25,6 +25,17 @@
 
 #pragma pack(1)
 
+#if defined(_arch_dreamcast)
+#define YESBUTTONNAME "A"
+#define NOBUTTONNAME  "B"
+#elif defined(GP2X)
+#define YESBUTTONNAME "Y"
+#define NOBUTTONNAME  "B"
+#else
+#define YESBUTTONNAME "Y"
+#define NOBUTTONNAME  "N"
+#endif
+
 #include "foreign.h"
 
 #ifndef SPEAR
@@ -82,10 +93,6 @@ void Quit(const char *errorStr, ...);
 #include "id_ca.h"
 
 #include "wl_menu.h"
-
-#ifdef SPEAR
-#include "f_spear.h"
-#endif
 
 #define MAPSPOT(x,y,plane) (mapsegs[plane][((y)<<mapshift)+(x)])
 
