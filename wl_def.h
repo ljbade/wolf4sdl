@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #if defined(_arch_dreamcast)
-#	include <kos.h>
+#	include "dc/dc_main.h"
 #elif !defined(_WIN32)
 #	include <stdint.h>
 #	include <string.h>
@@ -53,17 +53,6 @@
     #include "audiosod.h"
     #include "gfxv_sod.h"
     #include "f_spear.h"
-#endif
-
-#ifdef _arch_dreamcast
-typedef uint8 uint8_t;
-typedef uint16 uint16_t;
-typedef uint32 uint32_t;
-typedef int8 int8_t;
-typedef int16 int16_t;
-typedef int32 int32_t;
-typedef int64 int64_t;
-typedef ptr_t uintptr_t;
 #endif
 
 typedef uint8_t byte;
@@ -1350,34 +1339,6 @@ extern  char    helpfilename[],endfilename[];
 
 extern  void    HelpScreens(void);
 extern  void    EndText(void);
-
-
-/*
-=============================================================================
-
-                            DREAMCAST DEFINITIONS
-
-=============================================================================
-*/
-
-#ifdef _arch_dreamcast
-
-// defined in dc_main.cpp
-void DC_Main(void);
-void DC_CheckParameters(void);
-int DC_MousePresent(void);
-
-// defined in dc_vmu.cpp
-void StatusDrawLCD(int lcd_index);
-int DC_SaveToVMU(char *src, int tp);
-int DC_LoadFromVMU(char *dst);
-
-#else
-
-// ignore calls to this function
-#define StatusDrawLCD(x)
-
-#endif
 
 
 /*

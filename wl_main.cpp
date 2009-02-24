@@ -278,7 +278,7 @@ void WriteConfig(void)
         close(file);
     }
 #ifdef _arch_dreamcast
-    DC_SaveToVMU(configname, 1);
+    DC_SaveToVMU(configname, NULL);
 #endif
 }
 
@@ -1288,6 +1288,10 @@ static void InitGame()
 //
     IntroScreen ();
 
+#ifdef _arch_dreamcast
+    //TODO: VMU Selection Screen
+#endif
+
 //
 // load in and lock down some basic chunks
 //
@@ -1854,11 +1858,7 @@ void CheckParameters(int argc, char *argv[])
             " --joystickhat <index>  Enables movement with the given coolie hat\n"
             " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"
             " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
-#ifdef _arch_dreamcast
-            "                        (given in bytes, default: 4096 / (44100 / samplerate))\n"
-#else
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
-#endif
             " --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*\n"
             "                        (may be useful for some broken mods)\n"
 #if defined(SPEAR) && !defined(SPEARDEMO)
@@ -1871,11 +1871,7 @@ void CheckParameters(int argc, char *argv[])
     }
 
     if(sampleRateGiven && !audioBufferGiven)
-#ifdef _arch_dreamcast
-        param_audiobuffer = 4096 / (44100 / param_samplerate);
-#else
         param_audiobuffer = 2048 / (44100 / param_samplerate);
-#endif
 }
 
 /*
@@ -1889,8 +1885,7 @@ void CheckParameters(int argc, char *argv[])
 int main (int argc, char *argv[])
 {
 #if defined(_arch_dreamcast)
-    DC_Main();
-    DC_CheckParameters();
+    DC_Init();
 #else
     CheckParameters(argc, argv);
 #endif

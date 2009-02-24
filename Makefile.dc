@@ -5,8 +5,11 @@ include $(KOS_BASE)/Makefile.rules
 #KOS_ROMDISK_DIR = romdisk
 
 #OBJS += romdisk.o
-OBJS += dc_main.o
-OBJS += dc_vmu.o
+OBJS += dc/dc_cd.o
+OBJS += dc/dc_main.o
+OBJS += dc/dc_maple.o
+OBJS += dc/dc_video.o
+OBJS += dc/dc_vmu.o
 OBJS += fmopl.o
 OBJS += id_ca.o
 OBJS += id_in.o
@@ -46,9 +49,6 @@ rm-elf:
 Wolf4SDL.elf: $(OBJS)
 	$(KOS_CC) $(KOS_CFLAGS) $(KOS_LDFLAGS) -o Wolf4SDL.elf $(KOS_START) \
 		$(OBJS) -lSDL_mixer -lSDL -lm -lz $(OBJEXTRA) $(KOS_LIBS)
-
-#Wolf4SDL.elf: $(OBJS)
-#	kos-cc -o Wolf4SDL.elf $(OBJS) -lSDL -lSDL_mixer -lm
 
 Wolf4SDL.bin: Wolf4SDL.elf
 	kos-objcopy -O binary -R .stack Wolf4SDL.elf Wolf4SDL.bin

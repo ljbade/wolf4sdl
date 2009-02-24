@@ -17,12 +17,13 @@
 #endif
 
 boolean fullscreen = true;
-boolean usedoublebuffering = true;
 #if defined(_arch_dreamcast)
+boolean usedoublebuffering = false;
 unsigned screenWidth = 320;
 unsigned screenHeight = 200;
 unsigned screenBits = 8;
 #elif defined(GP2X)
+boolean usedoublebuffering = true;
 unsigned screenWidth = 320;
 unsigned screenHeight = 240;
 #if defined(GP2X_940)
@@ -31,6 +32,7 @@ unsigned screenBits = 8;
 unsigned screenBits = 16;
 #endif
 #else
+boolean usedoublebuffering = true;
 unsigned screenWidth = 640;
 unsigned screenHeight = 400;
 unsigned screenBits = -1;      // use "best" color depth according to libSDL
@@ -94,12 +96,10 @@ void	VL_Shutdown (void)
 
 void	VL_SetVGAPlaneMode (void)
 {
-#ifndef _arch_dreamcast
 #ifdef SPEAR
     SDL_WM_SetCaption("Spear of Destiny", NULL);
 #else
     SDL_WM_SetCaption("Wolfenstein 3D", NULL);
-#endif
 #endif
 
     if(screenBits == -1)

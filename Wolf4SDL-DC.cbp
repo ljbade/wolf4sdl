@@ -24,9 +24,13 @@
 		</Build>
 		<Unit filename="audiosod.h" />
 		<Unit filename="audiowl6.h" />
-		<Unit filename="dc_main.cpp" />
-		<Unit filename="dc_vmu.cpp" />
-		<Unit filename="dc_vmu.h" />
+		<Unit filename="dc\dc_cd.cpp" />
+		<Unit filename="dc\dc_main.cpp" />
+		<Unit filename="dc\dc_main.h" />
+		<Unit filename="dc\dc_maple.cpp" />
+		<Unit filename="dc\dc_video.cpp" />
+		<Unit filename="dc\dc_vmu.cpp" />
+		<Unit filename="dc\dc_vmu.h" />
 		<Unit filename="f_spear.h" />
 		<Unit filename="fmopl.cpp" />
 		<Unit filename="fmopl.h" />

@@ -1,27 +1,18 @@
-Wolf4SDL\DC 1.5
-ported to Dreamcast by fackue
+Wolf4SDL\DC 1.7
+ported to Dreamcast by dcbasic
 
 A port of Wolf4SDL by Moritz "Ripper" Kroll.
 
-Changes:
- 1.6 <October 04, 2008>
-  - Getting the DC port up-to-date
-
- 1.5 <May 25, 2008>
-  - Mouse support
-  - Weapon switch support
-  - Controllers with C & Z button support
-  - Command line parameters via 'params.txt' support
-  - SOD mission pack support via menu
-  - Commercial CD-ROM swap support
+What's new in 1.7:
+- See Changes-dc.txt
 
 Instructions:
 - Extract the Wolf4SDL\DC archive to it's own folder.
-- Put your *.wl6 files inside /wolf3d (if you have a commercial CD-ROM release
-  of Wolfenstein you can skip this step).
-- If you want use the command line, create a text file called 'params.txt'
-  (without quotes) in the folder you extracted Wolf4SDL\DC to and add any
-  valid parameters. Please keep them on one line.
+- Put your *.wl6 files inside /cd/data/wolf3d (if you have a commercial CD-ROM
+  release of Wolfenstein you can skip this step).
+- If you want to use the command line, create a text file called 'args.txt'
+  (without quotes) in the /cd/data/wolf3d folder and add any valid
+  arguments. Please keep them on one line.
 - Download and install BootDreams (http://dchelp.dcemulation.org/?BootDreams).
 - Open the folder you extracted Wolf4SDL\DC to in BootDreams.
 - Select a task. If you'd like to burn Wolf4SDL\DC directly to a CD-R, select
@@ -34,7 +25,7 @@ Instructions:
 - If you have a commercial CD-ROM, wait until you're asked to swap in your
   copy of Wolfenstein 3D, swap your copy in, press start and play.
 
-Valid Parameters:
+Valid Arguments:
 --goobers (Wolfenstein 3D only)
 --debugkeys (Spear of Destiny only)
 --goodtimes (Spear of Destiny only)
@@ -45,15 +36,23 @@ Valid Parameters:
 --hard
 --tedlevel <level>
 --res <width> <height> (default 320x200)
+--resf <width> <height>
+--bits <screen_bits> (default 8)
+--dblbuf
+--extravbls <vbls>
 --samplerate <rate> (default 11025)
 --audiobuffer <size> (default 4096)
 
 Notes:
-- The --res parameter will also except '640 400' but will slow rendering down
-  greatly.
+- The --res argument will also except '640 400' but will slow rendering down
+  greatly. The width must be a multiple of 320 and the height must be a
+  multiple of 200 or 240.
+- The --resf argument will force the passed screen resolution but may result
+  in graphic corruption.
 - The default samplerate is 11025 to keep the extra SOD missions from running
   out of memory. Wolfenstein 3D and the original SOD mission will happily run
   with the samplerate set to 22050.
+- The --dblbuf argument works but slows speed down by about 10 frames.
 
 Compiling:
 This port was developed under Code::Blocks 8.02 with the DC Dev ISO R4

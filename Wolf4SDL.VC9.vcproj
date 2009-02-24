@@ -176,19 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\dc_main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dc_vmu.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\fmopl.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\gp2x.cpp"
 				>
 			</File>
 			<File
@@ -307,6 +295,30 @@
 				RelativePath=".\wolfpal.inc"
 				>
 			</File>
+			<Filter
+				Name="dc"
+				>
+				<File
+					RelativePath=".\dc\dc_cd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dc\dc_main.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dc\dc_maple.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dc\dc_video.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dc\dc_vmu.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

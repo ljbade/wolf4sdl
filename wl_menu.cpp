@@ -389,6 +389,10 @@ US_ControlPanel (ScanCode scancode)
 {
     int which;
 
+#ifdef _arch_dreamcast
+    DC_StatusClearLCD();
+#endif
+
     if (ingame)
     {
         if (CP_CheckQuick (scancode))
@@ -1686,14 +1690,13 @@ CP_SaveGame (int quick)
 
             strcpy (input, &SaveGameNames[which][0]);
 
-//                      _dos_write(handle,(void far *)input,32,&nwritten);
             fwrite (input, 1, 32, file);
             fseek (file, 32, SEEK_SET);
             SaveTheGame (file, 0, 0);
             fclose (file);
 
 #ifdef _arch_dreamcast
-            DC_SaveToVMU (name, 2);
+            DC_SaveToVMU(name, input);
 #endif
 
             return 1;
@@ -1763,7 +1766,7 @@ CP_SaveGame (int quick)
                 fclose (file);
 
 #ifdef _arch_dreamcast
-                DC_SaveToVMU (name, 2);
+                DC_SaveToVMU(name, input);
 #endif
 
                 ShootSnd ();
@@ -3133,59 +3136,31 @@ void SetupSaveGames()
 {
     char name[13];
 
-#ifdef _arch_dreamcast
-    file_t dir;
-    dirent_t *dirent;
-    int x;
-
-    dir = fs_open("/vmu/a1", O_RDONLY | O_DIR);
-    x = 0;
-
     strcpy(name, SaveName);
-    while((dirent = fs_readdir(dir)) && x < 10)
-    {
-        for(int i=0; i<10; i++)
-        {
-            name[7] = '0' + i;
-            if(!strcmp(name, dirent->name))
-            {
-                if(DC_LoadFromVMU(name) != -1)
-                {
-                    const int handle = open(name, O_RDONLY);
-                    if (handle >= 0)
-                    {
-                        char temp[32];
-
-                        SaveGamesAvail[i] = 1;
-                        read(handle, temp, 32);
-                        close(handle);
-                        strcpy(&SaveGameNames[i][0], temp);
-                        x++;
-                    }
-                    fs_unlink(name);
-                }
-            }
-        }
-    }
-
-    fs_close(dir);
-#else
-    strcpy(name, SaveName);
-    for(int i=0; i<10; i++)
+    for(int i = 0; i < 10; i++)
     {
         name[7] = '0' + i;
-        const int handle = open(name, O_RDONLY | O_BINARY);
-        if (handle >= 0)
+#ifdef _arch_dreamcast
+        // Try to unpack file
+        if(DC_LoadFromVMU(name))
         {
-            char temp[32];
-
-            SaveGamesAvail[i] = 1;
-            read(handle, temp, 32);
-            close(handle);
-            strcpy(&SaveGameNames[i][0], temp);
-        }
-    }
 #endif
+            const int handle = open(name, O_RDONLY | O_BINARY);
+            if(handle >= 0)
+            {
+                char temp[32];
+
+                SaveGamesAvail[i] = 1;
+                read(handle, temp, 32);
+                close(handle);
+                strcpy(&SaveGameNames[i][0], temp);
+            }
+#ifdef _arch_dreamcast
+            // Remove unpacked version of file
+            fs_unlink(name);
+        }
+#endif
+    }
 }
 
 ////////////////////////////////////////////////////////////////////
