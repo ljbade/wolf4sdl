@@ -4,13 +4,18 @@
 // by Pickle
 //
 
-#ifdef GP2X
+#if defined(GP2X)
 
 #include "gp2x.h"
 
 static bool volume_init = false;
 static unsigned int screenshot_count = 0;
+
+#if defined(GP2X_940)
 static int volume = 70;
+#else
+static int volume = 10;
+#endif
 
 static int intUp          = 0;
 static int intDown        = 0;
@@ -30,6 +35,7 @@ static int intButtonSel   = 0;
 static int intButtonSrt   = 0;
 static int intButtonStick = 0;
 
+#if defined(GP2X_940)
 void GP2X_Shutdown(void)
 {
 	YM3812Shutdown();
@@ -39,6 +45,7 @@ void GP2X_MemoryInit( void )
 {
 	SDL_GP2X_AllowGfxMemory(NULL,0);
 }
+#endif
 
 void GP2X_AdjustVolume( int direction )
 {

@@ -326,7 +326,7 @@ static void processEvent(SDL_Event *event)
             break;
         }
 
-#ifdef GP2X
+#if defined(GP2X)
         case SDL_JOYBUTTONDOWN:
             GP2X_ButtonDown(event->jbutton.button);
             break;

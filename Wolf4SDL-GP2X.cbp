@@ -20,6 +20,8 @@
 			<Add library="SDL_mixer" />
 			<Add library="iconv" />
 		</Linker>
+		<Unit filename="GP2X/gp2x.cpp" />
+		<Unit filename="GP2X/gp2x.h" />
 		<Unit filename="audiosod.h" />
 		<Unit filename="audiowl6.h" />
 		<Unit filename="f_spear.h" />
@@ -29,8 +31,6 @@
 		<Unit filename="gfxv_apo.h" />
 		<Unit filename="gfxv_sod.h" />
 		<Unit filename="gfxv_wl6.h" />
-		<Unit filename="gp2x.cpp" />
-		<Unit filename="gp2x.h" />
 		<Unit filename="id_ca.cpp" />
 		<Unit filename="id_ca.h" />
 		<Unit filename="id_in.cpp" />

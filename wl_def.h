@@ -1388,10 +1388,12 @@ int DC_LoadFromVMU(char *dst);
 =============================================================================
 */
 
-#ifdef GP2X
+#if defined(GP2X)
 
+#if defined(GP2X_940)
 void GP2X_MemoryInit(void);
 void GP2X_Shutdown(void);
+#endif
 void GP2X_ButtonDown(int button);
 void GP2X_ButtonUp(int button);
 

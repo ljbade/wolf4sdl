@@ -2,14 +2,16 @@
 #define GP2X_H
 
 #include <SDL/SDL.h>
-#include <SDL_gp2x.h>
 #include <sys/ioctl.h>
 #include <sys/soundcard.h>
 #include <fcntl.h>
 #include <unistd.h>
 
 #include "../wl_def.h"
+#if defined(GP2X_940)
 #include "fmopl.h"
+#include <SDL_gp2x.h>
+#endif
 
 #define GP2X_BUTTON_UP              (0)
 #define GP2X_BUTTON_DOWN            (4)

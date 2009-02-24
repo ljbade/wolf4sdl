@@ -25,7 +25,11 @@ unsigned screenBits = 8;
 #elif defined(GP2X)
 unsigned screenWidth = 320;
 unsigned screenHeight = 240;
+#if defined(GP2X_940)
 unsigned screenBits = 8;
+#else
+unsigned screenBits = 16;
+#endif
 #else
 unsigned screenWidth = 640;
 unsigned screenHeight = 400;

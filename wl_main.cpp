@@ -88,7 +88,7 @@ int     param_joystickindex = 0;
 int     param_joystickhat = 0;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
 int     param_audiobuffer = 4096 / (44100 / param_samplerate);
-#elif defined(GP2X)
+#elif defined(GP2X_940)
 int     param_joystickhat = -1;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
 int     param_audiobuffer = 128;
@@ -665,7 +665,7 @@ void ShutdownId (void)
     IN_Shutdown ();
     VW_Shutdown ();
     CA_Shutdown ();
-#if defined(GP2X)
+#if defined(GP2X_940)
     GP2X_Shutdown();
 #endif
 }
@@ -1213,7 +1213,7 @@ static void InitGame()
         exit(1);
     }
 
-#if defined GP2X
+#if defined(GP2X_940)
     GP2X_MemoryInit();
 #endif
 
