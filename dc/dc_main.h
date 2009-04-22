@@ -44,6 +44,6 @@ extern void DiskFlopAnim(int x, int y);
        void DC_StatusDrawLCD(int index);
        void DC_StatusClearLCD();
        void DC_SaveToVMU(char *fname, char *str);
-       void DC_LoadFromVMU(char *fname);
+       int  DC_LoadFromVMU(char *fname);
 
 #endif

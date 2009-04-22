@@ -5,6 +5,8 @@
 #if defined(_arch_dreamcast)
 
 #include <string.h>
+#include <malloc.h>
+#include "../wl_def.h"
 #include "dc/biosfont.h"
 #include "dc/video.h"
 

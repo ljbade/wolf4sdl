@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #if defined(_arch_dreamcast)
+#	include <string.h>
 #	include "dc/dc_main.h"
 #elif !defined(_WIN32)
 #	include <stdint.h>

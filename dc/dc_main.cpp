@@ -193,7 +193,9 @@ int DC_CheckForMaps(char *path) {
 void DC_LoadMaps() {
     DC_CheckForMaps("/cd");
     DC_CLS();
+
     fs_chdir(dcwolf3dpath);
+
 #ifdef SPEAR
 #ifndef SPEARDEMO
     fs_copy("audiohed.sod", "/ram/audiohed.sod");
@@ -249,6 +251,7 @@ void DC_LoadMaps() {
     fs_copy("vswap.wl1", "/ram/vswap.wl1");
 #endif
 #endif
+
     fs_chdir("/ram");
 }
 
