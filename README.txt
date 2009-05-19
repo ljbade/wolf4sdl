@@ -16,6 +16,7 @@ Main features:
          (32 and 64 bit)
        - Linux
        - BSD variants
+       - Mac OS X (x86)
        - KallistiOS (used for Dreamcast)
       Only little endian platforms like x86, ARM and SH-4 are supported, yet.
 
