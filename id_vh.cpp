@@ -413,7 +413,7 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
                     goto finished;
             }
 
-            if(!i) lastrndval = rndval;
+            if(!i || first) lastrndval = rndval;
         }
 
         // If there is no double buffering, we always use the "first frame" case
