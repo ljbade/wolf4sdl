@@ -1,4 +1,8 @@
 Wolf4SDL v1.7
+ - Rain and snow speed fix (thanks to Tricob)
+ - Floor/ceiling fix (thanks to Tricob / Adam Biser)
+ - Fixed moon out of screen bug (thanks to Tricob)
+ - Rain/snow leaking ceilings fix (thanks to Adam Biser / Tricob)
  - Per-user configuration/savegame directories (~/.wolf4sdl) on
    Linux like systems per default (thanks to Jared Breland)
  - Added --configdir parameter
