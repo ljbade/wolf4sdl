@@ -142,6 +142,7 @@ extern  volatile boolean    Paused;
 extern  volatile char       LastASCII;
 extern  volatile ScanCode   LastScan;
 extern           int        JoyNumButtons;
+extern           boolean    forcegrabmouse;
 
 
 // Function prototypes

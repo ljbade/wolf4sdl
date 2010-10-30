@@ -33,6 +33,7 @@
 // configuration variables
 //
 boolean MousePresent;
+boolean forcegrabmouse;
 
 
 // 	Global variables
@@ -388,7 +389,7 @@ IN_Startup(void)
 
     SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
 
-    if(fullscreen)
+    if(fullscreen || forcegrabmouse)
     {
         GrabInput = true;
         SDL_WM_GrabInput(SDL_GRAB_ON);

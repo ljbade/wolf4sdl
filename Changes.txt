@@ -1,4 +1,6 @@
 Wolf4SDL v1.7
+ - Added --windowed-mouse parameter to start windowed mode with grabbed mouse
+   (thanks to Jared Breland)
  - Rain and snow speed fix (thanks to Tricob)
  - Floor/ceiling fix (thanks to Tricob / Adam Biser)
  - Fixed moon out of screen bug (thanks to Tricob)
