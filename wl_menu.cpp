@@ -8,9 +8,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifdef _WIN32
-	#include <io.h>
+    #include <io.h>
+    #include <direct.h>
 #else
-	#include <unistd.h>
+    #include <unistd.h>
 #endif
 
 #include "wl_def.h"
@@ -1491,7 +1492,7 @@ CP_LoadGame (int quick)
     FILE *file;
     int which, exit = 0;
     char name[13];
-
+    char loadpath[300];
 
     strcpy (name, SaveName);
 
@@ -1505,10 +1506,17 @@ CP_LoadGame (int quick)
         if (SaveGamesAvail[which])
         {
             name[7] = which + '0';
+
 #ifdef _arch_dreamcast
             DC_LoadFromVMU(name);
 #endif
-            file = fopen (name, "rb");
+
+            if(configdir[0])
+                snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
+            else
+                strcpy(loadpath, name);
+
+            file = fopen (loadpath, "rb");
             fseek (file, 32, SEEK_SET);
             loadedgame = true;
             LoadTheGame (file, 0, 0);
@@ -1547,7 +1555,13 @@ CP_LoadGame (int quick)
 #ifdef _arch_dreamcast
             DC_LoadFromVMU(name);
 #endif
-            file = fopen (name, "rb");
+
+            if(configdir[0])
+                snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
+            else
+                strcpy(loadpath, name);
+
+            file = fopen (loadpath, "rb");
             fseek (file, 32, SEEK_SET);
 
             DrawLSAction (0);
@@ -1670,8 +1684,8 @@ CP_SaveGame (int quick)
     int which, exit = 0;
     FILE *file;
     char name[13];
+    char savepath[300];
     char input[32];
-
 
     strcpy (name, SaveName);
 
@@ -1685,8 +1699,14 @@ CP_SaveGame (int quick)
         if (SaveGamesAvail[which])
         {
             name[7] = which + '0';
-            unlink (name);
-            file = fopen (name, "wb");
+
+            if(configdir[0])
+                snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
+            else
+                strcpy(savepath, name);
+
+            unlink (savepath);
+            file = fopen (savepath, "wb");
 
             strcpy (input, &SaveGameNames[which][0]);
 
@@ -1720,6 +1740,7 @@ CP_SaveGame (int quick)
             // OVERWRITE EXISTING SAVEGAME?
             //
             if (SaveGamesAvail[which])
+            {
 #ifdef JAPAN
                 if (!GetYorN (7, 8, C_JAPSAVEOVERPIC))
 #else
@@ -1735,6 +1756,7 @@ CP_SaveGame (int quick)
                     PrintLSEntry (which, HIGHLIGHT);
                     VW_UpdateScreen ();
                 }
+            }
 
             ShootSnd ();
 
@@ -1754,9 +1776,13 @@ CP_SaveGame (int quick)
                 SaveGamesAvail[which] = 1;
                 strcpy (&SaveGameNames[which][0], input);
 
-                unlink (name);
-                file = fopen (name, "wb");
-//                              _dos_write(handle,(void far *)input,32,&nwritten);
+                if(configdir[0])
+                    snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
+                else
+                    strcpy(savepath, name);
+
+                unlink (savepath);
+                file = fopen (savepath, "wb");
                 fwrite (input, 32, 1, file);
                 fseek (file, 32, SEEK_SET);
 
@@ -3135,6 +3161,7 @@ SetupControlPanel (void)
 void SetupSaveGames()
 {
     char name[13];
+    char savepath[300];
 
     strcpy(name, SaveName);
     for(int i = 0; i < 10; i++)
@@ -3145,7 +3172,12 @@ void SetupSaveGames()
         if(DC_LoadFromVMU(name))
         {
 #endif
-            const int handle = open(name, O_RDONLY | O_BINARY);
+            if(configdir[0])
+                snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
+            else
+                strcpy(savepath, name);
+
+            const int handle = open(savepath, O_RDONLY | O_BINARY);
             if(handle >= 0)
             {
                 char temp[32];
@@ -3956,6 +3988,41 @@ void
 CheckForEpisodes (void)
 {
     struct stat statbuf;
+
+    // On Linux like systems, the configdir defaults to $HOME/.wolf4sdl
+#if !defined(_WIN32) && !defined(_arch_dreamcast)
+    if(configdir[0] == 0)
+    {
+        // Set config location to home directory for multi-user support
+        char *homedir = getenv("HOME");
+        if(homedir == NULL)
+        {
+            Quit("Your $HOME directory is not defined. You must set this before playing.");
+        }
+        #define WOLFDIR "/.wolf4sdl"
+        if(strlen(homedir) + sizeof(WOLFDIR) > sizeof(configdir))
+        {
+            Quit("Your $HOME directory path is too long. It cannot be used for saving games.");
+        }
+        snprintf(configdir, sizeof(configdir), "%s" WOLFDIR, homedir);
+    }
+#endif
+
+    if(configdir[0] != 0)
+    {
+        // Ensure config directory exists and create if necessary
+        if(stat(configdir, &statbuf) != 0)
+        {
+#ifdef _WIN32
+            if(_mkdir(configdir) != 0)
+#else
+            if(mkdir(configdir, 0755) != 0)
+#endif
+            {
+                Quit("The configuration directory \"%s\" could not be created.", configdir);
+            }
+        }
+    }
 
 //
 // JAPANESE VERSION

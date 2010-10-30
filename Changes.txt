@@ -1,4 +1,7 @@
 Wolf4SDL v1.7
+ - Per-user configuration/savegame directories (~/.wolf4sdl) on
+   Linux like systems per default (thanks to Jared Breland)
+ - Added --configdir parameter
  - Use SDL_DOUBLEBUF for vsync to avoid or at least reduce flickering
    (thanks to Greg Ayrton for the hint, use --nodblbuf to disable it)
  - Removed remainings of the frame rate counter on screen, when disabled

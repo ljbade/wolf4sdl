@@ -417,6 +417,18 @@
 				RelativePath=".\wl_shade.h"
 				>
 			</File>
+			<Filter
+				Name="dc"
+				>
+				<File
+					RelativePath=".\dc\dc_main.h"
+					>
+				</File>
+				<File
+					RelativePath=".\dc\dc_vmu.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

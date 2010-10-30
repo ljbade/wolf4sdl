@@ -73,7 +73,8 @@ boolean startgame;
 boolean loadedgame;
 int     mouseadjustment;
 
-char    configname[13]="config.";
+char    configdir[256] = "";
+char    configname[13] = "config.";
 
 //
 // Command line parameter variables
@@ -125,11 +126,18 @@ void ReadConfig(void)
     SMMode  sm;
     SDSMode sds;
 
+    char configpath[300];
+
 #ifdef _arch_dreamcast
     DC_LoadFromVMU(configname);
 #endif
 
-    const int file = open(configname, O_RDONLY | O_BINARY);
+    if(configdir[0])
+        snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
+    else
+        strcpy(configpath, configname);
+
+    const int file = open(configpath, O_RDONLY | O_BINARY);
     if (file != -1)
     {
         //
@@ -243,11 +251,18 @@ noconfig:
 
 void WriteConfig(void)
 {
+    char configpath[300];
+
 #ifdef _arch_dreamcast
     fs_unlink(configname);
 #endif
 
-    const int file = open(configname, O_CREAT | O_WRONLY | O_BINARY, 0644);
+    if(configdir[0])
+        snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
+    else
+        strcpy(configpath, configname);
+
+    const int file = open(configpath, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (file != -1)
     {
         word tmp=0xfefa;
@@ -1818,6 +1833,29 @@ void CheckParameters(int argc, char *argv[])
             }
             else param_mission = atoi(argv[i]);
         }
+        else IFARG("--configdir")
+        {
+            if(++i >= argc)
+            {
+                printf("The configdir option is missing the dir argument!\n");
+                hasError = true;
+            }
+            else
+            {
+                size_t len = strlen(argv[i]);
+                if(len + 2 > sizeof(configdir))
+                {
+                    printf("The config directory is too long!\n");
+                    hasError = true;
+                }
+                else
+                {
+                    strcpy(configdir, argv[i]);
+                    if(argv[i][len] != '/' && argv[i][len] != '\\')
+                        strcat(configdir, "/");
+                }
+            }
+        }
         else IFARG("--goodtimes")
             param_goodtimes = true;
         else IFARG("--ignorenumchunks")
@@ -1861,6 +1899,12 @@ void CheckParameters(int argc, char *argv[])
             "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
             " --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*\n"
             "                        (may be useful for some broken mods)\n"
+            " --configdir <dir>      Directory where config file and save games are stored\n"
+#if defined(_arch_dreamcast) || defined(_WIN32)
+            "                        (default: current directory)\n"
+#else
+            "                        (default: $HOME/.wolf4sdl)\n"
+#endif
 #if defined(SPEAR) && !defined(SPEARDEMO)
             " --mission <mission>    Mission number to play (1-3)\n"
             " --goodtimes            Disable copy protection quiz\n"

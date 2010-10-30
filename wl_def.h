@@ -912,6 +912,7 @@ extern  unsigned screenofs;
 
 extern  boolean  startgame;
 extern  char     str[80];
+extern  char     configdir[256];
 extern  char     configname[13];
 
 //
@@ -1395,6 +1396,7 @@ static inline fixed FixedMul(fixed a, fixed b)
 #ifdef _WIN32
     #define strcasecmp stricmp
     #define strncasecmp strnicmp
+    #define snprintf _snprintf
 #else
     static inline char* itoa(int value, char* string, int radix)
     {
