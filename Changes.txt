@@ -1,4 +1,7 @@
 Wolf4SDL v1.7
+ - Added support for .sd1 SOD game files as delivered by Steam
+   by changing --mission parameter slightly
+   (thanks to Pickle)
  - Added --windowed-mouse parameter to start windowed mode with grabbed mouse
    (thanks to Jared Breland)
  - Rain and snow speed fix (thanks to Tricob)

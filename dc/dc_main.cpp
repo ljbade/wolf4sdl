@@ -204,10 +204,15 @@ void DC_LoadMaps() {
     fs_copy("vgagraph.sod", "/ram/vgagraph.sod");
     fs_copy("vgahead.sod", "/ram/vgahead.sod");
     switch(param_mission) {
-        case 1:
+        case 0:
             fs_copy("gamemaps.sod", "/ram/gamemaps.sod");
             fs_copy("maphead.sod", "/ram/maphead.sod");
             fs_copy("vswap.sod", "/ram/vswap.sod");
+            break;
+        case 1:
+            fs_copy("gamemaps.sd1", "/ram/gamemaps.sd1");
+            fs_copy("maphead.sd1", "/ram/maphead.sd1");
+            fs_copy("vswap.sd1", "/ram/vswap.sd1");
             break;
         case 2:
             fs_copy("gamemaps.sd2", "/ram/gamemaps.sd2");

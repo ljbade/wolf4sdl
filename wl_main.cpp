@@ -99,7 +99,7 @@ int     param_samplerate = 44100;
 int     param_audiobuffer = 2048 / (44100 / param_samplerate);
 #endif
 
-int     param_mission = 1;
+int     param_mission = 0;
 boolean param_goodtimes = false;
 boolean param_ignorenumchunks = false;
 
@@ -1836,7 +1836,15 @@ void CheckParameters(int argc, char *argv[])
                 printf("The mission option is missing the mission argument!\n");
                 hasError = true;
             }
-            else param_mission = atoi(argv[i]);
+            else
+            {
+                param_mission = atoi(argv[i]);
+                if(param_mission < 0 || param_mission > 3)
+                {
+                    printf("The mission option must be between 0 and 3!\n");
+                    hasError = true;
+                }
+            }
         }
         else IFARG("--configdir")
         {
@@ -1911,7 +1919,8 @@ void CheckParameters(int argc, char *argv[])
             "                        (default: $HOME/.wolf4sdl)\n"
 #endif
 #if defined(SPEAR) && !defined(SPEARDEMO)
-            " --mission <mission>    Mission number to play (1-3)\n"
+            " --mission <mission>    Mission number to play (0-3)\n"
+            "                        (default: 0 -> .sod, 1-3 -> .sd*)\n"
             " --goodtimes            Disable copy protection quiz\n"
 #endif
             , defaultSampleRate
