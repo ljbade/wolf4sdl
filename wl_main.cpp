@@ -1249,6 +1249,7 @@ static void InitGame()
         }
     }
 #endif
+	VW_UpdateScreen();
 
     VH_Startup ();
     IN_Startup ();
@@ -1289,6 +1290,8 @@ static void InitGame()
 //
 // HOLDING DOWN 'M' KEY?
 //
+	IN_ProcessEvents();
+
 #ifndef SPEARDEMO
     if (Keyboard[sc_M])
     {
