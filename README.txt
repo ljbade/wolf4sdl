@@ -9,11 +9,12 @@ while taking advantage of some improvements mentioned in the list below.
 
 
 Main features:
+--------------
 
  - Cross-plattform:
       Supported operating systems are at least:
        - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
-         (32 and 64 bit)
+         (32 and 64 bit), Windows 7 (32 and 64 bit)
        - Linux
        - BSD variants
        - Mac OS X (x86)
@@ -43,6 +44,7 @@ Main features:
       are recommended (run, strafe, ESC).
 
 Additional features:
+--------------------
 
  - Two additional view sizes:
       Wolf4SDL supports one view size using the full width of the screen
@@ -90,6 +92,7 @@ version.h as described in that file):
 
 
 How to play:
+------------
 
 To play Wolfenstein 3D with Wolf4SDL, you just have to copy the original data
 files (e.g. *.WL6) into the same directory as the Wolf4SDL executable.
@@ -104,6 +107,7 @@ to grab the mouse. Press it again to release the mouse.
 
 
 Usage:
+------
 
 Wolf4SDL supports the following command line options:
  --help                 This help page
@@ -113,7 +117,7 @@ Wolf4SDL supports the following command line options:
  --normal               Sets the difficulty to normal for tedlevel
  --hard                 Sets the difficulty to hard for tedlevel
  --nowait               Skips intro screens
- --windowed             Starts the game in a window
+ --windowed[-mouse]     Starts the game in a window [and grabs mouse]
  --res <width> <height> Sets the screen resolution
                         (must be multiple of 320x200 or 320x240)
  --resf <w> <h>         Sets any screen resolution >= 320x200
@@ -122,6 +126,7 @@ Wolf4SDL supports the following command line options:
                         (Use this when you have palette/fading problem
                         or perhaps to optimize speed on old systems.
                         Allowed: 8, 16, 24, 32, default: "best" depth)
+ --nodblbuf             Don't use SDL's double buffering
  --extravbls <vbls>     Sets a delay after each frame, which may help to
                         reduce flickering (SDL does not support vsync...)
                         (unit is currently 8 ms, default: 0)
@@ -132,6 +137,9 @@ Wolf4SDL supports the following command line options:
                         (given in bytes)
  --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*
                         (may be useful for some broken mods)
+ --configdir <dir>      Directory where config file and save games are stored
+                        (Windows default: current directory,
+                        others: $HOME/.wolf4sdl)
 
 For Spear of Destiny the following additional options are available:
  --mission <mission>    Mission number to play (1-3)
@@ -139,6 +147,7 @@ For Spear of Destiny the following additional options are available:
 
 
 Compiling from source code:
+---------------------------
 
 The current version of the source code is available in the svn repository at:
    svn://tron.homeunix.org:3690/wolf3d/trunk
@@ -150,6 +159,7 @@ The following ways of compiling the source code are supported:
  - Visual C++ 6 (Wolf4SDL.dsw and Wolf4SDL.dsp)
  - Code::Blocks 8.02 (Wolf4SDL.cbp)
  - Dev-C++ 5.0 Beta 9.2 (4.9.9.2) (Wolf4SDL.dev) (see README-devcpp.txt)
+ - Xcode (for Mac OS X, macosx/Wolf4SDL.xcodeproj/project.pbxproj)
  - Special compiling for Dreamcast (see README-dc.txt)
  - Special compiling for GP2X (see README-GP2X.txt)
 
@@ -170,21 +180,29 @@ IMPORTANT: Do not forget to take care of version.h!
 
 
 TODOs:
+------
+
  - Add PC speaker emulation
  - Center non-ingame screens for resolutions being a multiple of 320x240
  - Add support for any graphic resolution >= 320x200
 
 
 Known bugs:
+-----------
+
  - None! ;D
 
 
 Troubleshooting:
+----------------
+
  - If your frame rate is low, consider using the original screen resolution
    (--res 320 200) or lowering the sound quality (--samplerate 22050)
 
 
 Credits:
+--------
+
  - Special thanks to id Software! Without the source code we would still have
    to pelt Wolfenstein 3D with hex editors and disassemblers ;D
  - Special thanks to the MAME developer team for providing the source code
@@ -194,10 +212,13 @@ Credits:
  - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
  - Thanks to Pickle for the GP2X support and help on 320x240 support
  - Thanks to fackue for the Dreamcast support
+ - Thanks to Chris Ballinger for the Mac OS X support
  - Thanks to Xilinx, Inc. for providing a list of maximum-length LFSR counters
    used for higher resolutions of fizzle fade
 
 
 Licenses:
+---------
+
  - The original source code of Wolfenstein 3D: license-id.txt
  - The OPL2 emulator (fmopl.cpp): license-mame.txt

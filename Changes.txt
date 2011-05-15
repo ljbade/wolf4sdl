@@ -1,4 +1,6 @@
-Wolf4SDL v1.7
+Wolf4SDL v1.7 (released 2011-05-15, revision 256)
+ - Added support for Mac OS X
+   (thanks to Chris Ballinger)
  - Added support for .sd1 SOD game files as delivered by Steam
    by changing --mission parameter slightly
    (thanks to Pickle)
