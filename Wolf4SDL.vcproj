@@ -343,6 +343,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gfxv_jap.h"
+				>
+			</File>
+			<File
 				RelativePath=".\gfxv_sod.h"
 				>
 			</File>

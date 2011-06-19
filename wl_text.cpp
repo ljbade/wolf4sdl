@@ -766,14 +766,10 @@ void HelpScreens (void)
 #endif
 
 
-    //      CA_UpLevel ();
-    //      MM_SortMem ();
 #ifdef JAPAN
     ShowArticle (0);
     VW_FadeOut();
     FreeMusic ();
-    CA_DownLevel ();
-    MM_SortMem ();
 #else
 
 #ifdef ARTSEXTERN

@@ -1,7 +1,7 @@
 [Project]
 FileName=Wolf4SDL.dev
 Name=Wolf4SDL
-UnitCount=39
+UnitCount=40
 Type=0
 Ver=1
 ObjFiles=
@@ -437,3 +437,12 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit40]
+FileName=gfxv_jap.h
+CompileCpp=1
+Folder=Wolf4SDL
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=

@@ -119,13 +119,19 @@ CP_itemtype SndMenu[] = {
 #endif
 };
 
+#ifdef JAPAN
+enum { CTL_MOUSEENABLE, CTL_JOYENABLE, CTL_JOY2BUTTONUNKNOWN, CTL_GAMEPADUNKONWN, CTL_MOUSESENS, CTL_CUSTOMIZE };
+#else
 enum { CTL_MOUSEENABLE, CTL_MOUSESENS, CTL_JOYENABLE, CTL_CUSTOMIZE };
+#endif
 
 CP_itemtype CtlMenu[] = {
 #ifdef JAPAN
     {0, "", 0},
-    {0, "", MouseSensitivity},
     {0, "", 0},
+    {0, "", 0},
+    {0, "", 0},
+    {0, "", MouseSensitivity},
     {1, "", CustomControls}
 #else
     {0, STR_MOUSEEN, 0},
@@ -3767,7 +3773,8 @@ Confirm (const char *string)
 int
 GetYorN (int x, int y, int pic)
 {
-    int xit = 0, whichsnd[2] = { ESCPRESSEDSND, SHOOTSND };
+    int xit = 0;
+    soundnames whichsnd[2] = { ESCPRESSEDSND, SHOOTSND };
 
 
     CA_CacheGrChunk (pic);
@@ -3779,16 +3786,10 @@ GetYorN (int x, int y, int pic)
     do
     {
         IN_WaitAndProcessEvents();
-#ifndef SPEAR
-        if (Keyboard[sc_Tab] && Keyboard[sc_P] && param_debugmode)
-            PicturePause ();
-#endif
-
-#ifdef SPANISH
     }
+#ifdef SPANISH
     while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
 #else
-    }
     while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
 #endif
 
@@ -4046,6 +4047,8 @@ CheckForEpisodes (void)
     }
     else
         Quit ("NO JAPANESE WOLFENSTEIN 3-D DATA FILES to be found!");
+    strcpy (graphext, extension);
+    strcpy (audioext, extension);
 #else
 
 //
