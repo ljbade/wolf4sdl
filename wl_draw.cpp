@@ -1552,7 +1552,9 @@ void    ThreeDRefresh (void)
     spotvis[player->tilex][player->tiley] = 1;       // Detect all sprites over player fix
 
     vbuf = VL_LockSurface(screenBuffer);
-    vbuf+=screenofs;
+    if(vbuf == NULL) return;
+
+    vbuf += screenofs;
     vbufPitch = bufferPitch;
 
     CalcViewVariables();

@@ -979,6 +979,9 @@ void CA_CacheScreen (int chunk)
     memptr  bigbufferseg;
     int32_t    *source;
     int             next;
+    byte *pic, *vbuf;
+    int x, y, scx, scy;
+    unsigned i, j;
 
 //
 // load the chunk into a buffer
@@ -1002,22 +1005,25 @@ void CA_CacheScreen (int chunk)
 // allocate final space, decompress it, and free bigbuffer
 // Sprites need to have shifts made and various other junk
 //
-    byte *pic = (byte *) malloc(64000);
+    pic = (byte *) malloc(64000);
     CHECKMALLOCRESULT(pic);
     CAL_HuffExpand((byte *) source, pic, expanded, grhuffman);
 
-    byte *vbuf = LOCK();
-    for(int y = 0, scy = 0; y < 200; y++, scy += scaleFactor)
+    vbuf = VL_LockSurface(curSurface);
+    if(vbuf != NULL)
     {
-        for(int x = 0, scx = 0; x < 320; x++, scx += scaleFactor)
+        for(y = 0, scy = 0; y < 200; y++, scy += scaleFactor)
         {
-            byte col = pic[(y * 80 + (x >> 2)) + (x & 3) * 80 * 200];
-            for(unsigned i = 0; i < scaleFactor; i++)
-                for(unsigned j = 0; j < scaleFactor; j++)
-                    vbuf[(scy + i) * curPitch + scx + j] = col;
+            for(x = 0, scx = 0; x < 320; x++, scx += scaleFactor)
+            {
+                byte col = pic[(y * 80 + (x >> 2)) + (x & 3) * 80 * 200];
+                for(i = 0; i < scaleFactor; i++)
+                    for(j = 0; j < scaleFactor; j++)
+                        vbuf[(scy + i) * curPitch + scx + j] = col;
+            }
         }
+        VL_UnlockSurface(curSurface);
     }
-    UNLOCK();
     free(pic);
     free(bigbufferseg);
 }

@@ -16,8 +16,11 @@ void VWB_DrawPropString(const char* string)
 	int		    width, step, height;
 	byte	    *source, *dest;
 	byte	    ch;
+	int i;
+	unsigned sx, sy;
 
-    byte *vbuf = LOCK();
+	byte *vbuf = VL_LockSurface(curSurface);
+	if(vbuf == NULL) return;
 
 	font = (fontstruct *) grsegs[STARTFONT+fontnumber];
 	height = font->height;
@@ -32,11 +35,11 @@ void VWB_DrawPropString(const char* string)
 			for(int i=0;i<height;i++)
 			{
 				if(source[i*step])
-                {
-                    for(unsigned sy=0; sy<scaleFactor; sy++)
-                        for(unsigned sx=0; sx<scaleFactor; sx++)
-        					dest[(scaleFactor*i+sy)*curPitch+sx]=fontcolor;
-                }
+				{
+					for(sy=0; sy<scaleFactor; sy++)
+						for(sx=0; sx<scaleFactor; sx++)
+							dest[(scaleFactor*i+sy)*curPitch+sx]=fontcolor;
+				}
 			}
 
 			source++;
@@ -45,7 +48,7 @@ void VWB_DrawPropString(const char* string)
 		}
 	}
 
-	UNLOCK();
+	VL_UnlockSurface(curSurface);
 }
 
 /*
@@ -214,6 +217,16 @@ void LatchDrawPicScaledCoord (unsigned scx, unsigned scy, unsigned picnum)
 
 //==========================================================================
 
+void FreeLatchMem()
+{
+    int i;
+    for(i = 0; i < 2 + LATCHPICS_LUMP_END - LATCHPICS_LUMP_START; i++)
+    {
+        SDL_FreeSurface(latchpics[i]);
+        latchpics[i] = NULL;
+    }
+}
+
 /*
 ===================
 =
@@ -249,6 +262,8 @@ void LoadLatchMem (void)
 		src += 64;
 	}
 	UNCACHEGRCHUNK (STARTTILE8);
+
+	latchpics[1] = NULL;  // not used
 
 //
 // pics
@@ -351,8 +366,12 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
 
     frame = GetTimeCount();
     byte *srcptr = VL_LockSurface(source);
+    if(srcptr == NULL) return false;
+
     do
     {
+        IN_ProcessEvents();
+
         if(abortable && IN_CheckAck ())
         {
             VL_UnlockSurface(source);
@@ -363,64 +382,80 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
 
         byte *destptr = VL_LockSurface(screen);
 
-        rndval = lastrndval;
-
-        // When using double buffering, we have to copy the pixels of the last AND the current frame.
-        // Only for the first frame, there is no "last frame"
-        for(int i = first; i < 2; i++)
+        if(destptr != NULL)
         {
-            for(unsigned p = 0; p < pixperframe; p++)
+            rndval = lastrndval;
+
+            // When using double buffering, we have to copy the pixels of the last AND the current frame.
+            // Only for the first frame, there is no "last frame"
+            for(int i = first; i < 2; i++)
             {
-                //
-                // seperate random value into x/y pair
-                //
-
-                x = rndval >> rndbits_y;
-                y = rndval & ((1 << rndbits_y) - 1);
-
-                //
-                // advance to next random element
-                //
-
-                rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
-
-                if(x >= width || y >= height)
+                for(unsigned p = 0; p < pixperframe; p++)
                 {
-                    if(rndval == 0)     // entire sequence has been completed
+                    //
+                    // seperate random value into x/y pair
+                    //
+
+                    x = rndval >> rndbits_y;
+                    y = rndval & ((1 << rndbits_y) - 1);
+
+                    //
+                    // advance to next random element
+                    //
+
+                    rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
+
+                    if(x >= width || y >= height)
+                    {
+                        if(rndval == 0)     // entire sequence has been completed
+                            goto finished;
+                        p--;
+                        continue;
+                    }
+
+                    //
+                    // copy one pixel
+                    //
+
+                    if(screenBits == 8)
+                    {
+                        *(destptr + (y1 + y) * screen->pitch + x1 + x)
+                            = *(srcptr + (y1 + y) * source->pitch + x1 + x);
+                    }
+                    else
+                    {
+                        byte col = *(srcptr + (y1 + y) * source->pitch + x1 + x);
+                        uint32_t fullcol = SDL_MapRGB(screen->format, curpal[col].r, curpal[col].g, curpal[col].b);
+                        memcpy(destptr + (y1 + y) * screen->pitch + (x1 + x) * screen->format->BytesPerPixel,
+                            &fullcol, screen->format->BytesPerPixel);
+                    }
+
+                    if(rndval == 0)		// entire sequence has been completed
                         goto finished;
-                    p--;
-                    continue;
                 }
 
-                //
-                // copy one pixel
-                //
-
-                if(screenBits == 8)
-                {
-                    *(destptr + (y1 + y) * screen->pitch + x1 + x)
-                        = *(srcptr + (y1 + y) * source->pitch + x1 + x);
-                }
-                else
-                {
-                    byte col = *(srcptr + (y1 + y) * source->pitch + x1 + x);
-                    uint32_t fullcol = SDL_MapRGB(screen->format, curpal[col].r, curpal[col].g, curpal[col].b);
-                    memcpy(destptr + (y1 + y) * screen->pitch + (x1 + x) * screen->format->BytesPerPixel,
-                        &fullcol, screen->format->BytesPerPixel);
-                }
-
-                if(rndval == 0)		// entire sequence has been completed
-                    goto finished;
+                if(!i || first) lastrndval = rndval;
             }
 
-            if(!i || first) lastrndval = rndval;
+            // If there is no double buffering, we always use the "first frame" case
+            if(usedoublebuffering) first = 0;
+
+            VL_UnlockSurface(screen);
+            SDL_Flip(screen);
         }
-
-        // If there is no double buffering, we always use the "first frame" case
-        if(usedoublebuffering) first = 0;
-
-        VL_UnlockSurface(screen);
-        SDL_Flip(screen);
+        else
+        {
+            // No surface, so only enhance rndval
+            for(int i = first; i < 2; i++)
+            {
+                for(unsigned p = 0; p < pixperframe; p++)
+                {
+                    rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
+                    if(rndval == 0)
+                        goto finished;
+                }
+            }
+        }
 
         frame++;
         Delay(frame - GetTimeCount());        // don't go too fast
