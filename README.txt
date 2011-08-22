@@ -221,5 +221,9 @@ Credits:
 Licenses:
 ---------
 
- - The original source code of Wolfenstein 3D: license-id.txt
- - The OPL2 emulator (fmopl.cpp): license-mame.txt
+ - The original source code of Wolfenstein 3D:
+     At your choice:
+     - license-id.txt or
+     - license-gpl.txt
+ - The OPL2 emulator (fmopl.cpp):
+     - license-mame.txt
