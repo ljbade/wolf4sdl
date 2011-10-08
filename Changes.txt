@@ -1,4 +1,9 @@
 Wolf4SDL v1.8
+ - Added the DOSBox OPL emulator as a GPL alternative to the MAME one
+ - Changed source code license to also allow GPL (except for MAME's fmopl.cpp)
+ - Fixed MinGW portability issues (thanks to Fabian Greffrath)
+ - Added support for Japanese version
+ - Fixed ALT-TAB crashes on Windows
  - Fixed signon screen (show "One moment") and jukebox
    (thanks to Chris Chokan)
 

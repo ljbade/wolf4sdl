@@ -62,7 +62,7 @@ BuildCmd=
 [Unit4]
 FileName=fmopl.cpp
 CompileCpp=1
-Folder=Wolf4SDL
+Folder=Wolf4SDL\mame
 Compile=1
 Link=1
 Priority=1000
@@ -72,7 +72,7 @@ BuildCmd=
 [Unit5]
 FileName=fmopl.h
 CompileCpp=1
-Folder=Wolf4SDL
+Folder=Wolf4SDL\mame
 Compile=1
 Link=1
 Priority=1000

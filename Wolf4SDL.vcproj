@@ -185,10 +185,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fmopl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\gp2x.cpp"
 				>
 			</File>
@@ -308,6 +304,30 @@
 				RelativePath=".\wolfpal.inc"
 				>
 			</File>
+			<Filter
+				Name="mame"
+				>
+				<File
+					RelativePath=".\mame\fmopl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\mame\fmopl.h"
+				>
+				</File>
+			</Filter>
+			<Filter
+				Name="dosbox"
+				>
+				<File
+					RelativePath=".\dosbox\dbopl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dosbox\dbopl.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -328,10 +348,6 @@
 			</File>
 			<File
 				RelativePath=".\f_spear.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fmopl.h"
 				>
 			</File>
 			<File

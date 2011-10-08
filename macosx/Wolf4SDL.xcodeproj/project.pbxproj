@@ -73,9 +73,9 @@
 		D901F4C10FC0DB520040C290 /* SDL_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_mixer.framework; path = /Library/Frameworks/SDL_mixer.framework; sourceTree = "<absolute>"; };
 		D901F4C70FC0DBCB0040C290 /* id_in.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = id_in.h; path = ../id_in.h; sourceTree = SOURCE_ROOT; };
 		D901F4C80FC0DBCB0040C290 /* f_spear.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = f_spear.h; path = ../f_spear.h; sourceTree = SOURCE_ROOT; };
-		D901F4C90FC0DBCB0040C290 /* fmopl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmopl.h; path = ../fmopl.h; sourceTree = SOURCE_ROOT; };
+		D901F4C90FC0DBCB0040C290 /* fmopl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fmopl.h; path = ../mame/fmopl.h; sourceTree = SOURCE_ROOT; };
 		D901F4CA0FC0DBCB0040C290 /* audiosod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = audiosod.h; path = ../audiosod.h; sourceTree = SOURCE_ROOT; };
-		D901F4CB0FC0DBCB0040C290 /* fmopl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fmopl.cpp; path = ../fmopl.cpp; sourceTree = SOURCE_ROOT; };
+		D901F4CB0FC0DBCB0040C290 /* fmopl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fmopl.cpp; path = ../mame/fmopl.cpp; sourceTree = SOURCE_ROOT; };
 		D901F4CC0FC0DBCB0040C290 /* id_pm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = id_pm.cpp; path = ../id_pm.cpp; sourceTree = SOURCE_ROOT; };
 		D901F4CE0FC0DBCB0040C290 /* gfxv_sod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gfxv_sod.h; path = ../gfxv_sod.h; sourceTree = SOURCE_ROOT; };
 		D901F4CF0FC0DBCB0040C290 /* wl_inter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wl_inter.cpp; path = ../wl_inter.cpp; sourceTree = SOURCE_ROOT; };

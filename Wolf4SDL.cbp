@@ -25,8 +25,8 @@
 		<Unit filename="audiosod.h" />
 		<Unit filename="audiowl6.h" />
 		<Unit filename="f_spear.h" />
-		<Unit filename="fmopl.cpp" />
-		<Unit filename="fmopl.h" />
+		<Unit filename="mame\fmopl.cpp" />
+		<Unit filename="mame\fmopl.h" />
 		<Unit filename="foreign.h" />
 		<Unit filename="gfxv_apo.h" />
 		<Unit filename="gfxv_jap.h" />

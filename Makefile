@@ -26,6 +26,10 @@ CFLAGS += -Wreturn-type
 CFLAGS += -Wwrite-strings
 CFLAGS += -Wcast-align
 
+ifdef GPL
+    CFLAGS += -DUSE_GPL
+endif
+
 
 CCFLAGS += $(CFLAGS)
 CCFLAGS += -std=gnu99
@@ -37,9 +41,16 @@ CXXFLAGS += $(CFLAGS)
 
 LDFLAGS += $(LDFLAGS_SDL)
 LDFLAGS += -lSDL_mixer
+ifneq (,$(findstring MINGW,$(shell uname -s)))
+LDFLAGS += -static-libgcc
+endif
 
 SRCS :=
-SRCS += fmopl.cpp
+ifndef GPL
+    SRCS += mame/fmopl.cpp
+else
+    SRCS += dosbox/dbopl.cpp
+endif
 SRCS += id_ca.cpp
 SRCS += id_in.cpp
 SRCS += id_pm.cpp
@@ -105,7 +116,7 @@ $(BINARY): $(OBJS)
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(DEPS) $(OBJS) $(BINARY)
+	$(Q)rm -fr $(DEPS) $(OBJS) $(BINARY) $(BINARY).exe
 
 install: $(BINARY)
 	@echo '===> INSTALL'

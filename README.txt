@@ -3,7 +3,7 @@ Original Wolfenstein 3D by id Software (http://www.idsoftware.com)
 =============================================================================
 
 Wolf4SDL is an open-source port of id Software's classic first-person shooter
-Wolfenstein 3D to the cross-plattform multimedia library "Simple DirectMedia
+Wolfenstein 3D to the cross-platform multimedia library "Simple DirectMedia
 Layer (SDL)" (http://www.libsdl.org). It is meant to keep the original feel
 while taking advantage of some improvements mentioned in the list below.
 
@@ -11,7 +11,7 @@ while taking advantage of some improvements mentioned in the list below.
 Main features:
 --------------
 
- - Cross-plattform:
+ - Cross-platform:
       Supported operating systems are at least:
        - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
          (32 and 64 bit), Windows 7 (32 and 64 bit)
@@ -206,11 +206,12 @@ Credits:
 
  - Special thanks to id Software! Without the source code we would still have
    to pelt Wolfenstein 3D with hex editors and disassemblers ;D
+ - Special thanks to the DOSBox team for providing a GPL'ed OPL2/3 emulator!
  - Special thanks to the MAME developer team for providing the source code
    of the OPL2 emulator!
  - Many thanks to "Der Tron" for hosting the svn repository, making Wolf4SDL
    FreeBSD compatible, testing, bugfixing and cleaning up the code!
- - Thanks to Chris for his improvements on Wolf4GW, on which Wolf4SDL bases.
+ - Thanks to Chris Chokan for his improvements on Wolf4GW (base of Wolf4SDL)
  - Thanks to Pickle for the GP2X support and help on 320x240 support
  - Thanks to fackue for the Dreamcast support
  - Thanks to Chris Ballinger for the Mac OS X support
@@ -225,5 +226,7 @@ Licenses:
      At your choice:
      - license-id.txt or
      - license-gpl.txt
- - The OPL2 emulator (fmopl.cpp):
-     - license-mame.txt
+ - The OPL2 emulator:
+     At your choice:
+     - license-mame.txt (fmopl.cpp)
+     - license-gpl.txt (dbopl.cpp, USE_GPL define in version.h or set GPL=1 for Makefile)

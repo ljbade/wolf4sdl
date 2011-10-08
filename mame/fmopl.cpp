@@ -76,6 +76,10 @@ Revision History:
 		verify volume of the FM part on the Y8950
 */
 
+#include "../version.h"
+
+#ifndef USE_GPL
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -1955,6 +1959,8 @@ static void OPLSetUpdateHandler(FM_OPL *OPL,OPL_UPDATEHANDLER UpdateHandler,int 
 	OPL->UpdateParam = param;
 }
 
+#if defined(BUILD_YM3526) || defined(BUILD_Y8950)
+
 static int OPLWrite(FM_OPL *OPL,int a,int v)
 {
 	if( !(a&1) )
@@ -1968,6 +1974,8 @@ static int OPLWrite(FM_OPL *OPL,int a,int v)
 	}
 	return OPL->status>>7;
 }
+
+#endif
 
 static unsigned char OPLRead(FM_OPL *OPL,int a)
 {
@@ -2589,3 +2597,5 @@ void Y8950SetKeyboardHandler(int which,OPL_PORTHANDLER_W KeyboardHandler_w,OPL_P
 }
 
 #endif
+
+#endif  // ifndef USE_GPL

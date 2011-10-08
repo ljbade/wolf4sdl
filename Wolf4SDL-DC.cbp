@@ -32,8 +32,8 @@
 		<Unit filename="dc\dc_vmu.cpp" />
 		<Unit filename="dc\dc_vmu.h" />
 		<Unit filename="f_spear.h" />
-		<Unit filename="fmopl.cpp" />
-		<Unit filename="fmopl.h" />
+		<Unit filename="mame\fmopl.cpp" />
+		<Unit filename="mame\fmopl.h" />
 		<Unit filename="foreign.h" />
 		<Unit filename="gfxv_apo.h" />
 		<Unit filename="gfxv_sod.h" />

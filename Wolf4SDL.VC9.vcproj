@@ -176,10 +176,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\fmopl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\id_ca.cpp"
 				>
 			</File>
@@ -319,6 +315,30 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="mame"
+				>
+				<File
+					RelativePath=".\mame\fmopl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\mame\fmopl.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="dosbox"
+				>
+				<File
+					RelativePath=".\dosbox\dbopl.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\dosbox\dbopl.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -339,10 +359,6 @@
 			</File>
 			<File
 				RelativePath=".\f_spear.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fmopl.h"
 				>
 			</File>
 			<File
